@@ -84,9 +84,6 @@ class BubbleChart extends Component {
             .attr("x", 0)
             .attr("y", 0);
 
-        // Plot
-        this.scatter = svg.append('g').attr("class", "data-bubble").attr("clip-path", "url(#clip)");
-
         let zoom = d3.zoom()
             .scaleExtent([.5, 20])  // This control how much you can unzoom (x0.5) and zoom (x20)
             .extent([[0, 0], [this.state.width, this.state.height]])
@@ -101,44 +98,46 @@ class BubbleChart extends Component {
             //.attr('transform', 'translate(' + this.state.margin.left + ',' + this.state.margin.top + ')')
             .call(zoom);
 
-        this.createTooltip(svg);
+        // Plot
+        this.scatter = svg.append('g').attr("class", "data-bubble").attr("clip-path", "url(#clip)");
+
+        this.createTooltip();
         this.updateChart();
     }
 
-    createTooltip = (svg) => {
-        this.tooltip = svg
+    createTooltip = () => {
+        this.tooltip = d3.select(this.divEl)
             .append("div")
+            .attr("id","tooltip-bubble")
             .style("opacity", 0)
             .attr("class", "tooltip")
             .style("background-color", "black")
+            .style("position", "absolute")
             .style("border-radius", "5px")
             .style("padding", "10px")
             .style("color", "white");
     }
 
-    showTooltip = (d) => {
-
-        console.log(this);
-
-        this.tooltip
+    showTooltip = function (d) {
+        d3.select('#tooltip-bubble')
             .transition()
             .duration(200);
-
-        this.tooltip
+        let tooltip = d3.select('#tooltip-bubble')
             .style("opacity", 1)
             .html("isClean: " + d.isClean)
-            .style("left", (d3.mouse(this)[0] + 30) + "px")
-            .style("top", (d3.mouse(this)[1] + 30) + "px");
+            .style("left", d3.event.pageX + "px")
+            .style("top", d3.event.pageY + "px")
+            ;
     }
 
-    moveTooltip = (d) => {
-        this.tooltip
-            .style("left", (d3.mouse(this)[0] + 30) + "px")
-            .style("top", (d3.mouse(this)[1] + 30) + "px")
+    moveTooltip = function (d) {
+        d3.select('#tooltip-bubble')
+            .style("left",  d3.event.pageX + "px")
+            .style("top", d3.event.pageY + "px")
     }
 
-    hideTooltip = (d) => {
-        this.tooltip
+    hideTooltip = function (d) {
+        d3.select('#tooltip-bubble')
             .transition()
             .duration(200)
             .style("opacity", 0)
@@ -149,6 +148,8 @@ class BubbleChart extends Component {
         let scatter = this.scatter;
         let scales = this.getScales();
 
+        let component = this;
+
         scatter = scatter
             .selectAll("circle")
             .data(this.state.data);
@@ -156,9 +157,20 @@ class BubbleChart extends Component {
         scatter.enter()
             .append("circle")
             .merge(scatter)
-            .on("mouseover", this.showTooltip)
-            .on("mousemove", this.moveTooltip)
-            .on("mouseleave", this.hideTooltip)
+            .on("mouseover", d => {
+                this.tooltip
+                .transition()
+                .duration(100)
+                .style('opacity', 1)
+                .text(d.isClean)
+                .style('left', `${d3.mouse(d3.event.target)[0] + 2}px`)
+                .style('top', `${d3.mouse(d3.event.target)[1] - 18}px`);
+            })
+            .on("mouseout", () => {
+                this.tooltip.transition()
+                  .duration(400)
+                  .style('opacity', 0);
+              })
             .transition()
             .duration(1000)
             .attr("cx", (d) => scales.xScale(d.x))
@@ -197,7 +209,7 @@ class BubbleChart extends Component {
         const height = this.state.height + this.state.margin.top + this.state.margin.bottom;
 
         return (
-            <div>
+            <div ref={el => this.divEl = el}>
                 <svg viewBox={"0 0 " + width + " " + height} ref={el => this.svgEl = el}></svg>
                 <button className="btn btn-primary" onClick={this.handleClick}>Actualizar</button>
             </div>
