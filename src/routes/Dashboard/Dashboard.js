@@ -30,7 +30,7 @@ class Dashboard extends Component {
     return (
         <React.Fragment>
             <SidebarFilters />
-            <div class="col py-3">
+            <div className="col py-3">
                 <div className="container-fluid">
                     <h3 className="text-gray-800">Dashboard</h3>
                     <div className="row mb-4">

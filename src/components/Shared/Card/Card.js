@@ -8,16 +8,16 @@ const Card = (props) => {
     }
 
     return (
-    <div class="card shadow mb-4">
+    <div className="card shadow mb-4">
         { props.header ? 
-            <div class="card-header">
-                <h6 class={headerClasses.join(' ')}>{ props.header }</h6>
+            <div className="card-header">
+                <h6 className={headerClasses.join(' ')}>{ props.header }</h6>
             </div>
             : null
         }
-        <div class="card-body">
-            { props.title ? <h5 class="card-title">{ props.title }</h5> : null }
-            { props.text ? <p class="card-text">{ props.text }</p> : null }
+        <div className="card-body">
+            { props.title ? <h5 className="card-title">{ props.title }</h5> : null }
+            { props.text ? <p className="card-text">{ props.text }</p> : null }
             { props.children }
         </div>
     </div>
