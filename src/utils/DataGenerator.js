@@ -150,7 +150,7 @@ export const generateData = () => {
                 const randomRate = getRandomInt(100,500);
                 fullTotalRate += randomRate;
 
-                const productVariant = getRandomValueFromArray(productVariants);
+                let productVariant = getRandomValueFromArray(productVariants);
                 productVariant.totalRate = randomRate;
                 productVariant.percentAverage = (randomRate-averageSales[productVariant.idProductVariant])/averageSales[productVariant.idProductVariant]*100;
                 fullPercentAverage+=productVariant.percentAverage;
@@ -194,6 +194,8 @@ export const generateData = () => {
     return data;
 }
 
-const getRandomValueFromArray = (array) => array[(getRandomInt(0, 100) % array.length)];
+const getRandomValueFromArray = (array) => {
+    return {...array[(getRandomInt(0, 100) % array.length)]};
+};
 const getRandomInt = (min, max) => Math.floor(Math.random() * (max-min)) + min;
 

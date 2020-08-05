@@ -16,6 +16,7 @@ class BubbleChart extends Component {
         this.yAxis = null;
         this.tooltip = null;
         this.zeroLine = null;
+        this.strokeWidth = '0.75px';
 
         this.state = {
             margin,
@@ -121,6 +122,7 @@ class BubbleChart extends Component {
 
     updateChart = () => {
 
+        let component = this;
         let scatter = this.scatter;
         let scales = this.getScales();
 
@@ -143,10 +145,11 @@ class BubbleChart extends Component {
         .attr("r", (d) => scales.zScale(d.totalRate))
         .style("opacity", "0.9")
         .attr("stroke", (d) => this.strokeColor(d.isClean))
-        .style("stroke-width", "0.75px")
-        .on("mouseover", this.showTooltip)
-        .on("mousemove", this.showTooltip)
-        .on("mouseout", this.hideTooltip)
+        .style("stroke-width", this.strokeWidth)
+        .on("click", function(d){ component.showTooltipAlways(d, this)})
+        .on("mouseover", function(d){ component.showTooltip(d, this)})
+        //.on("mousemove", function(d){ component.showTooltip(d, this)})
+        .on("mouseout", function(d){ component.hideTooltip(d, this)})
 
 
 
@@ -187,37 +190,69 @@ class BubbleChart extends Component {
         scatter.exit().remove();*/
     }
 
-    showTooltip = (d) => {
+    showTooltip = (d, element) => {
 
+        if (this.tooltip.attr('fixed') == "true") {
+            return;
+        }
+        
         let html = '';
         html += `
-            <p><strong>Clean:</strong> ${ d.isClean ? 'Yes' : 'No' }</p>
+            <p><Strong>Reference:</strong> ${ d.reference }</p>
             <p><strong>Brokerage:</strong> ${ d.user.brokerage.name }</p>
             <p><strong>Network:</strong> ${ d.user.brokerage.network.name }</p>
+            <p><strong>Clean:</strong> ${ d.isClean ? 'Yes' : 'No' }</p>
             <p><strong>Products:</strong></p>
             <ul>
         `;
 
 
         for (let productVariant of d.productVariants) {
-            html += `<li>${productVariant.name}</li>`
+            html += `<li>${productVariant.name} - (${productVariant.totalRate}€) [${Math.round(productVariant.percentAverage)}%]</li>`
         }
 
         html += '</ul>';
 
+        html += `<p><strong>Total rate:</strong> ${d.totalRate}€ [${Math.round(d.fullPercentAverage)}%]</p>`;
+
         this.tooltip
             .html(html)
             .transition()
-            .duration(100)
+            .duration(300)
             .style('opacity', 1)
             .style('left', (d3.event.pageX + 10) + 'px')
-            .style('top', (d3.event.pageY + 20) + 'px');
+            .style('top', (d3.event.pageY + 20) + 'px')
+            .style('z-index', 1000);
+
+        this.scatter.selectAll("circle").transition().duration(300).style('stroke-width', this.strokeWidth);
+        d3.select(element).transition().duration(300).style('stroke-width','2px');
     }
 
-    hideTooltip = () => {
+    showTooltipAlways = (d, element) => {
+        if (d3.select(element).attr('fixed') == 'true') {
+            this.tooltip.attr('fixed', false);
+            this.scatter.selectAll('circle').attr('fixed', false);
+            d3.select(element).attr('fixed', false);
+        }
+        else {
+            this.tooltip.attr('fixed', false);
+            this.showTooltip(d, element);
+            this.tooltip.attr('fixed', true);
+            d3.select(element).attr('fixed', true);
+        }
+    }
+
+    hideTooltip = (d, element) => {
+        if (this.tooltip.attr('fixed') == "true") {
+            return;
+        }
+
         this.tooltip.transition()
-          .duration(1)
-          .style('opacity', 0);
+          .duration(100)
+          .style('opacity', 0)
+          .style('z-index', -1);
+
+        d3.select(element).transition().duration(300).style('stroke-width', this.strokeWidth);
     }
 
     updateChartZoom = (xScale, xAxis, yScale, yAxis) => {
