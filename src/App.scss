@@ -43,13 +43,23 @@ body {
       background-color: #333;
       padding: 0;
       color: #fff;
+      transition: width 0.25s;
 
       /* Sidebar sizes when expanded and collapsed */
       &.sidebar-expanded {
           width: 230px;
       }
       &.sidebar-collapsed {
-          width: 60px;
+          width: 10px;
+          .list-group {
+            display: none;
+          }
+      }
+
+      .sidebar-fixed-button {
+        span {
+          cursor: pointer;
+        }
       }
 
         /* Menu item*/
