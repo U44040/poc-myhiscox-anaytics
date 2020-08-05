@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import * as d3 from 'd3';
+import * as StringSanitizer from 'string-sanitizer';
 
 class BubbleChart extends Component {
 
@@ -134,7 +135,7 @@ class BubbleChart extends Component {
         .enter()
         .append('g')
         .style("fill", (d) => this.fillColor(d.state) )
-        .attr("class", (d) => d.name )
+        .attr("class", (d) => StringSanitizer.sanitize(d.state) )
         // Second we need to enter in the 'values' part of this group
         .selectAll("circle")
         .data(d => d.projects)
@@ -150,10 +151,9 @@ class BubbleChart extends Component {
         .on("mouseover", function(d){ component.showTooltip(d, this)})
         //.on("mousemove", function(d){ component.showTooltip(d, this)})
         .on("mouseout", function(d){ component.hideTooltip(d, this)})
+        .on("contextmenu", function(d){ component.hideProject(d, this) });
 
-
-
-
+        scatter.exit().remove();
 
 
 
@@ -253,6 +253,11 @@ class BubbleChart extends Component {
           .style('z-index', -1);
 
         d3.select(element).transition().duration(300).style('stroke-width', this.strokeWidth);
+    }
+
+    hideProject = (d, element) => {
+        d3.event.preventDefault();
+        d3.select(element).remove();
     }
 
     updateChartZoom = (xScale, xAxis, yScale, yAxis) => {
