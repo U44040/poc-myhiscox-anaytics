@@ -41,6 +41,7 @@ class BubbleChart extends Component {
         }
         return d3.scaleLinear().domain([0, d3.max(maximums) + 10]).range([0, this.state.width])
     };
+    
     yScale = () => (d3.scaleLinear().domain([-100, 100]).range([this.state.height, 0]));
     zScale = () => {
         const maximums = [];
@@ -94,7 +95,7 @@ class BubbleChart extends Component {
 
         // Plot
         this.scatter = this.svg.append('g').attr("class", "data-bubble").attr("clip-path", "url(#clip)");
-        
+
         //this.createLegend(svg);
         this.createTooltip();
         this.updateChart();
@@ -107,16 +108,16 @@ class BubbleChart extends Component {
             .enter()
             .append('g')
             .append("text")
-                .attr('x', function(d,i){ return 30 + i*60})
-                .attr('y', 30)
-                .text(function(d) { return d.isClean; })
-                .style("fill", (d) => this.fillColor(d.colour))
-                .style("font-size", 10)
-            .on("click", function(d){
+            .attr('x', function (d, i) { return 30 + i * 60 })
+            .attr('y', 30)
+            .text(function (d) { return d.isClean; })
+            .style("fill", (d) => this.fillColor(d.colour))
+            .style("font-size", 10)
+            .on("click", function (d) {
                 // is the element currently visible ?
                 let currentOpacity = d3.selectAll("." + d.name).style("opacity")
                 // Change the opacity: from 0 to 1 or from 1 to 0
-                d3.selectAll("." + d.name).transition().style("opacity", currentOpacity == 1 ? 0:1);
+                d3.selectAll("." + d.name).transition().style("opacity", currentOpacity == 1 ? 0 : 1);
             });
     }
 
@@ -124,7 +125,7 @@ class BubbleChart extends Component {
         //https://bl.ocks.org/Jverma/2385cb7794d18c51e3ab
         this.tooltip = d3.select('body')
             .append("div")
-            .attr("id","tooltip-bubble")
+            .attr("id", "tooltip-bubble")
             .style("opacity", 0)
             .attr("class", "tooltip")
             .style("background-color", "black")
@@ -142,29 +143,29 @@ class BubbleChart extends Component {
 
         // Add the points
         scatter = scatter
-        // First we need to enter in a group
-        .selectAll("g")
-        .data(this.props.data)
-        .enter()
-        .append('g')
-        .style("fill", (d) => this.fillColor(d.state) )
-        .attr("class", (d) => StringSanitizer.sanitize(d.state) )
-        // Second we need to enter in the 'values' part of this group
-        .selectAll("circle")
-        .data(d => d.projects)
-        .enter()
-        .append("circle")
-        .attr("cx", (d) => scales.xScale(d.elapsedTime))
-        .attr("cy", (d) => scales.yScale(d.fullPercentAverage))
-        .attr("r", (d) => scales.zScale(d.totalRate))
-        .style("opacity", "0.9")
-        .attr("stroke", (d) => this.strokeColor(d.isClean))
-        .style("stroke-width", this.strokeWidth)
-        .on("click", function(d){ component.showTooltipAlways(d, this)})
-        .on("mouseover", function(d){ component.showTooltip(d, this)})
-        //.on("mousemove", function(d){ component.showTooltip(d, this)})
-        .on("mouseout", function(d){ component.hideTooltip(d, this)})
-        .on("contextmenu", function(d){ component.hideProject(d, this) });
+            // First we need to enter in a group
+            .selectAll("g")
+            .data(this.props.data)
+            .enter()
+            .append('g')
+            .style("fill", (d) => this.fillColor(d.state))
+            .attr("class", (d) => StringSanitizer.sanitize(d.state))
+            // Second we need to enter in the 'values' part of this group
+            .selectAll("circle")
+            .data(d => d.projects)
+            .enter()
+            .append("circle")
+            .attr("cx", (d) => scales.xScale(d.elapsedTime))
+            .attr("cy", (d) => scales.yScale(d.fullPercentAverage))
+            .attr("r", (d) => scales.zScale(d.totalRate))
+            .style("opacity", "0.9")
+            .attr("stroke", (d) => this.strokeColor(d.isClean))
+            .style("stroke-width", this.strokeWidth)
+            .on("click", function (d) { component.showTooltipAlways(d, this) })
+            .on("mouseover", function (d) { component.showTooltip(d, this) })
+            //.on("mousemove", function(d){ component.showTooltip(d, this)})
+            .on("mouseout", function (d) { component.hideTooltip(d, this) })
+            .on("contextmenu", function (d) { component.hideProject(d, this) });
 
         scatter.exit().remove();
 
@@ -208,13 +209,13 @@ class BubbleChart extends Component {
         if (this.tooltip.attr('fixed') == "true") {
             return;
         }
-        
+
         let html = '';
         html += `
-            <p><Strong>Reference:</strong> ${ d.reference }</p>
-            <p><strong>Brokerage:</strong> ${ d.user.brokerage.name }</p>
-            <p><strong>Network:</strong> ${ d.user.brokerage.network.name }</p>
-            <p><strong>Clean:</strong> ${ d.isClean ? 'Yes' : 'No' }</p>
+            <p><Strong>Reference:</strong> ${ d.reference}</p>
+            <p><strong>Brokerage:</strong> ${ d.user.brokerage.name}</p>
+            <p><strong>Network:</strong> ${ d.user.brokerage.network.name}</p>
+            <p><strong>Clean:</strong> ${ d.isClean ? 'Yes' : 'No'}</p>
             <p><strong>Products:</strong></p>
             <ul>
         `;
@@ -238,7 +239,7 @@ class BubbleChart extends Component {
             .style('z-index', 1000);
 
         this.scatter.selectAll("circle").transition().duration(300).style('stroke-width', this.strokeWidth);
-        d3.select(element).transition().duration(300).style('stroke-width','2px');
+        d3.select(element).transition().duration(300).style('stroke-width', '2px');
     }
 
     showTooltipAlways = (d, element) => {
@@ -261,9 +262,9 @@ class BubbleChart extends Component {
         }
 
         this.tooltip.transition()
-          .duration(100)
-          .style('opacity', 0)
-          .style('z-index', -1);
+            .duration(100)
+            .style('opacity', 0)
+            .style('z-index', -1);
 
         d3.select(element).transition().duration(300).style('stroke-width', this.strokeWidth);
     }
@@ -299,10 +300,10 @@ class BubbleChart extends Component {
         return (
             <div ref={el => this.divEl = el}>
                 <svg ref={el => this.svgEl = el}
-                //width={width}
-                //height={height}
-                viewBox={"0 0 " + width + " " + height} 
-                preserveAspectRatio="xMinYMin meet"
+                    //width={width}
+                    //height={height}
+                    viewBox={"0 0 " + width + " " + height}
+                    preserveAspectRatio="xMinYMin meet"
                 ></svg>
             </div>
         );
