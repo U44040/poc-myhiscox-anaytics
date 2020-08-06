@@ -1,0 +1,119 @@
+// Variables
+$body-bg: #f6f7fa;
+$body-color: #111;
+$theme-colors: (
+  "primary": #0074d9,
+  "danger": #ff4136
+);
+
+$sidebar-bg-color: #1d1d1d;
+$submenu-bg-color: rgba(255, 255, 255, 0.05);
+$submenu-bg-color-collapsed: rgba(29, 29, 29, 0.95);
+$sidebar-color: #adadad;
+$highlight-color: #d8d8d8;
+$icon-bg-color: rgba(255, 255, 255, 0.05);
+$icon-size: 35px;
+
+@import url('https://fonts.googleapis.com/css?family=Roboto&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Nunito&display=swap');
+
+@import "~bootstrap/scss/bootstrap";
+
+body {
+  margin: 0;
+  height: 100vh;
+  color: #353535;
+  font-family: "Nunito",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+  padding-top: 56px;
+}
+
+.app {
+
+  .sticky-offset {
+      top: 56px;
+  }
+
+  &>main > .row {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  #sidebar-container {
+      min-height: 100vh;   
+      background-color: #333;
+      padding: 0;
+      color: #fff;
+      transition: width 0.25s;
+
+      /* Sidebar sizes when expanded and collapsed */
+      &.sidebar-expanded {
+          width: 230px;
+      }
+      &.sidebar-collapsed {
+          width: 10px;
+          .list-group {
+            display: none;
+          }
+      }
+
+      .sidebar-fixed-button {
+        span {
+          cursor: pointer;
+        }
+      }
+
+        /* Menu item*/
+      .list-group a {
+          height: 50px;
+          color: white;
+      }
+
+      /* Submenu item*/
+      .list-group .sidebar-submenu a {
+          height: 45px;
+          padding-left: 30px;
+      }
+
+      .sidebar-submenu {
+          font-size: 0.9rem;
+      }
+
+      /* Separators */
+      .sidebar-separator-title {
+          background-color: #333;
+          height: 35px;
+      }
+      .sidebar-separator {
+          background-color: #333;
+          height: 25px;
+      }
+
+      .logo-separator {
+          background-color: #333;    
+          height: 60px;
+      }
+
+      /* Closed submenu icon */
+      #sidebar-container .list-group .list-group-item[aria-expanded="false"] .submenu-icon::after {
+        content: " \f0d7";
+        font-family: FontAwesome;
+        display: inline;
+        text-align: right;
+        padding-left: 10px;
+      }
+      /* Opened submenu icon */
+      #sidebar-container .list-group .list-group-item[aria-expanded="true"] .submenu-icon::after {
+        content: " \f0da";
+        font-family: FontAwesome;
+        display: inline;
+        text-align: right;
+        padding-left: 10px;
+      }
+  }
+}
+
+#tooltip-bubble {
+  p {
+    margin-bottom: initial;
+  }
+}
