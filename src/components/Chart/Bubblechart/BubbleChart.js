@@ -34,9 +34,22 @@ class BubbleChart extends Component {
         this.updateChart()
     }
 
-    xScale = () => (d3.scaleLinear().domain([0, 60]).range([0, this.state.width]));
+    xScale = () => {
+        const maximums = [];
+        for (let state of this.props.data) {
+            maximums.push(d3.max(state.projects.map((d) => d.elapsedTime)));
+        }
+        return d3.scaleLinear().domain([0, d3.max(maximums) + 10]).range([0, this.state.width])
+    };
     yScale = () => (d3.scaleLinear().domain([-100, 100]).range([this.state.height, 0]));
-    zScale = () => (d3.scaleLinear().domain([0, 1500]).range([0, 20]));
+    zScale = () => {
+        const maximums = [];
+        for (let state of this.props.data) {
+            maximums.push(d3.max(state.projects.map((d) => d.totalRate)));
+        }
+        return d3.scaleLinear().domain([0, d3.max(maximums)]).range([0, 20]);
+    }
+
     fillColor = (d3.scaleOrdinal().domain(['Draft', 'Policy Holder Step', 'Start Date Step', 'Pending Info', 'Binding Request Pending']).range(d3.schemeSet2));
     strokeColor = (d3.scaleOrdinal().domain([true, false]).range(['#039453', '#bf003d']));
 

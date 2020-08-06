@@ -168,14 +168,14 @@ export const generateData = () => {
                 isClean = ((Math.round(Math.random())) == 0)
             }
 
+            let createdAt = moment().subtract(getRandomInt(0,300), 'minutes');
+
             let project = {
                 "id": maxId++,
                 "reference": "AX" + i + k,
                 "user": getRandomValueFromArray(users),
-                //"createdAt": "2019-06-12 16:54:06",
-                "createdAt": moment().startOf('day')
-                    .format('YYYY-MM-DD hh:mm:ss'),
-                "elapsedTime": getRandomInt(0,60),
+                "createdAt": createdAt.format('YYYY-MM-DD hh:mm:ss'),
+                "elapsedTime": moment.duration(moment().diff(createdAt)).asMinutes(),
                 "productVariants": products,
                 "isClean": isClean,
                 "source": ((Math.round(Math.random())) == 0 ? "web" : "api"),
