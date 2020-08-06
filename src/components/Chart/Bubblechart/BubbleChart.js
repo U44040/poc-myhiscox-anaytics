@@ -31,8 +31,6 @@ class BubbleChart extends Component {
     }
 
     componentDidUpdate() {
-        console.log("UPDATE");
-        console.log(this.props.data);
         this.updateChart()
     }
 
@@ -154,6 +152,7 @@ class BubbleChart extends Component {
             .append('g')
             .merge(scatter)
             .style("fill", (d) => this.fillColor(d.state))
+            .style("stroke-width", this.strokeWidth)
             .attr("class", (d) => StringSanitizer.sanitize(d.state))
             // Second we need to enter in the 'values' part of this group
             .selectAll("circle")
@@ -168,7 +167,6 @@ class BubbleChart extends Component {
             .attr("r", (d) => scales.zScale(d.totalRate))
             .style("opacity", "0.9")
             .attr("stroke", (d) => this.strokeColor(d.isClean))
-            .style("stroke-width", this.strokeWidth)
             .on("click", function (d) { component.showTooltipAlways(d, this) })
             .on("mouseover", function (d) { component.showTooltip(d, this) })
             //.on("mousemove", function(d){ component.showTooltip(d, this)})

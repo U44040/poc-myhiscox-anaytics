@@ -15,8 +15,10 @@ class SalesChart extends Component {
       filteredData,
       averageSales: DataGenerator.averageSales,
     }
-    
-    this.setIntervalRefresh(10);
+  }
+
+  componentDidMount = () => {
+    this.setIntervalRefresh(1000);
   }
 
   getData = () => {
