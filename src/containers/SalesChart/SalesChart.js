@@ -15,25 +15,15 @@ class SalesChart extends Component {
   }
   
   getData = () => {
+    const data = DataGenerator.generateData();
 
-    let data = DataGenerator.generateData();
-    console.log(data);
-
-    return data;
-    
-    /*let numItems = 20 + Math.floor(20 * Math.random())
-    let data = [];
-    const state = ['State1', 'State2'];
-    for (let i = 0; i < numItems; i++) {
-      data.push({
-        x: Math.random()*5,
-        y: Math.random()*200-100,
-        z: Math.random(),
-        colour: state[i % 2],
-        isClean: (i % 2 == 0),
-      })
-    }
-    return data*/
+    // return only projects with elapsed time > 0. (<0 are future projects)
+    return data.map((d) => {
+      return {
+        ...d,
+        projects: d.projects.filter((p) => p.elapsedTime >= 0)
+      }
+    });
   }
 
   handleClick = () => {

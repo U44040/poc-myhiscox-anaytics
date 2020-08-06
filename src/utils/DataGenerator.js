@@ -168,7 +168,7 @@ export const generateData = () => {
                 isClean = ((Math.round(Math.random())) == 0)
             }
 
-            let createdAt = moment().subtract(getRandomInt(0,300), 'minutes');
+            let createdAt = moment().subtract(getRandomInt(-300,300), 'minutes'); // createdAt with future / past +-(0-300min)
 
             let project = {
                 "id": maxId++,
