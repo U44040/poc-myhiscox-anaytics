@@ -31,6 +31,8 @@ class BubbleChart extends Component {
     }
 
     componentDidUpdate() {
+        console.log("UPDATE");
+        console.log(this.props.data);
         this.updateChart()
     }
 
@@ -39,7 +41,7 @@ class BubbleChart extends Component {
         for (let state of this.props.data) {
             maximums.push(d3.max(state.projects.map((d) => d.elapsedTime)));
         }
-        return d3.scaleLinear().domain([0, d3.max(maximums) + 10]).range([0, this.state.width])
+        return d3.scaleLinear().domain([0, d3.max(maximums)]).range([0, this.state.width])
     };
     
     yScale = () => (d3.scaleLinear().domain([-100, 100]).range([this.state.height, 0]));
@@ -143,18 +145,24 @@ class BubbleChart extends Component {
 
         // Add the points
         scatter = scatter
-            // First we need to enter in a group
             .selectAll("g")
-            .data(this.props.data)
+            .data(this.props.data);
+
+        let scatterProject = scatter
             .enter()
+            // First we need to enter in a group
             .append('g')
+            .merge(scatter)
             .style("fill", (d) => this.fillColor(d.state))
             .attr("class", (d) => StringSanitizer.sanitize(d.state))
             // Second we need to enter in the 'values' part of this group
             .selectAll("circle")
-            .data(d => d.projects)
+            .data(d => d.projects);
+
+        scatterProject
             .enter()
             .append("circle")
+            .merge(scatterProject)
             .attr("cx", (d) => scales.xScale(d.elapsedTime))
             .attr("cy", (d) => scales.yScale(d.fullPercentAverage))
             .attr("r", (d) => scales.zScale(d.totalRate))

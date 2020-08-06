@@ -15,6 +15,8 @@ class SalesChart extends Component {
       filteredData,
       averageSales: DataGenerator.averageSales,
     }
+    
+    this.setIntervalRefresh(10);
   }
 
   getData = () => {
@@ -39,6 +41,10 @@ class SalesChart extends Component {
       data: updatedData,
       filteredData: this.filterData(updatedData),
     })
+  }
+
+  setIntervalRefresh = (interval) => {
+    window.setInterval(this.handleClick, interval);
   }
 
   render = () => (

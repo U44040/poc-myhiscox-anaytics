@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import Callout from '../../components/Shared/Callout/Callout';
-import Card from '../../components/Shared/Card/Card';
 import SalesChart from '../../containers/SalesChart/SalesChart';
 import SidebarFilters from '../../components/SidebarFilters/SidebarFilters';
 

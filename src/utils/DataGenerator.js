@@ -163,15 +163,15 @@ export const generateData = () => {
             fullPercentAverage = (fullPercentAverage/numProducts);
 
             let isClean;
-            if (state[i] == 'Pending Info') {
+            if (state[i] === 'Pending Info') {
                 isClean = false;
             } else if (['Start Date Step', 'Binding Request Pending'].includes(state[i])) {
                 isClean = true;
             } else {
-                isClean = ((Math.round(Math.random())) == 0)
+                isClean = ((Math.round(Math.random())) === 0)
             }
 
-            let createdAt = moment().subtract(getRandomInt(-300,300), 'minutes'); // createdAt with future / past +-(0-300min)
+            let createdAt = moment().subtract(getRandomFloat(-10,+10), 'minutes'); // createdAt with future / past +-(0-300min)
 
             let project = {
                 "id": maxId++,
@@ -181,7 +181,7 @@ export const generateData = () => {
                 "elapsedTime": moment.duration(moment().diff(createdAt)).asMinutes(),
                 "productVariants": products,
                 "isClean": isClean,
-                "source": ((Math.round(Math.random())) == 0 ? "web" : "api"),
+                "source": ((Math.round(Math.random())) === 0 ? "web" : "api"),
                 "totalRate": fullTotalRate,
                 "fullPercentAverage": fullPercentAverage,
             }
@@ -201,7 +201,6 @@ export const updateData = (d) => {
     // deep copy from input data to avoid modification of original    
     let data = deepClone(d);
     for (let state of data) {
-        console.log(state);
         for (let project of state.projects) {
             project.elapsedTime = moment.duration(moment().diff(project.createdAt)).asMinutes();
         }
@@ -213,4 +212,5 @@ const getRandomValueFromArray = (array) => {
     return {...array[(getRandomInt(0, 100) % array.length)]};
 };
 const getRandomInt = (min, max) => Math.floor(Math.random() * (max-min)) + min;
+const getRandomFloat = (min, max) => Math.random() * (max-min) + min;
 
