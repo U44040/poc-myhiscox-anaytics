@@ -39,7 +39,7 @@ class BubbleChart extends Component {
         for (let state of this.props.data) {
             maximums.push(d3.max(state.projects.map((d) => d.elapsedTime)));
         }
-        return d3.scaleLinear().domain([0, d3.max(maximums)]).range([0, this.state.width])
+        return d3.scaleLinear().domain([0, d3.max(maximums)+1]).range([0, this.state.width])
     };
     
     yScale = () => (d3.scaleLinear().domain([-100, 100]).range([this.state.height, 0]));
@@ -141,6 +141,10 @@ class BubbleChart extends Component {
         let scatter = this.scatter;
         let scales = this.getScales();
 
+        // Axis
+        this.xAxis.call(d3.axisBottom(scales.xScale));
+        //this.yAxis.call(d3.axisLeft(scales.yScale).tickFormat((d, i) => d + "%"));
+
         // Add the points
         scatter = scatter
             .selectAll("g")
@@ -162,18 +166,18 @@ class BubbleChart extends Component {
             .enter()
             .append("circle")
             .merge(scatterProject)
-            .attr("cx", (d) => scales.xScale(d.elapsedTime))
-            .attr("cy", (d) => scales.yScale(d.fullPercentAverage))
-            .attr("r", (d) => scales.zScale(d.totalRate))
-            .style("opacity", "0.9")
-            .attr("stroke", (d) => this.strokeColor(d.isClean))
             .on("click", function (d) { component.showTooltipAlways(d, this) })
             .on("mouseover", function (d) { component.showTooltip(d, this) })
             //.on("mousemove", function(d){ component.showTooltip(d, this)})
             .on("mouseout", function (d) { component.hideTooltip(d, this) })
-            .on("contextmenu", function (d) { component.hideProject(d, this) });
+            .on("contextmenu", function (d) { component.hideProject(d, this) })
+            .attr("cx", (d) => scales.xScale(d.elapsedTime))
+            .attr("cy", (d) => scales.yScale(d.fullPercentAverage))
+            .attr("r", (d) => scales.zScale(d.totalRate))
+            .style("opacity", "0.9")
+            .attr("stroke", (d) => this.strokeColor(d.isClean));
 
-        scatter.exit().remove();
+        scatterProject.exit().remove();
 
 
 

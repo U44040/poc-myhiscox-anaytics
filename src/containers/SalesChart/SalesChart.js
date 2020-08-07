@@ -4,6 +4,8 @@ import Card from '../../components/Shared/Card/Card';
 
 import * as DataGenerator from '../../utils/DataGenerator';
 
+const INTERVAL_REFRESH = 1000;
+
 class SalesChart extends Component {
 
   constructor(props) {
@@ -18,7 +20,7 @@ class SalesChart extends Component {
   }
 
   componentDidMount = () => {
-    this.setIntervalRefresh(1000);
+    this.setIntervalRefresh(INTERVAL_REFRESH);
   }
 
   getData = () => {
