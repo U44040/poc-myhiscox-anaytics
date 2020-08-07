@@ -260,7 +260,6 @@ class BubbleChart extends Component {
             <p><strong>Brokerage:</strong> ${ d.user.brokerage.name}</p>
             <p><strong>Network:</strong> ${ d.user.brokerage.network.name}</p>
             <p><strong>Clean:</strong> ${ d.isClean ? 'Yes' : 'No'}</p>
-            <p><strong>ET:</strong> ${ d.elapsedTime }</p>
             <p><strong>Products:</strong></p>
             <ul>
         `;
