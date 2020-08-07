@@ -1,4 +1,7 @@
-import * as moment from 'moment';
+import moment from 'moment';
+import rfdc from 'rfdc';
+
+const deepClone = rfdc();
 
 const users = [
     {
@@ -160,25 +163,25 @@ export const generateData = () => {
             fullPercentAverage = (fullPercentAverage/numProducts);
 
             let isClean;
-            if (state[i] == 'Pending Info') {
+            if (state[i] === 'Pending Info') {
                 isClean = false;
             } else if (['Start Date Step', 'Binding Request Pending'].includes(state[i])) {
                 isClean = true;
             } else {
-                isClean = ((Math.round(Math.random())) == 0)
+                isClean = ((Math.round(Math.random())) === 0)
             }
+
+            let createdAt = moment().subtract(getRandomFloat(-10,+10), 'minutes'); // createdAt with future / past +-(0-300min)
 
             let project = {
                 "id": maxId++,
                 "reference": "AX" + i + k,
                 "user": getRandomValueFromArray(users),
-                //"createdAt": "2019-06-12 16:54:06",
-                "createdAt": moment().startOf('day')
-                    .format('YYYY-MM-DD hh:mm:ss'),
-                "elapsedTime": getRandomInt(0,60),
+                "createdAt": createdAt.format('YYYY-MM-DD HH:mm:ss'),
+                "elapsedTime": moment.duration(moment().diff(createdAt)).asMinutes(),
                 "productVariants": products,
                 "isClean": isClean,
-                "source": ((Math.round(Math.random())) == 0 ? "web" : "api"),
+                "source": ((Math.round(Math.random())) === 0 ? "web" : "api"),
                 "totalRate": fullTotalRate,
                 "fullPercentAverage": fullPercentAverage,
             }
@@ -194,8 +197,20 @@ export const generateData = () => {
     return data;
 }
 
+export const updateData = (d) => {
+    // deep copy from input data to avoid modification of original    
+    let data = deepClone(d);
+    for (let state of data) {
+        for (let project of state.projects) {
+            project.elapsedTime = moment.duration(moment().diff(project.createdAt)).asMinutes();
+        }
+    }
+    return data;
+}
+
 const getRandomValueFromArray = (array) => {
     return {...array[(getRandomInt(0, 100) % array.length)]};
 };
 const getRandomInt = (min, max) => Math.floor(Math.random() * (max-min)) + min;
+const getRandomFloat = (min, max) => Math.random() * (max-min) + min;
 

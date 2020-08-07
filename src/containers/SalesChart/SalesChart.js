@@ -4,49 +4,58 @@ import Card from '../../components/Shared/Card/Card';
 
 import * as DataGenerator from '../../utils/DataGenerator';
 
+const INTERVAL_REFRESH = 1000;
+
 class SalesChart extends Component {
 
   constructor(props) {
     super();
+    const data = this.getData();
+    const filteredData = this.filterData(data);
     this.state = {
-      data: this.getData(),
+      data,
+      filteredData,
       averageSales: DataGenerator.averageSales,
     }
   }
-  
+
+  componentDidMount = () => {
+    this.setIntervalRefresh(INTERVAL_REFRESH);
+  }
+
   getData = () => {
-
-    let data = DataGenerator.generateData();
-    console.log(data);
-
+    const data = DataGenerator.generateData();
     return data;
-    
-    /*let numItems = 20 + Math.floor(20 * Math.random())
-    let data = [];
-    const state = ['State1', 'State2'];
-    for (let i = 0; i < numItems; i++) {
-      data.push({
-        x: Math.random()*5,
-        y: Math.random()*200-100,
-        z: Math.random(),
-        colour: state[i % 2],
-        isClean: (i % 2 == 0),
-      })
-    }
-    return data*/
+  }
+
+  filterData = (data) => {
+    // return only projects with elapsed time > 0. (<0 are future projects)
+    return data.map((d) => {
+          return {
+            ...d,
+            projects: d.projects.filter((p) => p.elapsedTime >= 0)
+          }
+        })
   }
 
   handleClick = () => {
-      this.setState({
-          data: this.getData()
-      })
+    // Update data
+    let updatedData = DataGenerator.updateData(this.state.data);
+    this.setState({
+      data: updatedData,
+      filteredData: this.filterData(updatedData),
+    })
+  }
+
+  setIntervalRefresh = (interval) => {
+    window.setInterval(this.handleClick, interval);
   }
 
   render = () => (
     <React.Fragment>
       <div className="col-md">
         <Card type="primary" header="Venta de pólizas" title="Tiempo real" text="Gráfica en tiempo real de las pólizas que se están creando">
-          <BubbleChart data={this.state.data} />
+          <BubbleChart data={this.state.filteredData} />
           <button className="btn btn-primary" onClick={this.handleClick}>Actualizar</button>
         </Card>
       </div>
