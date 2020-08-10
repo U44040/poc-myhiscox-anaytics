@@ -52,7 +52,7 @@ class BubbleChart extends Component {
         return d3.scaleLinear().domain([0, d3.max(maximums)]).range([0, 20]);
     }
 
-    fillColor = (d3.scaleOrdinal().domain(['Draft', 'Policy Holder Step', 'Start Date Step', 'Pending Info', 'Binding Request Pending']).range(d3.schemeSet2));
+    fillColor = (d3.scaleOrdinal().domain(['Draft', 'Policy Holder Step', 'Start Date Step', 'Pending Info', 'Binding Request Pending', 'Issued']).range(d3.schemeSet2));
     strokeColor = (d3.scaleOrdinal().domain([true, false]).range(['#039453', '#bf003d']));
 
     getScales = () => {
@@ -156,7 +156,6 @@ class BubbleChart extends Component {
     }
 
     createTooltip = () => {
-        //https://bl.ocks.org/Jverma/2385cb7794d18c51e3ab
         this.tooltip = d3.select('body')
             .append("div")
             .attr("id", "tooltip-bubble")
@@ -260,7 +259,6 @@ class BubbleChart extends Component {
             <p><strong>Brokerage:</strong> ${ d.user.brokerage.name}</p>
             <p><strong>Network:</strong> ${ d.user.brokerage.network.name}</p>
             <p><strong>Clean:</strong> ${ d.isClean ? 'Yes' : 'No'}</p>
-            <p><strong>ET:</strong> ${ d.elapsedTime }</p>
             <p><strong>Products:</strong></p>
             <ul>
         `;
