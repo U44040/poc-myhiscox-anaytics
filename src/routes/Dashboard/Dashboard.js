@@ -6,32 +6,32 @@ import SidebarFilters from '../../components/SidebarFilters/SidebarFilters';
 
 class Dashboard extends Component {
     render = () => {
-    return (
-        <React.Fragment>
-            <SidebarFilters collapsed={true} sidebarFixed={false} />
-            <div className="col py-3">
-                <div className="container-fluid">
-                    <h3 className="text-gray-800">Dashboard</h3>
-                    <div className="row mb-4">
-                        <div className="col-md-6">
-                            <Callout type="info">
-                                <h4 id="dealing-with-specificity">Importe de ventas estimado</h4>
-                                <p>€ 120K</p>
-                            </Callout>
+        return (
+            <React.Fragment>
+                <SidebarFilters collapsed={true} sidebarFixed={false} />
+                <div className="col py-3">
+                    <div className="container-fluid">
+                        <h3 className="text-gray-800">Dashboard</h3>
+                        <div className="row mb-4">
+                            <div className="col-md-6">
+                                <Callout type="info">
+                                    <h4 id="dealing-with-specificity">Importe de ventas estimado</h4>
+                                    <p>€ 120K</p>
+                                </Callout>
+                            </div>
+                            <div className="col-md-6">
+                                <Callout type="info">
+                                    <h4 id="dealing-with-specificity">Importe de ventas acumulado</h4>
+                                    <p>€ 60K</p>
+                                </Callout>
+                            </div>
                         </div>
-                        <div className="col-md-6">
-                            <Callout type="info">
-                                <h4 id="dealing-with-specificity">Importe de ventas acumulado</h4>
-                                <p>€ 60K</p>
-                            </Callout>
+                        <div className="row mb-4">
+                            <SalesChart />
                         </div>
-                    </div>
-                    <div className="row mb-4">
-                        <SalesChart />
                     </div>
                 </div>
-            </div>
-        </React.Fragment>
+            </React.Fragment>
         );
     }
 
