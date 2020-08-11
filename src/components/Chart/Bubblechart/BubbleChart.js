@@ -75,7 +75,6 @@ class BubbleChart extends Component {
         // Labels
         // Y-Label
         d3.select(this.svgEl).append("text")
-            .attr("class", "legend-bubble")
             .attr('x', () => - 170)
             .attr('y', (d, i) => 10)
             .text((d, i) => "% de ventas respecto media")
@@ -84,7 +83,6 @@ class BubbleChart extends Component {
             .style("transform", "rotate(-90deg)");
         // X-Label
             d3.select(this.svgEl).append("text")
-            .attr("class", "legend-bubble")
             .attr('x', () => this.state.width)
             .attr('y', (d, i) => this.state.height+35)
             .text((d, i) => "Tiempo (minutos)")

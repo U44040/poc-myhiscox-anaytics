@@ -5,35 +5,10 @@ import SidebarFilters from '../../components/SidebarFilters/SidebarFilters';
 
 
 class Dashboard extends Component {
-
-    state = {
-        collapsed: true,
-        sidebarFixed: false,
-    }
-
-    showSidebar = (e) => {
-        this.setState({
-            collapsed: false,
-        })
-    }
-
-    hideSidebar = (e) => {
-        if (this.state.sidebarFixed === true) { return; }
-        this.setState({
-            collapsed: true,
-        })
-    }
-
-    toggleSidebarFixed = (e) => {
-        this.setState((oldState, oldProps) => ({
-            sidebarFixed: !oldState.sidebarFixed
-        }))
-    }
-
     render = () => {
     return (
         <React.Fragment>
-            <SidebarFilters collapsed={this.state.collapsed} sidebarFixed={this.state.sidebarFixed} showSidebar={this.showSidebar} hideSidebar={this.hideSidebar} toggleSidebarFixed={this.toggleSidebarFixed} />
+            <SidebarFilters collapsed={true} sidebarFixed={false} />
             <div className="col py-3">
                 <div className="container-fluid">
                     <h3 className="text-gray-800">Dashboard</h3>

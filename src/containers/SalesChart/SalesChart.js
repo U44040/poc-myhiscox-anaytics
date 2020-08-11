@@ -38,7 +38,7 @@ class SalesChart extends Component {
         })
   }
 
-  handleClick = () => {
+  updateData = () => {
     // Update data
     let updatedData = DataGenerator.updateData(this.state.data);
     this.setState({
@@ -48,7 +48,7 @@ class SalesChart extends Component {
   }
 
   setIntervalRefresh = (interval) => {
-    window.setInterval(this.handleClick, interval);
+    window.setInterval(this.updateData, interval);
   }
 
   render = () => (
@@ -56,7 +56,6 @@ class SalesChart extends Component {
       <div className="col-md">
         <Card type="primary" header="Venta de pólizas" title="Tiempo real" text="Gráfica en tiempo real de las pólizas que se están creando">
           <BubbleChart data={this.state.filteredData} />
-          <button className="btn btn-primary" onClick={this.handleClick}>Actualizar</button>
         </Card>
       </div>
     </React.Fragment>
