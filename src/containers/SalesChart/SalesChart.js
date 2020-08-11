@@ -31,11 +31,11 @@ class SalesChart extends Component {
   filterData = (data) => {
     // return only projects with elapsed time > 0. (<0 are future projects)
     return data.map((d) => {
-          return {
-            ...d,
-            projects: d.projects.filter((p) => p.elapsedTime >= 0)
-          }
-        })
+      return {
+        ...d,
+        projects: d.projects.filter((p) => p.elapsedTime >= 0)
+      }
+    })
   }
 
   updateData = () => {
@@ -52,13 +52,11 @@ class SalesChart extends Component {
   }
 
   render = () => (
-    <React.Fragment>
-      <div className="col-md">
-        <Card type="primary" header="Venta de pólizas" title="Tiempo real" text="Gráfica en tiempo real de las pólizas que se están creando">
-          <BubbleChart data={this.state.filteredData} />
-        </Card>
-      </div>
-    </React.Fragment>
+    <div className="col-md">
+      <Card type="primary" header="Venta de pólizas" title="Tiempo real" text="Gráfica en tiempo real de las pólizas que se están creando">
+        <BubbleChart data={this.state.filteredData} />
+      </Card>
+    </div>
   );
 }
 

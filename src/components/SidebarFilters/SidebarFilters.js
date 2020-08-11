@@ -45,7 +45,7 @@ class SidebarFilters extends Component {
     }
     
     components = {
-        DropdownIndicator: ""
+        DropdownIndicator: null,
     }
 
     showSidebar = (e) => {
