@@ -129,15 +129,15 @@ export const averageSales = {
 };
 
 export const generateData = () => {
-    
+
     let data = [];
-    
+
     let maxId = 1;
 
     const state = ['Draft', 'Policy Holder Step', 'Start Date Step', 'Pending Info', 'Binding Request Pending', 'Issued'];
     for (let i = 0; i < state.length; i++) {
 
-        let numItems = 20 + getRandomInt(0,20);
+        let numItems = 20 + getRandomInt(0, 20);
         let projects = [];
 
         if (state[i] === 'Issued') {
@@ -153,22 +153,22 @@ export const generateData = () => {
             let fullTotalRate = 0;
             let fullPercentAverage = 0;
 
-            let numProducts = getRandomInt(1,3);
+            let numProducts = getRandomInt(1, 3);
 
             let products = [];
             for (let p = 0; p < numProducts; p++) {
 
-                const randomRate = getRandomInt(100,500);
+                const randomRate = getRandomInt(100, 500);
                 fullTotalRate += randomRate;
 
                 let productVariant = getRandomValueFromArray(productVariants);
                 productVariant.totalRate = randomRate;
-                productVariant.percentAverage = (randomRate-averageSales[productVariant.idProductVariant])/averageSales[productVariant.idProductVariant]*100;
-                fullPercentAverage+=productVariant.percentAverage;
+                productVariant.percentAverage = (randomRate - averageSales[productVariant.idProductVariant]) / averageSales[productVariant.idProductVariant] * 100;
+                fullPercentAverage += productVariant.percentAverage;
                 products.push(productVariant);
             }
 
-            fullPercentAverage = (fullPercentAverage/numProducts);
+            fullPercentAverage = (fullPercentAverage / numProducts);
 
             let isClean;
             if (state[i] === 'Pending Info') {
@@ -179,7 +179,7 @@ export const generateData = () => {
                 isClean = ((Math.round(Math.random())) === 0)
             }
 
-            let createdAt = moment().subtract(getRandomFloat(-10,10), 'minutes'); // createdAt with future / past (-10,+10min)
+            let createdAt = moment().subtract(getRandomFloat(-10, 10), 'minutes'); // createdAt with future / past (-10,+10min)
             let finishedAt = createdAt.clone().add(getRandomFloat(10, 20), 'minutes'); // finishedAt (10, 12min) from createdAt)
 
             let project = {
@@ -226,8 +226,8 @@ export const updateData = (d) => {
 }
 
 const getRandomValueFromArray = (array) => {
-    return {...array[(getRandomInt(0, 100) % array.length)]};
+    return { ...array[(getRandomInt(0, 100) % array.length)] };
 };
-const getRandomInt = (min, max) => Math.floor(Math.random() * (max-min)) + min;
-const getRandomFloat = (min, max) => Math.random() * (max-min) + min;
+const getRandomInt = (min, max) => Math.floor(Math.random() * (max - min)) + min;
+const getRandomFloat = (min, max) => Math.random() * (max - min) + min;
 

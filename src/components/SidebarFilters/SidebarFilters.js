@@ -83,7 +83,7 @@ class SidebarFilters extends Component {
         const options = [
             { label: "States", options: statesOptions },
             { label: "Brokers", options: brokerOptions },
-            { label: "Networks", options: networkOptions },     
+            { label: "Networks", options: networkOptions },
         ]
 
         this.setState({
@@ -92,7 +92,7 @@ class SidebarFilters extends Component {
     }
 
     compareLabels = (a, b) => a.label.localeCompare(b.label);
-    
+
     components = {
         DropdownIndicator: null,
     }
@@ -163,29 +163,29 @@ class SidebarFilters extends Component {
                         onChange={this.filterChange}
                         maxMenuHeight={500}
                     />
-                    
+
                     {
-                    /*<a href="#submenu1" data-toggle="collapse" aria-expanded="false" className="bg-dark list-group-item list-group-item-action flex-column align-items-start collapsed">
-                        <div className="d-flex w-100 justify-content-start align-items-center">
-                            <span className="fa fa-filter fa-fw mr-3"></span>
-                            <span className="menu-collapsed">Corredurías</span>
-                            <span className="submenu-icon ml-auto"></span>
-                        </div>
-                    </a>
-                    <a href="#submenu1" data-toggle="collapse" aria-expanded="false" className="bg-dark list-group-item list-group-item-action flex-column align-items-start collapsed">
-                        <div className="d-flex w-100 justify-content-start align-items-center">
-                            <span className="fa fa-dashboard fa-fw mr-3"></span>
-                            <span className="menu-collapsed">Redes</span>
-                            <span className="submenu-icon ml-auto"></span>
-                        </div>
-                    </a>
-                    <a href="#submenu1" data-toggle="collapse" aria-expanded="false" className="bg-dark list-group-item list-group-item-action flex-column align-items-start collapsed">
-                        <div className="d-flex w-100 justify-content-start align-items-center">
-                            <span className="fa fa-dashboard fa-fw mr-3"></span>
-                            <span className="menu-collapsed">Estado</span>
-                            <span className="submenu-icon ml-auto"></span>
-                        </div>
-                    </a>*/
+                        /*<a href="#submenu1" data-toggle="collapse" aria-expanded="false" className="bg-dark list-group-item list-group-item-action flex-column align-items-start collapsed">
+                            <div className="d-flex w-100 justify-content-start align-items-center">
+                                <span className="fa fa-filter fa-fw mr-3"></span>
+                                <span className="menu-collapsed">Corredurías</span>
+                                <span className="submenu-icon ml-auto"></span>
+                            </div>
+                        </a>
+                        <a href="#submenu1" data-toggle="collapse" aria-expanded="false" className="bg-dark list-group-item list-group-item-action flex-column align-items-start collapsed">
+                            <div className="d-flex w-100 justify-content-start align-items-center">
+                                <span className="fa fa-dashboard fa-fw mr-3"></span>
+                                <span className="menu-collapsed">Redes</span>
+                                <span className="submenu-icon ml-auto"></span>
+                            </div>
+                        </a>
+                        <a href="#submenu1" data-toggle="collapse" aria-expanded="false" className="bg-dark list-group-item list-group-item-action flex-column align-items-start collapsed">
+                            <div className="d-flex w-100 justify-content-start align-items-center">
+                                <span className="fa fa-dashboard fa-fw mr-3"></span>
+                                <span className="menu-collapsed">Estado</span>
+                                <span className="submenu-icon ml-auto"></span>
+                            </div>
+                        </a>*/
                     }
                 </ul>
             </div>
