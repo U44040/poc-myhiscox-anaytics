@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import './SidebarFilters.scss';
 import Select from 'react-select';
 import rfdc from 'rfdc';
+import * as FILTER_TYPES from './FilterTypes';
 
 const deepClone = rfdc();
 
@@ -9,40 +10,88 @@ class SidebarFilters extends Component {
 
     constructor(props) {
         super();
-
-        const statesOptions = [
-            { value: "Draft", label: "Draft" },
-            { value: "Policy Holder Step", label: "Policy Holder Step" },
-            { value: "Start Date Step", label: "Start Date Step" },
-            { value: "Pending Info", label: "Pending Info" },
-            { value: "Binding Request Pending", label: "Binding Request Pending" },
-        ]
-        
-        const brokerOptions = [
-            { value: "Hiscox", label: "Hiscox" },
-            { value: "Albroksa", label: "Albroksa" },
-            { value: "Abella Mediación", label: "Abella Mediación" },
-        ]
-    
-        const networkOptions = [
-            { value: "RED Hiscox Connect", label: "RED Hiscox Connect" },
-            { value: "RED Espabrok", label: "RED Espabrok" },
-            { value: "RED AON", label: "RED AON" },
-        ]
-    
-        const options = [
-            { label: "States", options: statesOptions },
-            { label: "Brokers", options: brokerOptions },
-            { label: "Networks", options: networkOptions },        
-        ];
-
         this.state = {
             collapsed: props.collapsed,
             sidebarFixed: props.sidebarFixed,
-            options: options,
-            filterValue: [],
+            filterValue: [
+                {
+                    label: "Hide Issued",
+                    value: "HIDE_ISSUED",
+                    type: FILTER_TYPES.STATE,
+                }
+            ],
         }
     }
+
+    componentDidUpdate = (prevProps) => {
+        if (prevProps.salesChartData !== this.props.salesChartData) {
+            this.prepareFilters();
+        }
+    }
+
+    prepareFilters = () => {
+        let statesOptions = [];
+        let brokerOptions = {}
+        let networkOptions = {};
+        //let productOptions = {};
+
+        for (let state of this.props.salesChartData) {
+
+            if (Array.isArray(state.projects) && state.projects.length === 0) {
+                continue;
+            }
+
+            statesOptions.push({
+                label: state.state,
+                value: state.state,
+                type: FILTER_TYPES.STATE,
+            });
+
+            for (let project of state.projects) {
+                brokerOptions[project.user.brokerage.id] = {
+                    label: project.user.brokerage.name,
+                    value: project.user.brokerage.id,
+                    type: FILTER_TYPES.BROKER,
+                };
+
+                networkOptions[project.user.brokerage.network.id] = {
+                    label: project.user.brokerage.network.name,
+                    value: project.user.brokerage.network.id,
+                    type: FILTER_TYPES.NETWORK,
+                };
+
+                /*for (let productVariant of project.productVariants) {
+                    productOptions[productVariant.idProductVariant] = {
+                        label: productVariant.name,
+                        value: productVariant.idProductVariant,
+                    }
+                }*/
+            }
+        }
+
+        statesOptions.push({
+            label: "Hide Issued",
+            value: "HIDE_ISSUED",
+            type: FILTER_TYPES.STATE,
+        })
+
+        statesOptions = statesOptions.sort(this.compareLabels);
+        brokerOptions = Object.values(brokerOptions).sort(this.compareLabels);
+        networkOptions = Object.values(networkOptions).sort(this.compareLabels);
+        //productOptions = Object.values(productOptions);
+
+        const options = [
+            { label: "States", options: statesOptions },
+            { label: "Brokers", options: brokerOptions },
+            { label: "Networks", options: networkOptions },     
+        ]
+
+        this.setState({
+            options
+        })
+    }
+
+    compareLabels = (a, b) => a.label.localeCompare(b.label);
     
     components = {
         DropdownIndicator: null,
@@ -112,6 +161,7 @@ class SidebarFilters extends Component {
                         components={this.components}
                         value={this.state.filterValue}
                         onChange={this.filterChange}
+                        maxMenuHeight={500}
                     />
                     
                     {

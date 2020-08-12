@@ -134,11 +134,19 @@ export const generateData = () => {
     
     let maxId = 1;
 
-    const state = ['Draft', 'Policy Holder Step', 'Start Date Step', 'Pending Info', 'Binding Request Pending'];
+    const state = ['Draft', 'Policy Holder Step', 'Start Date Step', 'Pending Info', 'Binding Request Pending', 'Issued'];
     for (let i = 0; i < state.length; i++) {
 
         let numItems = 20 + getRandomInt(0,20);
         let projects = [];
+
+        if (state[i] === 'Issued') {
+            data.push({
+                state: state[i],
+                projects: projects,
+            })
+            continue;
+        }
 
         for (let k = 0; k < numItems; k++) {
 
@@ -171,13 +179,15 @@ export const generateData = () => {
                 isClean = ((Math.round(Math.random())) === 0)
             }
 
-            let createdAt = moment().subtract(getRandomFloat(-10,+10), 'minutes'); // createdAt with future / past +-(0-300min)
+            let createdAt = moment().subtract(getRandomFloat(-10,10), 'minutes'); // createdAt with future / past (-10,+10min)
+            let finishedAt = createdAt.clone().add(getRandomFloat(10, 20), 'minutes'); // finishedAt (10, 12min) from createdAt)
 
             let project = {
                 "id": maxId++,
                 "reference": "AX" + i + k,
                 "user": getRandomValueFromArray(users),
                 "createdAt": createdAt.format('YYYY-MM-DD HH:mm:ss'),
+                "finishedAt": finishedAt.format('YYYY-MM-DD HH:mm:ss'),
                 "elapsedTime": moment.duration(moment().diff(createdAt)).asMinutes(),
                 "productVariants": products,
                 "isClean": isClean,
@@ -201,9 +211,16 @@ export const updateData = (d) => {
     // deep copy from input data to avoid modification of original    
     let data = deepClone(d);
     for (let state of data) {
+        if (state.state === "Issued") { continue; }
+
         for (let project of state.projects) {
             project.elapsedTime = moment.duration(moment().diff(project.createdAt)).asMinutes();
+            if (moment().format('YYYY-MM-DD HH:mm:ss') >= project.finishedAt) {
+                data[5].projects.push(deepClone(project));
+                project.remove = true;
+            }
         }
+        state.projects = state.projects.filter(d => d.remove != true);
     }
     return data;
 }

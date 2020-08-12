@@ -20,6 +20,7 @@ class SalesChart extends Component {
   }
 
   componentDidMount = () => {
+    this.props.updateData(this.state.filteredData);
     this.setIntervalRefresh(INTERVAL_REFRESH);
   }
 
@@ -41,9 +42,11 @@ class SalesChart extends Component {
   updateData = () => {
     // Update data
     let updatedData = DataGenerator.updateData(this.state.data);
+    let filteredData = this.filterData(updatedData);
+    this.props.updateData(filteredData);
     this.setState({
       data: updatedData,
-      filteredData: this.filterData(updatedData),
+      filteredData: filteredData,
     })
   }
 
