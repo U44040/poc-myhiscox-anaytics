@@ -129,38 +129,46 @@ export const averageSales = {
 };
 
 export const generateData = () => {
-    
+
     let data = [];
-    
+
     let maxId = 1;
 
-    const state = ['Draft', 'Policy Holder Step', 'Start Date Step', 'Pending Info', 'Binding Request Pending'];
+    const state = ['Draft', 'Policy Holder Step', 'Start Date Step', 'Pending Info', 'Binding Request Pending', 'Issued'];
     for (let i = 0; i < state.length; i++) {
 
-        let numItems = 20 + getRandomInt(0,20);
+        let numItems = 20 + getRandomInt(0, 20);
         let projects = [];
+
+        if (state[i] === 'Issued') {
+            data.push({
+                state: state[i],
+                projects: projects,
+            })
+            continue;
+        }
 
         for (let k = 0; k < numItems; k++) {
 
             let fullTotalRate = 0;
             let fullPercentAverage = 0;
 
-            let numProducts = getRandomInt(1,3);
+            let numProducts = getRandomInt(1, 3);
 
             let products = [];
             for (let p = 0; p < numProducts; p++) {
 
-                const randomRate = getRandomInt(100,500);
+                const randomRate = getRandomInt(100, 500);
                 fullTotalRate += randomRate;
 
                 let productVariant = getRandomValueFromArray(productVariants);
                 productVariant.totalRate = randomRate;
-                productVariant.percentAverage = (randomRate-averageSales[productVariant.idProductVariant])/averageSales[productVariant.idProductVariant]*100;
-                fullPercentAverage+=productVariant.percentAverage;
+                productVariant.percentAverage = (randomRate - averageSales[productVariant.idProductVariant]) / averageSales[productVariant.idProductVariant] * 100;
+                fullPercentAverage += productVariant.percentAverage;
                 products.push(productVariant);
             }
 
-            fullPercentAverage = (fullPercentAverage/numProducts);
+            fullPercentAverage = (fullPercentAverage / numProducts);
 
             let isClean;
             if (state[i] === 'Pending Info') {
@@ -171,13 +179,15 @@ export const generateData = () => {
                 isClean = ((Math.round(Math.random())) === 0)
             }
 
-            let createdAt = moment().subtract(getRandomFloat(-10,+10), 'minutes'); // createdAt with future / past +-(0-300min)
+            let createdAt = moment().subtract(getRandomFloat(-10, 10), 'minutes'); // createdAt with future / past (-10,+10min)
+            let finishedAt = createdAt.clone().add(getRandomFloat(10, 10), 'minutes'); // finishedAt (10, 12min) from createdAt
 
             let project = {
                 "id": maxId++,
                 "reference": "AX" + i + k,
                 "user": getRandomValueFromArray(users),
                 "createdAt": createdAt.format('YYYY-MM-DD HH:mm:ss'),
+                "finishedAt": finishedAt.format('YYYY-MM-DD HH:mm:ss'),
                 "elapsedTime": moment.duration(moment().diff(createdAt)).asMinutes(),
                 "productVariants": products,
                 "isClean": isClean,
@@ -201,16 +211,23 @@ export const updateData = (d) => {
     // deep copy from input data to avoid modification of original    
     let data = deepClone(d);
     for (let state of data) {
+        if (state.state === "Issued") { continue; }
+
         for (let project of state.projects) {
             project.elapsedTime = moment.duration(moment().diff(project.createdAt)).asMinutes();
+            if (moment().format('YYYY-MM-DD HH:mm:ss') >= project.finishedAt) {
+                data[5].projects.push(deepClone(project));
+                project.remove = true;
+            }
         }
+        state.projects = state.projects.filter(d => d.remove != true);
     }
     return data;
 }
 
 const getRandomValueFromArray = (array) => {
-    return {...array[(getRandomInt(0, 100) % array.length)]};
+    return { ...array[(getRandomInt(0, 100) % array.length)] };
 };
-const getRandomInt = (min, max) => Math.floor(Math.random() * (max-min)) + min;
-const getRandomFloat = (min, max) => Math.random() * (max-min) + min;
+const getRandomInt = (min, max) => Math.floor(Math.random() * (max - min)) + min;
+const getRandomFloat = (min, max) => Math.random() * (max - min) + min;
 

@@ -40,9 +40,9 @@ class BubbleChart extends Component {
         for (let state of this.props.data) {
             maximums.push(d3.max(state.projects.map((d) => d.elapsedTime)));
         }
-        return d3.scaleLinear().domain([0, d3.max(maximums)+1]).range([0, this.state.width])
+        return d3.scaleLinear().domain([0, d3.max(maximums) + 1]).range([0, this.state.width])
     };
-    
+
     yScale = () => (d3.scaleLinear().domain([-100, 100]).range([this.state.height, 0]));
     zScale = () => {
         const maximums = [];
@@ -75,7 +75,6 @@ class BubbleChart extends Component {
         // Labels
         // Y-Label
         d3.select(this.svgEl).append("text")
-            .attr("class", "legend-bubble")
             .attr('x', () => - 170)
             .attr('y', (d, i) => 10)
             .text((d, i) => "% de ventas respecto media")
@@ -83,10 +82,9 @@ class BubbleChart extends Component {
             .style("font-weight", "bold")
             .style("transform", "rotate(-90deg)");
         // X-Label
-            d3.select(this.svgEl).append("text")
-            .attr("class", "legend-bubble")
+        d3.select(this.svgEl).append("text")
             .attr('x', () => this.state.width)
-            .attr('y', (d, i) => this.state.height+35)
+            .attr('y', (d, i) => this.state.height + 35)
             .text((d, i) => "Tiempo (minutos)")
             .style("font-size", 5)
             .style("font-weight", "bold");
@@ -132,7 +130,7 @@ class BubbleChart extends Component {
                 let isVisible = d3.selectAll("." + StringSanitizer.sanitize(d.state)).style("opacity") == 1;
                 // Change the opacity: from 0 to 1 or from 1 to 0
                 d3.selectAll("." + StringSanitizer.sanitize(d.state)).transition().style("opacity", isVisible ? 0 : 1);
-                d3.select(this).style("opacity", isVisible  ? 0.5 : 1).style("text-decoration", isVisible ? "line-through" : "inherit");
+                d3.select(this).style("opacity", isVisible ? 0.5 : 1).style("text-decoration", isVisible ? "line-through" : "inherit");
             });
 
         legendGroup
@@ -148,7 +146,7 @@ class BubbleChart extends Component {
         legendGroup
             .append("rect")
             .attr("class", "legend-bubble")
-            .attr('x', () => this.state.width + 3 )
+            .attr('x', () => this.state.width + 3)
             .attr('y', (d, i) => this.state.height - 15 - (10 * i))
             .attr('width', 5)
             .attr('height', 5)

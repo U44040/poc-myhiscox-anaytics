@@ -11,15 +11,16 @@ class SalesChart extends Component {
   constructor(props) {
     super();
     const data = this.getData();
-    const filteredData = this.filterData(data);
+    const validData = this.getValidData(data);
     this.state = {
       data,
-      filteredData,
+      validData,
       averageSales: DataGenerator.averageSales,
     }
   }
 
   componentDidMount = () => {
+    this.props.updateData(this.state.validData);
     this.setIntervalRefresh(INTERVAL_REFRESH);
   }
 
@@ -28,38 +29,36 @@ class SalesChart extends Component {
     return data;
   }
 
-  filterData = (data) => {
+  getValidData = (data) => {
     // return only projects with elapsed time > 0. (<0 are future projects)
     return data.map((d) => {
-          return {
-            ...d,
-            projects: d.projects.filter((p) => p.elapsedTime >= 0)
-          }
-        })
-  }
-
-  handleClick = () => {
-    // Update data
-    let updatedData = DataGenerator.updateData(this.state.data);
-    this.setState({
-      data: updatedData,
-      filteredData: this.filterData(updatedData),
+      return {
+        ...d,
+        projects: d.projects.filter((p) => p.elapsedTime >= 0)
+      }
     })
   }
 
+  updateData = () => {
+    // Update data
+    let updatedData = DataGenerator.updateData(this.state.data);
+    let validData = this.getValidData(updatedData);
+    this.setState({
+      data: updatedData,
+      validData: validData,
+    }, () => this.props.updateData(validData));
+  }
+
   setIntervalRefresh = (interval) => {
-    window.setInterval(this.handleClick, interval);
+    window.setInterval(this.updateData, interval);
   }
 
   render = () => (
-    <React.Fragment>
-      <div className="col-md">
-        <Card type="primary" header="Venta de pólizas" title="Tiempo real" text="Gráfica en tiempo real de las pólizas que se están creando">
-          <BubbleChart data={this.state.filteredData} />
-          <button className="btn btn-primary" onClick={this.handleClick}>Actualizar</button>
-        </Card>
-      </div>
-    </React.Fragment>
+    <div className="col-md">
+      <Card type="primary" header="Venta de pólizas" title="Tiempo real" text="Gráfica en tiempo real de las pólizas que se están creando">
+        <BubbleChart data={this.state.validData} />
+      </Card>
+    </div>
   );
 }
 
