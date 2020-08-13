@@ -11,16 +11,16 @@ class SalesChart extends Component {
   constructor(props) {
     super();
     const data = this.getData();
-    const filteredData = this.filterData(data);
+    const validData = this.getValidData(data);
     this.state = {
       data,
-      filteredData,
+      validData,
       averageSales: DataGenerator.averageSales,
     }
   }
 
   componentDidMount = () => {
-    this.props.updateData(this.state.filteredData);
+    this.props.updateData(this.state.validData);
     this.setIntervalRefresh(INTERVAL_REFRESH);
   }
 
@@ -29,7 +29,7 @@ class SalesChart extends Component {
     return data;
   }
 
-  filterData = (data) => {
+  getValidData = (data) => {
     // return only projects with elapsed time > 0. (<0 are future projects)
     return data.map((d) => {
       return {
@@ -42,12 +42,11 @@ class SalesChart extends Component {
   updateData = () => {
     // Update data
     let updatedData = DataGenerator.updateData(this.state.data);
-    let filteredData = this.filterData(updatedData);
-    this.props.updateData(filteredData);
+    let validData = this.getValidData(updatedData);
     this.setState({
       data: updatedData,
-      filteredData: filteredData,
-    })
+      validData: validData,
+    }, () => this.props.updateData(validData));
   }
 
   setIntervalRefresh = (interval) => {
@@ -57,7 +56,7 @@ class SalesChart extends Component {
   render = () => (
     <div className="col-md">
       <Card type="primary" header="Venta de pólizas" title="Tiempo real" text="Gráfica en tiempo real de las pólizas que se están creando">
-        <BubbleChart data={this.state.filteredData} />
+        <BubbleChart data={this.state.validData} />
       </Card>
     </div>
   );

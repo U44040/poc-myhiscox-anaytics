@@ -180,7 +180,7 @@ export const generateData = () => {
             }
 
             let createdAt = moment().subtract(getRandomFloat(-10, 10), 'minutes'); // createdAt with future / past (-10,+10min)
-            let finishedAt = createdAt.clone().add(getRandomFloat(10, 20), 'minutes'); // finishedAt (10, 12min) from createdAt)
+            let finishedAt = createdAt.clone().add(getRandomFloat(10, 10), 'minutes'); // finishedAt (10, 12min) from createdAt
 
             let project = {
                 "id": maxId++,
