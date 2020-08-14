@@ -98,8 +98,9 @@ class BubbleChart extends Component {
             .attr("y", 0);
 
         let zoom = d3.zoom()
-            .scaleExtent([.5, 20])  // This control how much you can unzoom (x0.5) and zoom (x20)
+            .scaleExtent([1, 20])  // This control how much you can unzoom (x0.5) and zoom (x20)
             .extent([[0, 0], [this.state.width, this.state.height]])
+            .translateExtent([[0, 0], [Infinity, this.state.height]])
             .on("zoom", () => this.updateChartZoom(scales.xScale, this.xAxis, scales.yScale, this.yAxis));
 
         // This add an invisible rect on top of the chart area. This rect can recover pointer events: necessary to understand when the user zoom
