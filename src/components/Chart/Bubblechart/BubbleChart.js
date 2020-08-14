@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import * as d3 from 'd3';
 import * as StringSanitizer from 'string-sanitizer';
-import './BubbleChart.scss';
 
 class BubbleChart extends Component {
 
@@ -40,9 +39,9 @@ class BubbleChart extends Component {
         for (let state of this.props.data) {
             maximums.push(d3.max(state.projects.map((d) => d.elapsedTime)));
         }
-        return d3.scaleLinear().domain([0, d3.max(maximums) + 1]).range([0, this.state.width])
+        return d3.scaleLinear().domain([0, d3.max(maximums)]).range([0, this.state.width])
     };
-
+    
     yScale = () => (d3.scaleLinear().domain([-100, 100]).range([this.state.height, 0]));
     zScale = () => {
         const maximums = [];
@@ -52,7 +51,7 @@ class BubbleChart extends Component {
         return d3.scaleLinear().domain([0, d3.max(maximums)]).range([0, 20]);
     }
 
-    fillColor = (d3.scaleOrdinal().domain(['Draft', 'Policy Holder Step', 'Start Date Step', 'Pending Info', 'Binding Request Pending', 'Issued']).range(d3.schemeSet2));
+    fillColor = (d3.scaleOrdinal().domain(['Draft', 'Policy Holder Step', 'Start Date Step', 'Pending Info', 'Binding Request Pending']).range(d3.schemeSet2));
     strokeColor = (d3.scaleOrdinal().domain([true, false]).range(['#039453', '#bf003d']));
 
     getScales = () => {
@@ -72,23 +71,6 @@ class BubbleChart extends Component {
         this.xAxis = this.svg.append("g").attr("transform", "translate(0," + this.state.height + ")").call(d3.axisBottom(scales.xScale));
         this.yAxis = this.svg.append("g").call(d3.axisLeft(scales.yScale).tickFormat((d, i) => d + "%"));
 
-        // Labels
-        // Y-Label
-        d3.select(this.svgEl).append("text")
-            .attr('x', () => - 170)
-            .attr('y', (d, i) => 10)
-            .text((d, i) => "% de ventas respecto media")
-            .style("font-size", 5)
-            .style("font-weight", "bold")
-            .style("transform", "rotate(-90deg)");
-        // X-Label
-        d3.select(this.svgEl).append("text")
-            .attr('x', () => this.state.width)
-            .attr('y', (d, i) => this.state.height + 35)
-            .text((d, i) => "Tiempo (minutos)")
-            .style("font-size", 5)
-            .style("font-weight", "bold");
-
         let clip = this.svg.append("defs").append("SVG:clipPath")
             .attr("id", "clip")
             .append("SVG:rect")
@@ -98,9 +80,8 @@ class BubbleChart extends Component {
             .attr("y", 0);
 
         let zoom = d3.zoom()
-            .scaleExtent([1, 20])  // This control how much you can unzoom (x0.5) and zoom (x20)
+            .scaleExtent([.5, 20])  // This control how much you can unzoom (x0.5) and zoom (x20)
             .extent([[0, 0], [this.state.width, this.state.height]])
-            .translateExtent([[0, 0], [Infinity, this.state.height]])
             .on("zoom", () => this.updateChartZoom(scales.xScale, this.xAxis, scales.yScale, this.yAxis));
 
         // This add an invisible rect on top of the chart area. This rect can recover pointer events: necessary to understand when the user zoom
@@ -115,46 +96,33 @@ class BubbleChart extends Component {
         // Plot
         this.scatter = this.svg.append('g').attr("class", "data-bubble").attr("clip-path", "url(#clip)");
 
-        this.createLegend();
+        //this.createLegend(svg);
         this.createTooltip();
         this.updateChart();
     }
 
-    createLegend = () => {
-        let legendGroup = this.svg
-            .selectAll(".legend")
+    createLegend = (svg) => {
+        svg
+            .selectAll("myLegend")
             .data(this.props.data)
             .enter()
             .append('g')
+            .append("text")
+            .attr('x', function (d, i) { return 30 + i * 60 })
+            .attr('y', 30)
+            .text(function (d) { return d.isClean; })
+            .style("fill", (d) => this.fillColor(d.colour))
+            .style("font-size", 10)
             .on("click", function (d) {
                 // is the element currently visible ?
-                let isVisible = d3.selectAll("." + StringSanitizer.sanitize(d.state)).style("opacity") == 1;
+                let currentOpacity = d3.selectAll("." + d.name).style("opacity")
                 // Change the opacity: from 0 to 1 or from 1 to 0
-                d3.selectAll("." + StringSanitizer.sanitize(d.state)).transition().style("opacity", isVisible ? 0 : 1);
-                d3.select(this).style("opacity", isVisible ? 0.5 : 1).style("text-decoration", isVisible ? "line-through" : "inherit");
+                d3.selectAll("." + d.name).transition().style("opacity", currentOpacity == 1 ? 0 : 1);
             });
-
-        legendGroup
-            .append("text")
-            .attr("class", "legend-bubble")
-            .attr('x', () => this.state.width + 10)
-            .attr('y', (d, i) => this.state.height - 10 - (10 * i))
-            .text((d, i) => d.state)
-            .style("fill", (d) => this.fillColor(d.state))
-            .style("font-size", 5)
-            .style("font-weight", "bold");
-
-        legendGroup
-            .append("rect")
-            .attr("class", "legend-bubble")
-            .attr('x', () => this.state.width + 3)
-            .attr('y', (d, i) => this.state.height - 15 - (10 * i))
-            .attr('width', 5)
-            .attr('height', 5)
-            .style("fill", (d) => this.fillColor(d.state));
     }
 
     createTooltip = () => {
+        //https://bl.ocks.org/Jverma/2385cb7794d18c51e3ab
         this.tooltip = d3.select('body')
             .append("div")
             .attr("id", "tooltip-bubble")
@@ -172,10 +140,6 @@ class BubbleChart extends Component {
         let component = this;
         let scatter = this.scatter;
         let scales = this.getScales();
-
-        // Axis
-        this.xAxis.call(d3.axisBottom(scales.xScale));
-        //this.yAxis.call(d3.axisLeft(scales.yScale).tickFormat((d, i) => d + "%"));
 
         // Add the points
         scatter = scatter
@@ -198,18 +162,18 @@ class BubbleChart extends Component {
             .enter()
             .append("circle")
             .merge(scatterProject)
-            .on("click", function (d) { component.showTooltipAlways(d, this) })
-            .on("mouseover", function (d) { component.showTooltip(d, this) })
-            //.on("mousemove", function(d){ component.showTooltip(d, this)})
-            .on("mouseout", function (d) { component.hideTooltip(d, this) })
-            .on("contextmenu", function (d) { component.hideProject(d, this) })
             .attr("cx", (d) => scales.xScale(d.elapsedTime))
             .attr("cy", (d) => scales.yScale(d.fullPercentAverage))
             .attr("r", (d) => scales.zScale(d.totalRate))
             .style("opacity", "0.9")
-            .attr("stroke", (d) => this.strokeColor(d.isClean));
+            .attr("stroke", (d) => this.strokeColor(d.isClean))
+            .on("click", function (d) { component.showTooltipAlways(d, this) })
+            .on("mouseover", function (d) { component.showTooltip(d, this) })
+            //.on("mousemove", function(d){ component.showTooltip(d, this)})
+            .on("mouseout", function (d) { component.hideTooltip(d, this) })
+            .on("contextmenu", function (d) { component.hideProject(d, this) });
 
-        scatterProject.exit().remove();
+        scatter.exit().remove();
 
 
 
@@ -313,7 +277,7 @@ class BubbleChart extends Component {
 
     hideProject = (d, element) => {
         d3.event.preventDefault();
-        d3.select(element).style("display", "none");
+        d3.select(element).remove();
     }
 
     updateChartZoom = (xScale, xAxis, yScale, yAxis) => {
@@ -340,7 +304,7 @@ class BubbleChart extends Component {
         const height = this.state.height + this.state.margin.top + this.state.margin.bottom;
 
         return (
-            <div id="bubbleChartSales" ref={el => this.divEl = el}>
+            <div ref={el => this.divEl = el}>
                 <svg ref={el => this.svgEl = el}
                     //width={width}
                     //height={height}
