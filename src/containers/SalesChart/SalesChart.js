@@ -106,7 +106,7 @@ class SalesChart extends Component {
 
   render = () => (
     <div className="col-md">
-      <Card type="primary" header="Venta de pólizas" title="Tiempo real" text="Gráfica en tiempo real de las pólizas que se están creando">
+      <Card type="primary" /* header="Venta de pólizas" title="Tiempo real" text="Gráfica en tiempo real de las pólizas que se están creando"*/ >
         <BubbleChart data={this.state.filteredData} />
       </Card>
     </div>

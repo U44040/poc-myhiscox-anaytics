@@ -8,7 +8,7 @@ class BubbleChart extends Component {
     constructor(props) {
         super();
 
-        const margin = { top: 10, right: 70, bottom: 30, left: 50 };
+        const margin = { top: 5, right: 70, bottom: 5, left: 35 };
         const width = 800 - margin.left - margin.right;
         const height = 300 - margin.top - margin.bottom;
 
@@ -40,10 +40,10 @@ class BubbleChart extends Component {
         for (let state of this.props.data) {
             maximums.push(d3.max(state.projects.map((d) => d.elapsedTime)));
         }
-        return d3.scaleLinear().domain([0, d3.max(maximums) + 1]).range([0, this.state.width])
+        return d3.scaleLinear().domain([0, d3.max(maximums) + 5]).range([0, this.state.width])
     };
 
-    yScale = () => (d3.scaleLinear().domain([-100, 100]).range([this.state.height, 0]));
+    yScale = () => (d3.scaleLinear().domain([-110, 110]).range([this.state.height, 0]));
     zScale = () => {
         const maximums = [];
         for (let state of this.props.data) {
@@ -76,7 +76,7 @@ class BubbleChart extends Component {
         // Y-Label
         d3.select(this.svgEl).append("text")
             .attr('x', () => - 170)
-            .attr('y', (d, i) => 10)
+            .attr('y', (d, i) => 4)
             .text((d, i) => "% de ventas respecto media")
             .style("font-size", 5)
             .style("font-weight", "bold")
@@ -98,23 +98,21 @@ class BubbleChart extends Component {
             .attr("y", 0);
 
         let zoom = d3.zoom()
-            .scaleExtent([1, 20])  // This control how much you can unzoom (x0.5) and zoom (x20)
+            .scaleExtent([1, 60])  // This control how much you can unzoom (x0.5) and zoom (x20)
             .extent([[0, 0], [this.state.width, this.state.height]])
             .translateExtent([[0, 0], [Infinity, this.state.height]])
             .on("zoom", () => this.updateChartZoom(scales.xScale, this.xAxis, scales.yScale, this.yAxis));
 
     
+        d3.select(this.svgEl).call(zoom).on("dblclick.zoom", null);
 
-        // This add an invisible rect on top of the chart area. This rect can recover pointer events: necessary to understand when the user zoom
+        // This add an invisible rect on top of the chart area. This rect can recover pointer events: necessary to understand when the user click to dismiss tooltip
         this.svg.append("rect")
             .attr("width", this.state.width)
             .attr("height", this.state.height)
             .style("fill", "none")
             .style("pointer-events", "all")
-            //.attr('transform', 'translate(' + this.state.margin.left + ',' + this.state.margin.top + ')')
-            .call(zoom)
-            .on("dblclick.zoom", null)
-            .on("click.zoom", () => { this.forceHideTooltip() } );
+            .on("click", () => { this.forceHideTooltip() } );
 
         // Plot
         this.scatter = this.svg.append('g').attr("class", "data-bubble").attr("clip-path", "url(#clip)");
@@ -141,7 +139,7 @@ class BubbleChart extends Component {
         legendGroup
             .append("text")
             .attr("class", "legend-bubble")
-            .attr('x', () => this.state.width)
+            .attr('x', () => this.state.width + 5)
             .attr('y', (d, i) => this.state.height - 10 - (10 * i))
             .text((d, i) => d.state)
             .style("fill", (d) => this.fillColor(d.state))
@@ -151,7 +149,7 @@ class BubbleChart extends Component {
         legendGroup
             .append("rect")
             .attr("class", "legend-bubble")
-            .attr('x', () => this.state.width + 60)
+            .attr('x', () => this.state.width + 65)
             .attr('y', (d, i) => this.state.height - 15 - (10 * i))
             .attr('width', 5)
             .attr('height', 5)
@@ -208,7 +206,7 @@ class BubbleChart extends Component {
             .on("mouseout", function (d) { component.hideTooltip(d) })
             .on("contextmenu", function (d) { component.hideProject(d, this) })
             .attr("cx", (d) => scales.xScale(d.elapsedTime))
-            .attr("cy", (d) => scales.yScale(d.fullPercentAverage))
+            .attr("cy", (d) => scales.yScale(d.fullPercentAverage > 100 ? 100 : d.fullPercentAverage < -100 ? -100 : d.fullPercentAverage))
             .attr("r", (d) => scales.zScale(d.totalRate))
             .style("opacity", "0.9")
             .attr("stroke", (d) => this.strokeColor(d.isClean));
@@ -341,8 +339,8 @@ class BubbleChart extends Component {
         this.scatter
             .selectAll("circle")
             .attr('cx', (d) => newX(d.elapsedTime))
-            .attr('cy', (d) => newY(d.fullPercentAverage));
-    }
+            .attr("cy", (d) => newY(d.fullPercentAverage > 100 ? 100 : d.fullPercentAverage < -100 ? -100 : d.fullPercentAverage));
+        }
 
     render() {
         const width = this.state.width + this.state.margin.left + this.state.margin.right;
