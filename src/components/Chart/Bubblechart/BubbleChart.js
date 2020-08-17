@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import * as d3 from 'd3';
 import * as StringSanitizer from 'string-sanitizer';
 import './BubbleChart.scss';
+import moment from 'moment';
 
 class BubbleChart extends Component {
 
@@ -9,7 +10,7 @@ class BubbleChart extends Component {
         super();
 
         const margin = { top: 5, right: 70, bottom: 5, left: 38 };
-        const width = 680 - margin.left - margin.right;
+        const width = 670 - margin.left - margin.right;
         const height = 300 - margin.top - margin.bottom;
 
         this.svg = null;
@@ -69,23 +70,23 @@ class BubbleChart extends Component {
         this.svg = d3.select(this.svgEl).append("g").attr("transform", "translate(" + this.state.margin.left + "," + this.state.margin.top + ")");
 
         // Axis
-        this.xAxis = this.svg.append("g").style("font-size", "0.5rem").attr("transform", "translate(0," + scales.yScale(0) + ")").call(d3.axisBottom(scales.xScale));
-        this.yAxis = this.svg.append("g").style("font-size", "0.5rem").call(d3.axisLeft(scales.yScale).tickFormat((d, i) => d + "%"));
+        this.xAxis = this.svg.append("g").style("font-size", "0.4rem").attr("transform", "translate(0," + scales.yScale(0) + ")").call(d3.axisBottom(scales.xScale));
+        this.yAxis = this.svg.append("g").style("font-size", "0.4rem").call(d3.axisLeft(scales.yScale).tickFormat((d, i) => d + "%"));
 
         // Labels
         // Y-Label
         d3.select(this.svgEl).append("text")
-            .attr('x', () => - 170)
+            .attr('x', () => - 175)
             .attr('y', (d, i) => 4)
-            .text((d, i) => "% de ventas respecto media")
+            .text((d, i) => "Products vs Market")
             .style("font-size", 5)
             .style("font-weight", "bold")
             .style("transform", "rotate(-90deg)");
         // X-Label
         d3.select(this.svgEl).append("text")
-            .attr('x', () => this.state.width)
-            .attr('y', (d, i) => this.state.height + 35)
-            .text((d, i) => "Tiempo (minutos)")
+            .attr('x', () => this.state.width - 5)
+            .attr('y', (d, i) => this.state.height)
+            .text((d, i) => "Time (minutes)")
             .style("font-size", 5)
             .style("font-weight", "bold");
 
@@ -210,44 +211,9 @@ class BubbleChart extends Component {
             .attr("stroke", (d) => this.strokeColor(d.isClean));
 
         scatterProject.exit().remove();
-
-
-
-        /*scatter = scatter
-            .selectAll("circle")
-            .data(this.props.data);
-
-        scatter.enter()
-            .append("circle")
-            .merge(scatter)
-            .on("mouseover", d => {
-                this.tooltip.transition()
-                    .duration(100)
-                    .style('opacity', 1)
-                    .text(d.isClean)
-                    .style('left', d3.event.pageX + 'px')
-                    .style('top', d3.event.pageY + 'px');
-            })
-            .on("mouseout", () => {
-                this.tooltip.transition()
-                  .duration(400)
-                  .style('opacity', 0);
-              })
-            .transition()
-            .duration(1000)
-            .attr("cx", (d) => scales.xScale(d.x))
-            .attr("cy", (d) => scales.yScale(d.y))
-            .attr("r", (d) => scales.zScale(d.z))
-            .style("fill", (d) => this.fillColor(d.colour))
-            .style("opacity", "0.9")
-            .attr("stroke", (d) => this.strokeColor(d.isClean))
-            .style("stroke-width", "0.5px");
-
-        scatter.exit().remove();*/
     }
 
     showTooltip = (d, element) => {
-
         if (this.tooltip.attr('fixed') == "true") {
             return;
         }
@@ -257,19 +223,36 @@ class BubbleChart extends Component {
             <p><Strong>Reference:</strong> ${ d.reference}</p>
             <p><strong>Brokerage:</strong> ${ d.user.brokerage.name}</p>
             <p><strong>Network:</strong> ${ d.user.brokerage.network.name}</p>
-            <p><strong>Clean:</strong> ${ d.isClean ? 'Yes' : 'No'}</p>
+            <p><strong>Clean:</strong> ${ d.isClean ? '<span class="text-success font-weight-bold">Yes</span>' : '<span class="text-danger font-weight-bold">No</span>'}</p>
             <p><strong>Products:</strong></p>
             <ul>
         `;
 
-
+        let style;
         for (let productVariant of d.productVariants) {
-            html += `<li>${productVariant.name} - (${productVariant.totalRate}€) [${Math.round(productVariant.percentAverage)}%]</li>`
+            if (Math.round(productVariant.percentAverage) >= 0) {
+                style = "text-success font-weight-bold";
+            }
+            else {
+                style = "text-danger font-weight-bold";
+            }
+
+            html += `<li>${productVariant.name} - (${productVariant.totalRate}€) <span class="${style}">[${Math.round(productVariant.percentAverage)}%]</span></li>`
         }
 
         html += '</ul>';
 
-        html += `<p><strong>Total rate:</strong> ${d.totalRate}€ [${Math.round(d.fullPercentAverage)}%]</p>`;
+        if (Math.round(d.fullPercentAverage) >= 0) {
+            style = "text-success font-weight-bold";
+        }
+        else {
+            style = "text-danger font-weight-bold";
+        }
+
+        let duration = moment.duration(d.elapsedTime, "minutes");
+        html += `<p><strong>Elapsed time:</strong> ${ duration.hours() == 0 ? '' : duration.hours() + " hours"} ${ duration.minutes() } minutes </p>`;
+
+        html += `<p><strong>Total rate:</strong> ${d.totalRate}€ <span class="${style}">[${Math.round(d.fullPercentAverage)}%]</span></p>`;
 
         this.tooltip
             .html(html)
@@ -312,6 +295,7 @@ class BubbleChart extends Component {
     }
 
     forceHideTooltip = (d) => {
+        this.scatter.selectAll("circle").attr('fixed', false);
         this.tooltip.attr('fixed', false);
         this.hideTooltip(d);
     }

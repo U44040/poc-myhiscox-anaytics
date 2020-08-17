@@ -156,7 +156,7 @@ class SidebarFilters extends Component {
                     <li className="sidebar-fixed-button text-right">
                         <span className={iconSidebarFixed} onClick={this.toggleSidebarFixed}></span>
                     </li>
-                    <li className="list-group-item sidebar-separator-title text-muted align-items-center menu-collapsed d-flex">
+                    <li className="list-group-item sidebar-separator-title align-items-center menu-collapsed d-flex">
                         <small>FILTERS</small>
                     </li>
 
