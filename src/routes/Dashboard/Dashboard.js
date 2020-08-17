@@ -7,6 +7,7 @@ import SidebarFilters from '../../components/SidebarFilters/SidebarFilters';
 class Dashboard extends Component {
 
     state = {
+        filters: []
     }
 
     updateSalesChartData = (data) => {
@@ -15,10 +16,16 @@ class Dashboard extends Component {
         )
     }
 
+    updateFilters = (filters) => {
+        this.setState(
+            { filters: filters }
+        )
+    }
+
     render = () => {
         return (
             <React.Fragment>
-                <SidebarFilters collapsed={true} sidebarFixed={false} salesChartData={this.state.salesChartData} />
+                <SidebarFilters collapsed={true} sidebarFixed={false} salesChartData={this.state.salesChartData} updateFilters={this.updateFilters} />
                 <div className="col py-3">
                     <div className="container-fluid">
                         <h3 className="text-gray-800">Dashboard</h3>
@@ -37,7 +44,7 @@ class Dashboard extends Component {
                             </div>
                         </div>
                         <div className="row mb-4">
-                            <SalesChart updateData={this.updateSalesChartData} />
+                            <SalesChart updateData={this.updateSalesChartData} filters={this.state.filters} />
                         </div>
                     </div>
                 </div>

@@ -14,11 +14,11 @@ class SidebarFilters extends Component {
             collapsed: props.collapsed,
             sidebarFixed: props.sidebarFixed,
             filterValue: [
-                {
+                /*{
                     label: "Hide Issued",
                     value: "HIDE_ISSUED",
                     type: FILTER_TYPES.STATE,
-                }
+                }*/
             ],
         }
     }
@@ -28,6 +28,8 @@ class SidebarFilters extends Component {
             this.prepareFilters();
         }
     }
+
+    concatTypeValue = (type, value) => (type + "_" + value);
 
     prepareFilters = () => {
         let statesOptions = [];
@@ -43,20 +45,20 @@ class SidebarFilters extends Component {
 
             statesOptions.push({
                 label: state.state,
-                value: state.state,
+                value: this.concatTypeValue(FILTER_TYPES.STATE, state.state),
                 type: FILTER_TYPES.STATE,
             });
 
             for (let project of state.projects) {
                 brokerOptions[project.user.brokerage.id] = {
                     label: project.user.brokerage.name,
-                    value: project.user.brokerage.id,
+                    value: this.concatTypeValue(FILTER_TYPES.BROKER, project.user.brokerage.id),
                     type: FILTER_TYPES.BROKER,
                 };
 
                 networkOptions[project.user.brokerage.network.id] = {
                     label: project.user.brokerage.network.name,
-                    value: project.user.brokerage.network.id,
+                    value: this.concatTypeValue(FILTER_TYPES.NETWORK, project.user.brokerage.network.id),
                     type: FILTER_TYPES.NETWORK,
                 };
 
@@ -69,11 +71,11 @@ class SidebarFilters extends Component {
             }
         }
 
-        statesOptions.push({
+        /*statesOptions.push({
             label: "Hide Issued",
             value: "HIDE_ISSUED",
             type: FILTER_TYPES.STATE,
-        })
+        })*/
 
         statesOptions = statesOptions.sort(this.compareLabels);
         brokerOptions = Object.values(brokerOptions).sort(this.compareLabels);
@@ -117,9 +119,18 @@ class SidebarFilters extends Component {
     }
 
     filterChange = (values) => {
+        let filtersByType = {};
+        if (Array.isArray(values)) {
+            for (let filter of values) {
+                if (filtersByType[filter.type] == undefined) {
+                  filtersByType[filter.type] = [];
+                }
+                filtersByType[filter.type].push(filter);
+              }
+        }
         this.setState({
             filterValue: values
-        })
+        }, () => this.props.updateFilters(filtersByType));
     }
 
     render = () => {
