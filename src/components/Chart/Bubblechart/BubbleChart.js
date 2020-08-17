@@ -8,8 +8,8 @@ class BubbleChart extends Component {
     constructor(props) {
         super();
 
-        const margin = { top: 10, right: 100, bottom: 30, left: 50 };
-        const width = 700 - margin.left - margin.right;
+        const margin = { top: 10, right: 70, bottom: 30, left: 50 };
+        const width = 800 - margin.left - margin.right;
         const height = 300 - margin.top - margin.bottom;
 
         this.svg = null;
@@ -69,7 +69,7 @@ class BubbleChart extends Component {
         this.svg = d3.select(this.svgEl).append("g").attr("transform", "translate(" + this.state.margin.left + "," + this.state.margin.top + ")");
 
         // Axis
-        this.xAxis = this.svg.append("g").attr("transform", "translate(0," + this.state.height + ")").call(d3.axisBottom(scales.xScale));
+        this.xAxis = this.svg.append("g").attr("transform", "translate(0," + scales.yScale(0) + ")").call(d3.axisBottom(scales.xScale));
         this.yAxis = this.svg.append("g").call(d3.axisLeft(scales.yScale).tickFormat((d, i) => d + "%"));
 
         // Labels
@@ -103,6 +103,8 @@ class BubbleChart extends Component {
             .translateExtent([[0, 0], [Infinity, this.state.height]])
             .on("zoom", () => this.updateChartZoom(scales.xScale, this.xAxis, scales.yScale, this.yAxis));
 
+    
+
         // This add an invisible rect on top of the chart area. This rect can recover pointer events: necessary to understand when the user zoom
         this.svg.append("rect")
             .attr("width", this.state.width)
@@ -110,7 +112,9 @@ class BubbleChart extends Component {
             .style("fill", "none")
             .style("pointer-events", "all")
             //.attr('transform', 'translate(' + this.state.margin.left + ',' + this.state.margin.top + ')')
-            .call(zoom);
+            .call(zoom)
+            .on("dblclick.zoom", null)
+            .on("click.zoom", () => { this.forceHideTooltip() } );
 
         // Plot
         this.scatter = this.svg.append('g').attr("class", "data-bubble").attr("clip-path", "url(#clip)");
@@ -137,7 +141,7 @@ class BubbleChart extends Component {
         legendGroup
             .append("text")
             .attr("class", "legend-bubble")
-            .attr('x', () => this.state.width + 10)
+            .attr('x', () => this.state.width)
             .attr('y', (d, i) => this.state.height - 10 - (10 * i))
             .text((d, i) => d.state)
             .style("fill", (d) => this.fillColor(d.state))
@@ -147,7 +151,7 @@ class BubbleChart extends Component {
         legendGroup
             .append("rect")
             .attr("class", "legend-bubble")
-            .attr('x', () => this.state.width + 3)
+            .attr('x', () => this.state.width + 60)
             .attr('y', (d, i) => this.state.height - 15 - (10 * i))
             .attr('width', 5)
             .attr('height', 5)
@@ -201,7 +205,7 @@ class BubbleChart extends Component {
             .on("click", function (d) { component.showTooltipAlways(d, this) })
             .on("mouseover", function (d) { component.showTooltip(d, this) })
             //.on("mousemove", function(d){ component.showTooltip(d, this)})
-            .on("mouseout", function (d) { component.hideTooltip(d, this) })
+            .on("mouseout", function (d) { component.hideTooltip(d) })
             .on("contextmenu", function (d) { component.hideProject(d, this) })
             .attr("cx", (d) => scales.xScale(d.elapsedTime))
             .attr("cy", (d) => scales.yScale(d.fullPercentAverage))
@@ -298,7 +302,7 @@ class BubbleChart extends Component {
         }
     }
 
-    hideTooltip = (d, element) => {
+    hideTooltip = (d) => {
         if (this.tooltip.attr('fixed') == "true") {
             return;
         }
@@ -308,7 +312,12 @@ class BubbleChart extends Component {
             .style('opacity', 0)
             .style('z-index', -1);
 
-        d3.select(element).transition().duration(300).style('stroke-width', this.strokeWidth);
+        this.scatter.selectAll("circle").transition().duration(300).style('stroke-width', this.strokeWidth);
+    }
+
+    forceHideTooltip = (d) => {
+        this.tooltip.attr('fixed', false);
+        this.hideTooltip(d);
     }
 
     hideProject = (d, element) => {
@@ -325,7 +334,7 @@ class BubbleChart extends Component {
         this.yScale = () => newY;
 
         // update axes with these new boundaries
-        xAxis.call(d3.axisBottom(newX));
+        xAxis.attr("transform", "translate(0," + newY(0) + ")").call(d3.axisBottom(newX));
         yAxis.call(d3.axisLeft(newY).tickFormat((d, i) => d + "%"));
 
         // update circle position
