@@ -130,12 +130,12 @@ class BubbleChart extends Component {
             .data(this.props.data)
             .enter()
             .append('g')
-            .on("click", function (d) {
-                // is the element currently visible ?
-                let isVisible = d3.selectAll("." + StringSanitizer.sanitize(d.state)).style("opacity") == 1;
-                // Change the opacity: from 0 to 1 or from 1 to 0
-                d3.selectAll("." + StringSanitizer.sanitize(d.state)).transition().style("opacity", isVisible ? 0 : 1);
-                d3.select(this).style("opacity", isVisible ? 0.5 : 1).style("text-decoration", isVisible ? "line-through" : "inherit");
+            .on("mouseover", function (d) {
+                d3.select('.data-bubble').selectAll("g:not(." + StringSanitizer.sanitize(d.state)).transition().style("opacity", 0.1);
+                //d3.selectAll('.legend').style("opacity", 0.5).style("text-decoration", "line-through");
+            })
+            .on("mouseout", function (d) {
+                d3.select('.data-bubble').selectAll("g").transition().style("opacity", 1);
             });
 
         legendGroup
@@ -285,7 +285,7 @@ class BubbleChart extends Component {
             .style('z-index', 1000);
 
         this.scatter.selectAll("circle").transition().duration(300).style('stroke-width', this.strokeWidth);
-        d3.select(element).transition().duration(300).style('stroke-width', '2px');
+        d3.select(element).transition().duration(300).style('stroke-width', '1.25px');
     }
 
     showTooltipAlways = (d, element) => {
