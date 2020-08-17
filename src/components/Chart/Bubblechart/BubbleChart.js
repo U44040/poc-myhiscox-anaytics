@@ -8,8 +8,8 @@ class BubbleChart extends Component {
     constructor(props) {
         super();
 
-        const margin = { top: 5, right: 70, bottom: 5, left: 35 };
-        const width = 800 - margin.left - margin.right;
+        const margin = { top: 5, right: 70, bottom: 5, left: 38 };
+        const width = 680 - margin.left - margin.right;
         const height = 300 - margin.top - margin.bottom;
 
         this.svg = null;
@@ -69,8 +69,8 @@ class BubbleChart extends Component {
         this.svg = d3.select(this.svgEl).append("g").attr("transform", "translate(" + this.state.margin.left + "," + this.state.margin.top + ")");
 
         // Axis
-        this.xAxis = this.svg.append("g").attr("transform", "translate(0," + scales.yScale(0) + ")").call(d3.axisBottom(scales.xScale));
-        this.yAxis = this.svg.append("g").call(d3.axisLeft(scales.yScale).tickFormat((d, i) => d + "%"));
+        this.xAxis = this.svg.append("g").style("font-size", "0.5rem").attr("transform", "translate(0," + scales.yScale(0) + ")").call(d3.axisBottom(scales.xScale));
+        this.yAxis = this.svg.append("g").style("font-size", "0.5rem").call(d3.axisLeft(scales.yScale).tickFormat((d, i) => d + "%"));
 
         // Labels
         // Y-Label
@@ -162,11 +162,9 @@ class BubbleChart extends Component {
             .attr("id", "tooltip-bubble")
             .style("opacity", 0)
             .attr("class", "tooltip")
-            .style("background-color", "black")
             .style("position", "absolute")
             .style("border-radius", "5px")
             .style("padding", "10px")
-            .style("color", "white");
     }
 
     updateChart = () => {

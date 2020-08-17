@@ -63,9 +63,9 @@ class SalesChart extends Component {
     for (let filterType in this.props.filters){
       let filters = this.props.filters[filterType].map(d=>d.value);
       switch (filterType) {
-        case FILTER_TYPES.STATE:
+        case FILTER_TYPES.STATUS:
           for (let state of filteredData) {
-            if (filters.includes(this.concatTypeValue(FILTER_TYPES.STATE, state.state)) == false) {
+            if (filters.includes(this.concatTypeValue(FILTER_TYPES.STATUS, state.state)) == false) {
               state.projects = [];
             }
           }

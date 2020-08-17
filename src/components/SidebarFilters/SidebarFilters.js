@@ -17,7 +17,7 @@ class SidebarFilters extends Component {
                 /*{
                     label: "Hide Issued",
                     value: "HIDE_ISSUED",
-                    type: FILTER_TYPES.STATE,
+                    type: FILTER_TYPES.STATUS,
                 }*/
             ],
         }
@@ -32,7 +32,7 @@ class SidebarFilters extends Component {
     concatTypeValue = (type, value) => (type + "_" + value);
 
     prepareFilters = () => {
-        let statesOptions = [];
+        let statusOptions = [];
         let brokerOptions = {}
         let networkOptions = {};
         //let productOptions = {};
@@ -43,10 +43,10 @@ class SidebarFilters extends Component {
                 continue;
             }
 
-            statesOptions.push({
+            statusOptions.push({
                 label: state.state,
-                value: this.concatTypeValue(FILTER_TYPES.STATE, state.state),
-                type: FILTER_TYPES.STATE,
+                value: this.concatTypeValue(FILTER_TYPES.STATUS, state.state),
+                type: FILTER_TYPES.STATUS,
             });
 
             for (let project of state.projects) {
@@ -71,19 +71,19 @@ class SidebarFilters extends Component {
             }
         }
 
-        /*statesOptions.push({
+        /*statusOptions.push({
             label: "Hide Issued",
             value: "HIDE_ISSUED",
-            type: FILTER_TYPES.STATE,
+            type: FILTER_TYPES.STATUS,
         })*/
 
-        statesOptions = statesOptions.sort(this.compareLabels);
+        statusOptions = statusOptions.sort(this.compareLabels);
         brokerOptions = Object.values(brokerOptions).sort(this.compareLabels);
         networkOptions = Object.values(networkOptions).sort(this.compareLabels);
         //productOptions = Object.values(productOptions);
 
         const options = [
-            { label: "States", options: statesOptions },
+            { label: "Status", options: statusOptions },
             { label: "Brokers", options: brokerOptions },
             { label: "Networks", options: networkOptions },
         ]
@@ -157,7 +157,7 @@ class SidebarFilters extends Component {
                         <span className={iconSidebarFixed} onClick={this.toggleSidebarFixed}></span>
                     </li>
                     <li className="list-group-item sidebar-separator-title text-muted align-items-center menu-collapsed d-flex">
-                        <small>FILTROS</small>
+                        <small>FILTERS</small>
                     </li>
 
                     <Select
