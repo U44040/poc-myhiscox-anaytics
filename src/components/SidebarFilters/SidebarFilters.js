@@ -71,11 +71,11 @@ class SidebarFilters extends Component {
             }
         }
 
-        statesOptions.push({
+        /*statesOptions.push({
             label: "Hide Issued",
             value: "HIDE_ISSUED",
             type: FILTER_TYPES.STATE,
-        })
+        })*/
 
         statesOptions = statesOptions.sort(this.compareLabels);
         brokerOptions = Object.values(brokerOptions).sort(this.compareLabels);
