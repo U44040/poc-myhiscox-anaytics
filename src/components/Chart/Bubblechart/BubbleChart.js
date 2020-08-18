@@ -38,8 +38,8 @@ class BubbleChart extends Component {
 
     xScale = () => {
         const maximums = [];
-        for (let state of this.props.data) {
-            maximums.push(d3.max(state.projects.map((d) => d.elapsedTime)));
+        for (let status of this.props.data) {
+            maximums.push(d3.max(status.projects.map((d) => d.elapsedTime)));
         }
         return d3.scaleLinear().domain([0, d3.max(maximums) + 5]).range([0, this.state.width])
     };
@@ -47,10 +47,22 @@ class BubbleChart extends Component {
     yScale = () => (d3.scaleLinear().domain([-110, 110]).range([this.state.height, 0]));
     zScale = () => {
         const maximums = [];
-        for (let state of this.props.data) {
-            maximums.push(d3.max(state.projects.map((d) => d.totalRate)));
+        for (let status of this.props.data) {
+            maximums.push(d3.max(status.projects.map((d) => d.totalRate)));
         }
         return d3.scaleLinear().domain([0, d3.max(maximums)]).range([0, 20]);
+    }
+
+    getXValue = (d) => d.elapsedTime;
+    getYValue = (d) => {
+        let sum = 0;
+        if (d.productVariants.length == 0) { return 0; }
+
+        for (let productVariant of d.productVariants) {
+            sum += productVariant.percentAverage;
+        }
+
+        return sum / d.productVariants.length;        
     }
 
     fillColor = (d3.scaleOrdinal().domain(['Draft', 'Policy Holder Step', 'Start Date Step', 'Pending Info', 'Binding Request Pending', 'Issued']).range(d3.schemeSet2));
@@ -130,7 +142,7 @@ class BubbleChart extends Component {
             .enter()
             .append('g')
             .on("mouseover", function (d) {
-                d3.select('.data-bubble').selectAll("g:not(." + StringSanitizer.sanitize(d.state)).transition().style("opacity", 0.1);
+                d3.select('.data-bubble').selectAll("g:not(." + StringSanitizer.sanitize(d.status)).transition().style("opacity", 0.1);
                 //d3.selectAll('.legend').style("opacity", 0.5).style("text-decoration", "line-through");
             })
             .on("mouseout", function (d) {
@@ -142,8 +154,8 @@ class BubbleChart extends Component {
             .attr("class", "legend-bubble")
             .attr('x', () => this.state.width + 5)
             .attr('y', (d, i) => this.state.height - 10 - (10 * i))
-            .text((d, i) => d.state)
-            .style("fill", (d) => this.fillColor(d.state))
+            .text((d, i) => d.status)
+            .style("fill", (d) => this.fillColor(d.status))
             .style("font-size", 5)
             .style("font-weight", "bold");
 
@@ -154,7 +166,7 @@ class BubbleChart extends Component {
             .attr('y', (d, i) => this.state.height - 15 - (10 * i))
             .attr('width', 5)
             .attr('height', 5)
-            .style("fill", (d) => this.fillColor(d.state));
+            .style("fill", (d) => this.fillColor(d.status));
     }
 
     createTooltip = () => {
@@ -188,9 +200,9 @@ class BubbleChart extends Component {
             // First we need to enter in a group
             .append('g')
             .merge(scatter)
-            .style("fill", (d) => this.fillColor(d.state))
+            .style("fill", (d) => this.fillColor(d.status))
             .style("stroke-width", this.strokeWidth)
-            .attr("class", (d) => StringSanitizer.sanitize(d.state))
+            .attr("class", (d) => StringSanitizer.sanitize(d.status))
             // Second we need to enter in the 'values' part of this group
             .selectAll("circle")
             .data(d => d.projects);
@@ -204,8 +216,8 @@ class BubbleChart extends Component {
             //.on("mousemove", function(d){ component.showTooltip(d, this)})
             .on("mouseout", function (d) { component.hideTooltip(d) })
             .on("contextmenu", function (d) { component.hideProject(d, this) })
-            .attr("cx", (d) => scales.xScale(d.elapsedTime))
-            .attr("cy", (d) => scales.yScale(d.fullPercentAverage > 100 ? 100 : d.fullPercentAverage < -100 ? -100 : d.fullPercentAverage))
+            .attr("cx", (d) => scales.xScale(this.getXValue(d)))
+            .attr("cy", (d) => scales.yScale(this.getYValue(d) > 100 ? 100 : this.getYValue(d) < -100 ? -100 : this.getYValue(d)))
             .attr("r", (d) => scales.zScale(d.totalRate))
             .style("opacity", "0.9")
             .attr("stroke", (d) => this.strokeColor(d.isClean));
@@ -217,6 +229,8 @@ class BubbleChart extends Component {
         if (this.tooltip.attr('fixed') == "true") {
             return;
         }
+
+        this.tooltip.style("display", "block");
 
         let html = '';
         html += `
@@ -242,17 +256,32 @@ class BubbleChart extends Component {
 
         html += '</ul>';
 
-        if (Math.round(d.fullPercentAverage) >= 0) {
+        let startDate = moment(d.createdAt, 'YYYY-MM-DD HH:mm:ss');
+        html += `<p><strong>Start date:</strong> ${ startDate.format('DD-MM-YYYY HH:mm:ss') }</p>`;
+
+        if (d.status === "Issued") {
+            let endDate = moment(d.finishedAt, 'YYYY-MM-DD HH:mm:ss');
+            html += `<p><Strong>End date:</strong> ${ endDate.format('DD-MM-YYYY HH:mm:ss') }</p>`;
+        }
+
+        let duration = moment.duration(d.elapsedTime, "minutes");
+        html += `<p><strong>Elapsed time:</strong> ${ duration.hours() == 0 ? '' : duration.hours() + " hours"} ${ duration.minutes() } minutes </p>`;
+
+        let totalRate = 0;
+        if (d.productVariants.length != 0) {
+            for (let productVariant of d.productVariants) {
+                totalRate += productVariant.totalRate;
+            }
+        }
+
+        if (Math.round(this.getYValue(d)) >= 0) {
             style = "text-success font-weight-bold";
         }
         else {
             style = "text-danger font-weight-bold";
         }
 
-        let duration = moment.duration(d.elapsedTime, "minutes");
-        html += `<p><strong>Elapsed time:</strong> ${ duration.hours() == 0 ? '' : duration.hours() + " hours"} ${ duration.minutes() } minutes </p>`;
-
-        html += `<p><strong>Total rate:</strong> ${d.totalRate}€ <span class="${style}">[${Math.round(d.fullPercentAverage)}%]</span></p>`;
+        html += `<p><strong>Total rate:</strong> ${totalRate}€ <span class="${style}">[${Math.round(this.getYValue(d))}%]</span></p>`;
 
         this.tooltip
             .html(html)
@@ -320,8 +349,8 @@ class BubbleChart extends Component {
         // update circle position
         this.scatter
             .selectAll("circle")
-            .attr('cx', (d) => newX(d.elapsedTime))
-            .attr("cy", (d) => newY(d.fullPercentAverage > 100 ? 100 : d.fullPercentAverage < -100 ? -100 : d.fullPercentAverage));
+            .attr('cx', (d) => newX(this.getXValue(d)))
+            .attr("cy", (d) => newY(this.getYValue(d) > 100 ? 100 : this.getYValue(d) < -100 ? -100 : this.getYValue(d)));
         }
 
     render() {

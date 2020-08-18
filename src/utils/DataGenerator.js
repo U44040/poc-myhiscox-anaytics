@@ -134,15 +134,15 @@ export const generateData = () => {
 
     let maxId = 1;
 
-    const state = ['Draft', 'Policy Holder Step', 'Start Date Step', 'Pending Info', 'Binding Request Pending', 'Issued'];
-    for (let i = 0; i < state.length; i++) {
+    const status = ['Draft', 'Policy Holder Step', 'Start Date Step', 'Pending Info', 'Binding Request Pending', 'Issued'];
+    for (let i = 0; i < status.length; i++) {
 
         let numItems = 20 + getRandomInt(0, 20);
         let projects = [];
 
-        if (state[i] === 'Issued') {
+        if (status[i] === 'Issued') {
             data.push({
-                state: state[i],
+                status: status[i],
                 projects: projects,
             })
             continue;
@@ -171,20 +171,21 @@ export const generateData = () => {
             fullPercentAverage = (fullPercentAverage / numProducts);
 
             let isClean;
-            if (state[i] === 'Pending Info') {
+            if (status[i] === 'Pending Info') {
                 isClean = false;
-            } else if (['Start Date Step', 'Binding Request Pending'].includes(state[i])) {
+            } else if (['Start Date Step', 'Binding Request Pending'].includes(status[i])) {
                 isClean = true;
             } else {
                 isClean = ((Math.round(Math.random())) === 0)
             }
 
             let createdAt = moment().subtract(getRandomFloat(-10, 180), 'minutes'); // createdAt with future / past (-10,+10min)
-            let finishedAt = createdAt.clone().add(getRandomFloat(200, 240), 'minutes'); // finishedAt (10, 12min) from createdAt
+            let finishedAt = createdAt.clone().add(getRandomFloat(160, 180), 'minutes'); // finishedAt (10, 12min) from createdAt
 
             let project = {
                 "id": maxId++,
                 "reference": "AX" + i + k,
+                "status": status[i],
                 "user": getRandomValueFromArray(users),
                 "createdAt": createdAt.format('YYYY-MM-DD HH:mm:ss'),
                 "finishedAt": finishedAt.format('YYYY-MM-DD HH:mm:ss'),
@@ -199,7 +200,7 @@ export const generateData = () => {
         }
 
         data.push({
-            state: state[i],
+            status: status[i],
             projects: projects,
         })
     }
@@ -210,17 +211,19 @@ export const generateData = () => {
 export const updateData = (d) => {
     // deep copy from input data to avoid modification of original    
     let data = deepClone(d);
-    for (let state of data) {
-        if (state.state === "Issued") { continue; }
+    for (let status of data) {
+        if (status.status === "Issued") { continue; }
 
-        for (let project of state.projects) {
+        for (let project of status.projects) {
             project.elapsedTime = moment.duration(moment().diff(project.createdAt)).asMinutes();
             if (moment().format('YYYY-MM-DD HH:mm:ss') >= project.finishedAt) {
-                data[5].projects.push(deepClone(project));
+                let copyProject = deepClone(project);
+                copyProject.status = 'Issued';
+                data[5].projects.push(copyProject);
                 project.remove = true;
             }
         }
-        state.projects = state.projects.filter(d => d.remove != true);
+        status.projects = status.projects.filter(d => d.remove != true);
     }
     return data;
 }
