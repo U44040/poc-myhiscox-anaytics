@@ -30,21 +30,21 @@ class Dashboard extends Component {
                     <div className="container-fluid">
                         <h3 className="text-gray-800">Dashboard</h3>
                         <div className="row mb-4">
+                            <SalesChart updateData={this.updateSalesChartData} filters={this.state.filters} />
+                        </div>
+                        <div className="row mb-4">
                             <div className="col-md-6">
                                 <Callout type="info">
-                                    <h4 id="dealing-with-specificity">Importe de ventas estimado</h4>
+                                    <h4 id="dealing-with-specificity">Estimated sales amount</h4>
                                     <p>€ 120K</p>
                                 </Callout>
                             </div>
                             <div className="col-md-6">
                                 <Callout type="info">
-                                    <h4 id="dealing-with-specificity">Importe de ventas acumulado</h4>
+                                    <h4 id="dealing-with-specificity">Accumulated sales amount</h4>
                                     <p>€ 60K</p>
                                 </Callout>
                             </div>
-                        </div>
-                        <div className="row mb-4">
-                            <SalesChart updateData={this.updateSalesChartData} filters={this.state.filters} />
                         </div>
                     </div>
                 </div>

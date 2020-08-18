@@ -81,6 +81,7 @@ body {
       /* Separators */
       .sidebar-separator-title {
           background-color: #333;
+          color: #b4b4b4;
           height: 35px;
       }
       .sidebar-separator {
@@ -113,7 +114,14 @@ body {
 }
 
 #tooltip-bubble {
+  background-color: #f8f2b2e0;
+  color: #000;
   p {
     margin-bottom: initial;
+    font-size: 0.75rem;
+  }
+
+  li {
+    font-size: 0.75rem;
   }
 }

@@ -6,7 +6,7 @@ import rfdc from 'rfdc';
 import * as FILTER_TYPES from '../../components/SidebarFilters/FilterTypes';
 
 const deepClone = rfdc();
-const INTERVAL_REFRESH = 1000;
+const INTERVAL_REFRESH = 5000;
 
 class SalesChart extends Component {
 
@@ -63,23 +63,44 @@ class SalesChart extends Component {
     for (let filterType in this.props.filters){
       let filters = this.props.filters[filterType].map(d=>d.value);
       switch (filterType) {
-        case FILTER_TYPES.STATE:
-          for (let state of filteredData) {
-            if (filters.includes(this.concatTypeValue(FILTER_TYPES.STATE, state.state)) == false) {
-              state.projects = [];
+        case FILTER_TYPES.STATUS:
+          for (let status of filteredData) {
+            if (filters.includes(this.concatTypeValue(FILTER_TYPES.STATUS, status.status)) == false) {
+              status.projects = [];
             }
           }
           break;
 
         case FILTER_TYPES.BROKER:
-          for (let state of filteredData) {
-            state.projects = state.projects.filter(d => filters.includes(this.concatTypeValue(FILTER_TYPES.BROKER, d.user.brokerage.id)));
+          for (let status of filteredData) {
+            status.projects = status.projects.filter(d => filters.includes(this.concatTypeValue(FILTER_TYPES.BROKER, d.user.id)));
+          }
+          break;
+
+        case FILTER_TYPES.BROKERAGE:
+          for (let status of filteredData) {
+            status.projects = status.projects.filter(d => filters.includes(this.concatTypeValue(FILTER_TYPES.BROKERAGE, d.user.brokerage.id)));
           }
           break;
 
         case FILTER_TYPES.NETWORK:
-          for (let state of filteredData) {
-            state.projects = state.projects.filter(d => filters.includes(this.concatTypeValue(FILTER_TYPES.NETWORK, d.user.brokerage.network.id)));
+          for (let status of filteredData) {
+            status.projects = status.projects.filter(d => filters.includes(this.concatTypeValue(FILTER_TYPES.NETWORK, d.user.brokerage.network.id)));
+          }
+          break;
+
+        case FILTER_TYPES.SOURCE:
+          for (let status of filteredData) {
+            status.projects = status.projects.filter(d => filters.includes(this.concatTypeValue(FILTER_TYPES.SOURCE, d.source)));
+          }
+          break;
+
+        case FILTER_TYPES.PRODUCT:
+          for (let status of filteredData) {
+            for (let project of status.projects) {
+              project.productVariants = project.productVariants.filter(d => filters.includes(this.concatTypeValue(FILTER_TYPES.PRODUCT, d.idProductVariant)));
+              status.projects = status.projects.filter(d => d.productVariants.length != 0);
+            }
           }
           break;
       }
@@ -106,7 +127,7 @@ class SalesChart extends Component {
 
   render = () => (
     <div className="col-md">
-      <Card type="primary" header="Venta de pólizas" title="Tiempo real" text="Gráfica en tiempo real de las pólizas que se están creando">
+      <Card type="primary" /* header="Venta de pólizas" title="Tiempo real" text="Gráfica en tiempo real de las pólizas que se están creando"*/ >
         <BubbleChart data={this.state.filteredData} />
       </Card>
     </div>

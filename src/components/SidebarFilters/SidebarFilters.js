@@ -17,7 +17,7 @@ class SidebarFilters extends Component {
                 /*{
                     label: "Hide Issued",
                     value: "HIDE_ISSUED",
-                    type: FILTER_TYPES.STATE,
+                    type: FILTER_TYPES.STATUS,
                 }*/
             ],
         }
@@ -32,28 +32,36 @@ class SidebarFilters extends Component {
     concatTypeValue = (type, value) => (type + "_" + value);
 
     prepareFilters = () => {
-        let statesOptions = [];
-        let brokerOptions = {}
+        let statusOptions = [];
+        let brokerOptions = {};
+        let brokerageOptions = {};
         let networkOptions = {};
-        //let productOptions = {};
+        let sourceOptions = {};
+        let productOptions = {};
 
-        for (let state of this.props.salesChartData) {
+        for (let status of this.props.salesChartData) {
 
-            if (Array.isArray(state.projects) && state.projects.length === 0) {
+            if (Array.isArray(status.projects) && status.projects.length === 0) {
                 continue;
             }
 
-            statesOptions.push({
-                label: state.state,
-                value: this.concatTypeValue(FILTER_TYPES.STATE, state.state),
-                type: FILTER_TYPES.STATE,
+            statusOptions.push({
+                label: status.status,
+                value: this.concatTypeValue(FILTER_TYPES.STATUS, status.status),
+                type: FILTER_TYPES.STATUS,
             });
 
-            for (let project of state.projects) {
-                brokerOptions[project.user.brokerage.id] = {
-                    label: project.user.brokerage.name,
-                    value: this.concatTypeValue(FILTER_TYPES.BROKER, project.user.brokerage.id),
+            for (let project of status.projects) {
+                brokerOptions[project.user.id] = {
+                    label: project.user.name,
+                    value: this.concatTypeValue(FILTER_TYPES.BROKER, project.user.id),
                     type: FILTER_TYPES.BROKER,
+                };
+
+                brokerageOptions[project.user.brokerage.id] = {
+                    label: project.user.brokerage.name,
+                    value: this.concatTypeValue(FILTER_TYPES.BROKERAGE, project.user.brokerage.id),
+                    type: FILTER_TYPES.BROKERAGE,
                 };
 
                 networkOptions[project.user.brokerage.network.id] = {
@@ -62,30 +70,36 @@ class SidebarFilters extends Component {
                     type: FILTER_TYPES.NETWORK,
                 };
 
-                /*for (let productVariant of project.productVariants) {
+                sourceOptions[project.source] = {
+                    label: project.source.toUpperCase(),
+                    value: this.concatTypeValue(FILTER_TYPES.SOURCE, project.source),
+                    type: FILTER_TYPES.SOURCE,
+                };
+
+                for (let productVariant of project.productVariants) {
                     productOptions[productVariant.idProductVariant] = {
                         label: productVariant.name,
-                        value: productVariant.idProductVariant,
+                        value: this.concatTypeValue(FILTER_TYPES.PRODUCT, productVariant.idProductVariant),
+                        type: FILTER_TYPES.PRODUCT,
                     }
-                }*/
+                }
             }
         }
 
-        /*statesOptions.push({
-            label: "Hide Issued",
-            value: "HIDE_ISSUED",
-            type: FILTER_TYPES.STATE,
-        })*/
-
-        statesOptions = statesOptions.sort(this.compareLabels);
+        statusOptions = statusOptions.sort(this.compareLabels);
         brokerOptions = Object.values(brokerOptions).sort(this.compareLabels);
+        brokerageOptions = Object.values(brokerageOptions).sort(this.compareLabels);
         networkOptions = Object.values(networkOptions).sort(this.compareLabels);
-        //productOptions = Object.values(productOptions);
+        sourceOptions = Object.values(sourceOptions).sort(this.compareLabels);
+        productOptions = Object.values(productOptions);
 
         const options = [
-            { label: "States", options: statesOptions },
             { label: "Brokers", options: brokerOptions },
             { label: "Networks", options: networkOptions },
+            { label: "Brokerages", options: brokerageOptions },
+            { label: "Products", options: productOptions },
+            { label: "Status", options: statusOptions },
+            { label: "Source", options: sourceOptions },
         ]
 
         this.setState({
@@ -156,8 +170,8 @@ class SidebarFilters extends Component {
                     <li className="sidebar-fixed-button text-right">
                         <span className={iconSidebarFixed} onClick={this.toggleSidebarFixed}></span>
                     </li>
-                    <li className="list-group-item sidebar-separator-title text-muted align-items-center menu-collapsed d-flex">
-                        <small>FILTROS</small>
+                    <li className="list-group-item sidebar-separator-title align-items-center menu-collapsed d-flex">
+                        <small>FILTERS</small>
                     </li>
 
                     <Select
@@ -165,7 +179,7 @@ class SidebarFilters extends Component {
                         //key={JSON.stringify(this.state.options)}
                         name="filters"
                         menuIsOpen={true}
-                        hideSelectedOptions={true}
+                        hideSelectedOptions={false}
                         className="react-select-container-filters"
                         classNamePrefix="react-select-filters"
                         options={this.state.options}
