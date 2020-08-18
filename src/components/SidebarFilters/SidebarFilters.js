@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './SidebarFilters.scss';
-import Select from 'react-select';
+import Select, { components } from 'react-select';
 import rfdc from 'rfdc';
 import * as FILTER_TYPES from './FilterTypes';
 
@@ -71,7 +71,7 @@ class SidebarFilters extends Component {
                 };
 
                 sourceOptions[project.source] = {
-                    label: project.source.toUpperCase(),
+                    label: project.source,
                     value: this.concatTypeValue(FILTER_TYPES.SOURCE, project.source),
                     type: FILTER_TYPES.SOURCE,
                 };
@@ -109,8 +109,40 @@ class SidebarFilters extends Component {
 
     compareLabels = (a, b) => a.label.localeCompare(b.label);
 
+    handleHeaderClick = id => {
+        const node = document.querySelector(`#${id}`).parentElement.parentElement;
+        const classes = node.classList;
+        if (classes.contains("group-expanded")) {
+          node.classList.remove("group-expanded");
+        } else {
+          node.classList.add("group-expanded");
+        }
+      };
+
+    CustomGroupHeading = props => {
+        return (
+          <div
+            className="group-heading-wrapper"
+            onClick={() => this.handleHeaderClick(props.id)}
+          >
+            <components.GroupHeading {...props} />
+          </div>
+        );
+    };
+
+    OptionComponent = props => (
+        <div>
+            <components.Option {...props}>
+                <input type="checkbox" checked={props.isSelected} />
+                <label>{props.label}</label>
+            </components.Option>
+        </div>
+    );
+
     components = {
         DropdownIndicator: null,
+        GroupHeading: this.CustomGroupHeading,
+        Option: this.OptionComponent,
     }
 
     showSidebar = (e) => {
