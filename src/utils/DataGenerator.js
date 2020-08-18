@@ -134,13 +134,13 @@ export const generateData = () => {
 
     let maxId = 1;
 
-    const status = ['Draft', 'Policy Holder Step', 'Start Date Step', 'Pending Info', 'Binding Request Pending', 'Issued'];
+    const status = ['Draft', 'Pending Info', 'Binding Request Pending', 'Manual Quotation Required', 'To be Issued', 'Approved', 'Rejected'];
     for (let i = 0; i < status.length; i++) {
 
         let numItems = 20 + getRandomInt(0, 20);
         let projects = [];
 
-        if (status[i] === 'Issued') {
+        if (status[i] === 'Approved' || status[i] === 'Rejected') {
             data.push({
                 status: status[i],
                 projects: projects,
@@ -171,9 +171,9 @@ export const generateData = () => {
             fullPercentAverage = (fullPercentAverage / numProducts);
 
             let isClean;
-            if (status[i] === 'Pending Info') {
+            if (['Pending Info', 'Manual Quotation Required'].includes(status[i])) {
                 isClean = false;
-            } else if (['Start Date Step', 'Binding Request Pending'].includes(status[i])) {
+            } else if (['Binding Request Pending', 'To Be Issued'].includes(status[i])) {
                 isClean = true;
             } else {
                 isClean = ((Math.round(Math.random())) === 0)
@@ -192,7 +192,7 @@ export const generateData = () => {
                 "elapsedTime": moment.duration(moment().diff(createdAt)).asMinutes(),
                 "productVariants": products,
                 "isClean": isClean,
-                "source": ((Math.round(Math.random())) === 0 ? "web" : "api"),
+                "source": ((Math.round(Math.random())) === 0 ? "MyHiscox" : "API"),
                 "totalRate": fullTotalRate,
                 "fullPercentAverage": fullPercentAverage,
             }
@@ -212,14 +212,21 @@ export const updateData = (d) => {
     // deep copy from input data to avoid modification of original    
     let data = deepClone(d);
     for (let status of data) {
-        if (status.status === "Issued") { continue; }
+        if (status.status === "Approved" || status.status === "Rejected") { continue; }
 
         for (let project of status.projects) {
             project.elapsedTime = moment.duration(moment().diff(project.createdAt)).asMinutes();
             if (moment().format('YYYY-MM-DD HH:mm:ss') >= project.finishedAt) {
                 let copyProject = deepClone(project);
-                copyProject.status = 'Issued';
-                data[5].projects.push(copyProject);
+                let approved = (Math.random() > 0.1);
+                if (approved == true) {
+                    copyProject.status = 'Approved';
+                    data[5].projects.push(copyProject);
+                }
+                else {
+                    copyProject.status = 'Rejected';
+                    data[6].projects.push(copyProject);
+                }
                 project.remove = true;
             }
         }

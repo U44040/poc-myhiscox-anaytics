@@ -65,7 +65,7 @@ class BubbleChart extends Component {
         return sum / d.productVariants.length;        
     }
 
-    fillColor = (d3.scaleOrdinal().domain(['Draft', 'Policy Holder Step', 'Start Date Step', 'Pending Info', 'Binding Request Pending', 'Issued']).range(d3.schemeSet2));
+    fillColor = (d3.scaleOrdinal().domain(['Draft', 'Pending Info', 'Binding Request Pending', 'Manual Quotation Required', 'To be Issued', 'Approved', 'Rejected']).range(d3.schemeSet2));
     strokeColor = (d3.scaleOrdinal().domain([true, false]).range(['#039453', '#bf003d']));
 
     getScales = () => {
@@ -152,7 +152,7 @@ class BubbleChart extends Component {
         legendGroup
             .append("text")
             .attr("class", "legend-bubble")
-            .attr('x', () => this.state.width + 5)
+            .attr('x', () => this.state.width + 3)
             .attr('y', (d, i) => this.state.height - 10 - (10 * i))
             .text((d, i) => d.status)
             .style("fill", (d) => this.fillColor(d.status))
@@ -259,7 +259,7 @@ class BubbleChart extends Component {
         let startDate = moment(d.createdAt, 'YYYY-MM-DD HH:mm:ss');
         html += `<p><strong>Start date:</strong> ${ startDate.format('DD-MM-YYYY HH:mm:ss') }</p>`;
 
-        if (d.status === "Issued") {
+        if (d.status === "Approved" || d.status === "Rejected") {
             let endDate = moment(d.finishedAt, 'YYYY-MM-DD HH:mm:ss');
             html += `<p><Strong>End date:</strong> ${ endDate.format('DD-MM-YYYY HH:mm:ss') }</p>`;
         }
