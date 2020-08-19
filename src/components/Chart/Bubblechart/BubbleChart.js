@@ -9,7 +9,7 @@ class BubbleChart extends Component {
     constructor(props) {
         super();
 
-        const margin = { top: 5, right: 70, bottom: 5, left: 38 };
+        const margin = { top: 5, right: 60, bottom: 5, left: 38 };
         const width = 670 - margin.left - margin.right;
         const height = 300 - margin.top - margin.bottom;
 
@@ -154,7 +154,7 @@ class BubbleChart extends Component {
             .attr("class", "legend-bubble")
             .attr('x', () => this.state.width + 3)
             .attr('y', (d, i) => this.state.height - 10 - (10 * i))
-            .text((d, i) => d.status)
+            .text((d, i) => this.mappedStatusForLegend(d.status))
             .style("fill", (d) => this.fillColor(d.status))
             .style("font-size", 5)
             .style("font-weight", "bold");
@@ -162,11 +162,22 @@ class BubbleChart extends Component {
         legendGroup
             .append("rect")
             .attr("class", "legend-bubble")
-            .attr('x', () => this.state.width + 65)
+            .attr('x', () => this.state.width + 50)
             .attr('y', (d, i) => this.state.height - 15 - (10 * i))
             .attr('width', 5)
             .attr('height', 5)
             .style("fill", (d) => this.fillColor(d.status));
+    }
+
+    mappedStatusForLegend = (status) => {
+        switch (status) {
+            case 'Manual Quotation Required':
+                return 'M. Quot. Required.';
+            case 'Binding Request Pending':
+                return 'Bind. Req. Pending';
+            default:
+                return status;
+        }
     }
 
     createTooltip = () => {
