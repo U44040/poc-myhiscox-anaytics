@@ -23,6 +23,21 @@ class Dashboard extends Component {
     }
 
     render = () => {
+        let boxes = <div className="row mb-4">
+            <div className="col-md-6">
+                <Callout type="info">
+                    <h4 id="dealing-with-specificity">Estimated sales amount</h4>
+                    <p>€ 120K</p>
+                </Callout>
+            </div>
+            <div className="col-md-6">
+                <Callout type="info">
+                    <h4 id="dealing-with-specificity">Accumulated sales amount</h4>
+                    <p>€ 60K</p>
+                </Callout>
+            </div>
+        </div>;
+
         return (
             <React.Fragment>
                 <SidebarFilters collapsed={true} sidebarFixed={false} salesChartData={this.state.salesChartData} updateFilters={this.updateFilters} />
@@ -32,20 +47,7 @@ class Dashboard extends Component {
                         <div className="row mb-4">
                             <SalesChart updateData={this.updateSalesChartData} filters={this.state.filters} />
                         </div>
-                        <div className="row mb-4">
-                            <div className="col-md-6">
-                                <Callout type="info">
-                                    <h4 id="dealing-with-specificity">Estimated sales amount</h4>
-                                    <p>€ 120K</p>
-                                </Callout>
-                            </div>
-                            <div className="col-md-6">
-                                <Callout type="info">
-                                    <h4 id="dealing-with-specificity">Accumulated sales amount</h4>
-                                    <p>€ 60K</p>
-                                </Callout>
-                            </div>
-                        </div>
+                        {boxes}
                     </div>
                 </div>
             </React.Fragment>
