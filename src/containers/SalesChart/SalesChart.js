@@ -32,7 +32,7 @@ class SalesChart extends Component {
   }
 
   componentDidUpdate = (prevProps) => {
-    if (prevProps.filters != this.props.filters) {
+    if (prevProps.filters != this.props.filters || prevProps.specialFilters != this.props.specialFilters) {
       this.setState((oldState, oldProps) => (
         {
           filteredData: this.filterData(oldState.validData)
@@ -103,6 +103,35 @@ class SalesChart extends Component {
             }
           }
           break;
+      }
+    }
+
+    let hasApprovedFilter = false;
+    let hasRejectedFilter = false;
+
+    if (this.props.filters[FILTER_TYPES.STATUS]) {
+      let filters = this.props.filters[FILTER_TYPES.STATUS].map(d=>d.value);
+      if (filters.includes(this.concatTypeValue(FILTER_TYPES.STATUS, "Approved"))) {
+        hasApprovedFilter = true;
+      }
+      if (filters.includes(this.concatTypeValue(FILTER_TYPES.STATUS, "Rejected"))) {
+        hasRejectedFilter = true;
+      }
+    }
+
+
+    for (let status of filteredData) {
+
+      if (status.status == "Approved") {
+        if (hasApprovedFilter == false && this.props.specialFilters.includes(this.concatTypeValue(FILTER_TYPES.STATUS, "Approved")) == false) {
+          status.projects = [];
+        }
+      }
+
+      if (status.status == "Rejected") {
+        if (hasRejectedFilter == false && this.props.specialFilters.includes(this.concatTypeValue(FILTER_TYPES.STATUS, "Rejected")) == false) {
+          status.projects = [];
+        }
       }
     }
 

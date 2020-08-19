@@ -77,10 +77,19 @@
                 
             }
 
+            &__option-wrapper {
+                &--disabled {
+                    color: #ccc;
+                    &:hover{
+                        background-color: #eeeeee;
+                        color: #aaa
+                    }
+                }
+            }
+
             &__option {
 
                 padding: 3px 10px;
-
                 white-space: nowrap;
 
                 &--is-selected {

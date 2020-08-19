@@ -3,6 +3,7 @@ import './SidebarFilters.scss';
 import Select, { components } from 'react-select';
 import rfdc from 'rfdc';
 import * as FILTER_TYPES from './FilterTypes';
+import Option from './Option/Option';
 
 const deepClone = rfdc();
 
@@ -20,6 +21,7 @@ class SidebarFilters extends Component {
                     type: FILTER_TYPES.STATUS,
                 }*/
             ],
+            specialFilterValues: [],
             inputValue: '',
         }
     }
@@ -46,11 +48,13 @@ class SidebarFilters extends Component {
                 continue;
             }
 
-            statusOptions.push({
-                label: status.status,
-                value: this.concatTypeValue(FILTER_TYPES.STATUS, status.status),
-                type: FILTER_TYPES.STATUS,
-            });
+            if (status.status != 'Approved' && status.status != "Rejected") {
+                statusOptions.push({
+                    label: status.status,
+                    value: this.concatTypeValue(FILTER_TYPES.STATUS, status.status),
+                    type: FILTER_TYPES.STATUS,
+                });
+            }
 
             for (let project of status.projects) {
                 brokerOptions[project.user.id] = {
@@ -88,6 +92,18 @@ class SidebarFilters extends Component {
         }
 
         statusOptions = statusOptions.sort(this.compareLabels);
+
+        statusOptions.push({
+            label: "Approved",
+            value: this.concatTypeValue(FILTER_TYPES.STATUS, "Approved"),
+            type: FILTER_TYPES.STATUS,
+        });
+        statusOptions.push({
+            label: "Rejected",
+            value: this.concatTypeValue(FILTER_TYPES.STATUS, "Rejected"),
+            type: FILTER_TYPES.STATUS,
+        });
+
         brokerOptions = Object.values(brokerOptions).sort(this.compareLabels);
         brokerageOptions = Object.values(brokerageOptions).sort(this.compareLabels);
         networkOptions = Object.values(networkOptions).sort(this.compareLabels);
@@ -144,12 +160,7 @@ class SidebarFilters extends Component {
     }
 
     OptionComponent = props => (
-        <div>
-            <components.Option {...props}>
-                <input type="checkbox" checked={props.isSelected} />
-                <label>{props.label}</label>
-            </components.Option>
-        </div>
+        <Option addSpecialFilterValue={this.addSpecialFilterValue} removeSpecialFilterValue={this.removeSpecialFilterValue} {...props}></Option>
     );
 
     components = {
@@ -193,6 +204,25 @@ class SidebarFilters extends Component {
         }, () => this.props.updateFilters(filtersByType));
     }
 
+    addSpecialFilterValue = (value) => {
+        let specialFilterValues = this.state.specialFilterValues.map(d => d);
+        specialFilterValues.push(value);
+        this.setState({
+            specialFilterValues
+        }, () => this.props.updateSpecialFilters(specialFilterValues));
+    }
+
+    removeSpecialFilterValue = (value) => {
+        let specialFilterValues = this.state.specialFilterValues.map(d => d);
+        let index = specialFilterValues.indexOf(value);
+        if (index != -1) {
+            specialFilterValues.splice(index, 1);
+        }
+        this.setState({
+            specialFilterValues
+        }, () => this.props.updateSpecialFilters(specialFilterValues));
+    }
+
     changeSearchValue = (value) => {
         if (value !== ""){
             console.log(true);
@@ -218,8 +248,6 @@ class SidebarFilters extends Component {
         else {
             iconSidebarFixed = 'fa fa-thumb-tack fa-rotate-90 mr-3';
         }
-
-        
 
         return (
             <div id="sidebar-container" className={classes.join(' ')} onMouseEnter={this.showSidebar} onMouseLeave={this.hideSidebar}>
