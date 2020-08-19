@@ -112,8 +112,8 @@ class SidebarFilters extends Component {
 
         const options = [
             { label: "Brokers", options: brokerOptions },
-            { label: "Networks", options: networkOptions },
             { label: "Brokerages", options: brokerageOptions },
+            { label: "Networks", options: networkOptions },
             { label: "Products", options: productOptions },
             { label: "Status", options: statusOptions },
             { label: "Source", options: sourceOptions },
