@@ -33,6 +33,13 @@ body {
       top: 56px;
   }
 
+  @media (max-height: 700px) {
+    .sticky-height-control {
+      position: inherit;
+    }
+
+  }
+
   &>main > .row {
     margin-left: 0;
     margin-right: 0;

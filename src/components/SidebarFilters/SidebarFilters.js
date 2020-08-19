@@ -20,6 +20,7 @@ class SidebarFilters extends Component {
                     type: FILTER_TYPES.STATUS,
                 }*/
             ],
+            inputValue: '',
         }
     }
 
@@ -130,6 +131,18 @@ class SidebarFilters extends Component {
         );
     };
 
+    GroupComponent = props => {
+        let className = [props.selectProps.classNamePrefix + "__group-wrapper"];
+        if (this.state.inputValue !== "") {
+           className.push(props.selectProps.classNamePrefix + "__group-wrapper--is-searching")
+        }
+        return (
+            <div className={className.join(" ")}>
+                <components.Group {...props} />
+            </div>
+        );
+    }
+
     OptionComponent = props => (
         <div>
             <components.Option {...props}>
@@ -143,6 +156,7 @@ class SidebarFilters extends Component {
         DropdownIndicator: null,
         GroupHeading: this.CustomGroupHeading,
         Option: this.OptionComponent,
+        Group: this.GroupComponent,
     }
 
     showSidebar = (e) => {
@@ -179,6 +193,15 @@ class SidebarFilters extends Component {
         }, () => this.props.updateFilters(filtersByType));
     }
 
+    changeSearchValue = (value) => {
+        if (value !== ""){
+            console.log(true);
+        }
+        this.setState({
+            inputValue: value
+        });
+    }
+
     render = () => {
         let classes = ['d-none d-md-block'];
         if (this.state.collapsed) {
@@ -196,9 +219,11 @@ class SidebarFilters extends Component {
             iconSidebarFixed = 'fa fa-thumb-tack fa-rotate-90 mr-3';
         }
 
+        
+
         return (
             <div id="sidebar-container" className={classes.join(' ')} onMouseEnter={this.showSidebar} onMouseLeave={this.hideSidebar}>
-                <ul className="list-group sticky-top sticky-offset">
+                <ul className="list-group sticky-top sticky-offset sticky-height-control">
                     <li className="sidebar-fixed-button text-right">
                         <span className={iconSidebarFixed} onClick={this.toggleSidebarFixed}></span>
                     </li>
@@ -217,7 +242,9 @@ class SidebarFilters extends Component {
                         options={this.state.options}
                         components={this.components}
                         value={this.state.filterValue}
+                        inputValue={this.state.inputValue}
                         onChange={this.filterChange}
+                        onInputChange={this.changeSearchValue}
                         maxMenuHeight={500}
                     />
 

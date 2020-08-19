@@ -174,6 +174,7 @@ class BubbleChart extends Component {
             .append("div")
             .attr("id", "tooltip-bubble")
             .style("opacity", 0)
+            .style("display", "none")
             .attr("class", "tooltip")
             .style("position", "absolute")
             .style("border-radius", "5px")
@@ -287,6 +288,7 @@ class BubbleChart extends Component {
             .html(html)
             .transition()
             .duration(300)
+            //.style('display','block')
             .style('opacity', 1)
             .style('left', (d3.event.pageX + 10) + 'px')
             .style('top', (d3.event.pageY + 20) + 'px')
@@ -315,8 +317,11 @@ class BubbleChart extends Component {
             return;
         }
 
-        this.tooltip.transition()
-            .duration(100)
+        this.tooltip
+            .html('')
+            .transition()
+            .duration(10)
+            //.style('display', 'none')
             .style('opacity', 0)
             .style('z-index', -1);
 
