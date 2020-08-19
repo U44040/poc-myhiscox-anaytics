@@ -244,17 +244,30 @@ class BubbleChart extends Component {
 
         this.tooltip.style("display", "block");
 
+        let duration = moment.duration(d.elapsedTime, "minutes");
+        let style;
+
+        if (Math.round(this.getYValue(d)) >= 0) {
+            style = "text-success font-weight-bold";
+        }
+        else {
+            style = "text-danger font-weight-bold";
+        }
+
         let html = '';
         html += `
+            <p><strong>ΔX:</strong> ${ duration.hours() == 0 ? '' : duration.hours() + " hours"} ${ duration.minutes() } minutes </p>
+            <p><strong>ΔY:</strong> <span class="${style}">${Math.round(this.getYValue(d))}%</span></p>
             <p><Strong>Reference:</strong> ${ d.reference}</p>
+            <p><strong>Broker:</strong> ${ d.user.name}</p>
             <p><strong>Brokerage:</strong> ${ d.user.brokerage.name}</p>
             <p><strong>Network:</strong> ${ d.user.brokerage.network.name}</p>
             <p><strong>Clean:</strong> ${ d.isClean ? '<span class="text-success font-weight-bold">Yes</span>' : '<span class="text-danger font-weight-bold">No</span>'}</p>
+            <p><strong>Source:</strong> ${ d.source }</p>
             <p><strong>Products:</strong></p>
             <ul>
         `;
 
-        let style;
         for (let productVariant of d.productVariants) {
             if (Math.round(productVariant.percentAverage) >= 0) {
                 style = "text-success font-weight-bold";
@@ -276,9 +289,6 @@ class BubbleChart extends Component {
             html += `<p><Strong>End date:</strong> ${ endDate.format('DD-MM-YYYY HH:mm:ss') }</p>`;
         }
 
-        let duration = moment.duration(d.elapsedTime, "minutes");
-        html += `<p><strong>Elapsed time:</strong> ${ duration.hours() == 0 ? '' : duration.hours() + " hours"} ${ duration.minutes() } minutes </p>`;
-
         let totalRate = 0;
         if (d.productVariants.length != 0) {
             for (let productVariant of d.productVariants) {
@@ -286,14 +296,7 @@ class BubbleChart extends Component {
             }
         }
 
-        if (Math.round(this.getYValue(d)) >= 0) {
-            style = "text-success font-weight-bold";
-        }
-        else {
-            style = "text-danger font-weight-bold";
-        }
-
-        html += `<p><strong>Total rate:</strong> ${totalRate}€ <span class="${style}">[${Math.round(this.getYValue(d))}%]</span></p>`;
+        html += `<p><strong>Total rate:</strong> ${totalRate}€</p>`;
 
         this.tooltip
             .html(html)
