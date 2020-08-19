@@ -259,9 +259,11 @@ class BubbleChart extends Component {
             <p><strong>ΔX:</strong> ${ duration.hours() == 0 ? '' : duration.hours() + " hours"} ${ duration.minutes() } minutes </p>
             <p><strong>ΔY:</strong> <span class="${style}">${Math.round(this.getYValue(d))}%</span></p>
             <p><Strong>Reference:</strong> ${ d.reference}</p>
+            <p><strong>Broker:</strong> ${ d.user.name}</p>
             <p><strong>Brokerage:</strong> ${ d.user.brokerage.name}</p>
             <p><strong>Network:</strong> ${ d.user.brokerage.network.name}</p>
             <p><strong>Clean:</strong> ${ d.isClean ? '<span class="text-success font-weight-bold">Yes</span>' : '<span class="text-danger font-weight-bold">No</span>'}</p>
+            <p><strong>Source:</strong> ${ d.source }</p>
             <p><strong>Products:</strong></p>
             <ul>
         `;
