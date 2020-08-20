@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import BubbleChart from '../../components/Chart/Bubblechart/BubbleChart';
 import Card from '../../components/Shared/Card/Card';
 import * as DataGenerator from '../../utils/DataGenerator';
+import * as STATUS from '../../utils/StatusTypes';
 import rfdc from 'rfdc';
 import * as FILTER_TYPES from '../../components/SidebarFilters/FilterTypes';
 import moment from 'moment';
@@ -115,10 +116,10 @@ class SalesChart extends Component {
 
     if (this.props.filters[FILTER_TYPES.STATUS]) {
       let filters = this.props.filters[FILTER_TYPES.STATUS].map(d=>d.value);
-      if (filters.includes(this.concatTypeValue(FILTER_TYPES.STATUS, "Approved"))) {
+      if (filters.includes(this.concatTypeValue(FILTER_TYPES.STATUS, STATUS.APPROVED))) {
         hasApprovedFilter = true;
       }
-      if (filters.includes(this.concatTypeValue(FILTER_TYPES.STATUS, "Rejected"))) {
+      if (filters.includes(this.concatTypeValue(FILTER_TYPES.STATUS, STATUS.REJECTED))) {
         hasRejectedFilter = true;
       }
     }
@@ -126,14 +127,14 @@ class SalesChart extends Component {
 
     for (let status of filteredData) {
 
-      if (status.status == "Approved") {
-        if (hasApprovedFilter == false && this.props.specialFilters.includes(this.concatTypeValue(FILTER_TYPES.STATUS, "Approved")) == false) {
+      if (status.status == STATUS.APPROVED) {
+        if (hasApprovedFilter == false && this.props.specialFilters.includes(this.concatTypeValue(FILTER_TYPES.STATUS, STATUS.APPROVED)) == false) {
           status.projects = [];
         }
       }
 
-      if (status.status == "Rejected") {
-        if (hasRejectedFilter == false && this.props.specialFilters.includes(this.concatTypeValue(FILTER_TYPES.STATUS, "Rejected")) == false) {
+      if (status.status == STATUS.REJECTED) {
+        if (hasRejectedFilter == false && this.props.specialFilters.includes(this.concatTypeValue(FILTER_TYPES.STATUS, STATUS.REJECTED)) == false) {
           status.projects = [];
         }
       }
@@ -144,7 +145,9 @@ class SalesChart extends Component {
 
   updateData = () => {
     // Update data
-    let actualMoment = this.state.actualMoment.clone().add(30 * this.state.speed / 100, 'seconds');
+    if (this.state.speed == 0) { return }
+
+    let actualMoment = this.state.actualMoment.clone().add(60 * this.state.speed / 100, 'seconds');
     let updatedData = DataGenerator.updateData(this.state.data, actualMoment);
     let validData = this.getValidData(updatedData);
     let filteredData = this.filterData(validData);

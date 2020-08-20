@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import * as d3 from 'd3';
 import * as StringSanitizer from 'string-sanitizer';
+import * as STATUS from '../../../utils/StatusTypes';
 import './BubbleChart.scss';
 import moment from 'moment';
 
@@ -78,7 +79,7 @@ class BubbleChart extends Component {
         return sum / d.productVariants.length;        
     }
 
-    fillColor = (d3.scaleOrdinal().domain(['Draft', 'Pending Info', 'Binding Request Pending', 'Manual Quotation Required', 'To be Issued', 'Approved', 'Rejected']).range(d3.schemeSet2));
+    fillColor = (d3.scaleOrdinal().domain([STATUS.DRAFT, STATUS.PENDING_INFO, STATUS.BINDING_REQUEST_PENDING, STATUS.MANUAL_QUOTATION_REQUIRED, STATUS.TO_BE_ISSUED, STATUS.APPROVED, STATUS.REJECTED]).range(d3.schemeSet2));
     strokeColor = (d3.scaleOrdinal().domain([true, false]).range(['#039453', '#bf003d']));
 
     getScales = () => {
@@ -300,7 +301,7 @@ class BubbleChart extends Component {
         let startDate = moment(d.createdAt, 'YYYY-MM-DD HH:mm:ss');
         html += `<p><strong>Start date:</strong> ${ startDate.format('DD-MM-YYYY HH:mm:ss') }</p>`;
 
-        if (d.status === "Approved" || d.status === "Rejected") {
+        if (d.status === STATUS.APPROVED || d.status === STATUS.REJECTED) {
             let endDate = moment(d.finishedAt, 'YYYY-MM-DD HH:mm:ss');
             html += `<p><Strong>End date:</strong> ${ endDate.format('DD-MM-YYYY HH:mm:ss') }</p>`;
         }

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import * as FILTER_TYPES from '../FilterTypes';
 import { components } from 'react-select';
-
+import * as STATUS from '../../../utils/StatusTypes';
 
 class Option extends Component {
 
@@ -13,9 +13,12 @@ class Option extends Component {
 
         let disabled = false;
         let canBeDisabled = false;
-        if (props.value == this.concatTypeValue(FILTER_TYPES.STATUS, 'Approved') || props.value == this.concatTypeValue(FILTER_TYPES.STATUS, 'Rejected')) {
-            disabled = true;
+        if (props.value == this.concatTypeValue(FILTER_TYPES.STATUS, STATUS.APPROVED ) || props.value == this.concatTypeValue(FILTER_TYPES.STATUS, STATUS.REJECTED)) {
             canBeDisabled = true;
+            if (props.specialFilterValues.includes(props.value) == false)
+            {
+                disabled = true;
+            }
         }
 
         this.state = {
@@ -50,7 +53,7 @@ class Option extends Component {
         if (this.state.disabled) {
             classes.push(this.classNamePrefix + "--disabled");
             option = (
-                <div class="react-select-filters__option css-yt9ioa-option">
+                <div key={this.props.value} className="react-select-filters__option css-yt9ioa-option">
                     <input type="checkbox" readonly="" disabled />
                     <label>{this.props.label}</label>
                 </div>
@@ -59,7 +62,7 @@ class Option extends Component {
         else
         {
             option = (
-                <components.Option {...this.props}>
+                <components.Option key={this.props.value} {...this.props}>
                     <input type="checkbox" checked={this.props.isSelected} readOnly />
                     <label>{this.props.label}</label>
                 </components.Option>
@@ -67,7 +70,7 @@ class Option extends Component {
         }
 
         return (
-            <div className={classes.join(" ")} onClick={this.clickHandler} onContextMenu={this.contextMenuHandler} >
+            <div key={this.props.value} className={classes.join(" ")} onClick={this.clickHandler} onContextMenu={this.contextMenuHandler} >
                 { option }
             </div>
         )
