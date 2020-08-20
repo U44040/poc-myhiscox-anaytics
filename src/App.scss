@@ -57,9 +57,17 @@ body {
           width: 230px;
       }
       &.sidebar-collapsed {
-          width: 10px;
+          width: 15px;
           .list-group {
             display: none;
+          }
+
+          &::after{
+            margin-left: 1px;
+            font: normal normal normal 14px/1 FontAwesome;
+            content: "\f061";
+            position: sticky;
+            top: 50%;
           }
       }
 
