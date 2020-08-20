@@ -2,17 +2,20 @@ import React, { Component } from 'react';
 import BubbleChart from '../../components/Chart/Bubblechart/BubbleChart';
 import Card from '../../components/Shared/Card/Card';
 import * as DataGenerator from '../../utils/DataGenerator';
+import * as STATUS from '../../utils/StatusTypes';
 import rfdc from 'rfdc';
 import * as FILTER_TYPES from '../../components/SidebarFilters/FilterTypes';
+import moment from 'moment';
 
 const deepClone = rfdc();
-const INTERVAL_REFRESH = 5000;
+const INTERVAL_REFRESH = 1000;
 
 class SalesChart extends Component {
 
   constructor(props) {
     super();
-    const data = this.getData();
+    const actualMoment = moment().hour(8).minute(0).second(0);
+    const data = this.getData(actualMoment);
     const validData = this.getValidData(data);
     const filteredData = validData;
     this.state = {
@@ -20,6 +23,8 @@ class SalesChart extends Component {
       validData,
       filteredData,
       averageSales: DataGenerator.averageSales,
+      speed: 100,
+      actualMoment,
     }
   }
 
@@ -41,8 +46,8 @@ class SalesChart extends Component {
     }
   }
 
-  getData = () => {
-    const data = DataGenerator.generateData();
+  getData = (actualMoment) => {
+    const data = DataGenerator.generateData(actualMoment);
     return data;
   }
 
@@ -111,10 +116,10 @@ class SalesChart extends Component {
 
     if (this.props.filters[FILTER_TYPES.STATUS]) {
       let filters = this.props.filters[FILTER_TYPES.STATUS].map(d=>d.value);
-      if (filters.includes(this.concatTypeValue(FILTER_TYPES.STATUS, "Approved"))) {
+      if (filters.includes(this.concatTypeValue(FILTER_TYPES.STATUS, STATUS.APPROVED))) {
         hasApprovedFilter = true;
       }
-      if (filters.includes(this.concatTypeValue(FILTER_TYPES.STATUS, "Rejected"))) {
+      if (filters.includes(this.concatTypeValue(FILTER_TYPES.STATUS, STATUS.REJECTED))) {
         hasRejectedFilter = true;
       }
     }
@@ -122,14 +127,14 @@ class SalesChart extends Component {
 
     for (let status of filteredData) {
 
-      if (status.status == "Approved") {
-        if (hasApprovedFilter == false && this.props.specialFilters.includes(this.concatTypeValue(FILTER_TYPES.STATUS, "Approved")) == false) {
+      if (status.status == STATUS.APPROVED) {
+        if (hasApprovedFilter == false && this.props.specialFilters.includes(this.concatTypeValue(FILTER_TYPES.STATUS, STATUS.APPROVED)) == false) {
           status.projects = [];
         }
       }
 
-      if (status.status == "Rejected") {
-        if (hasRejectedFilter == false && this.props.specialFilters.includes(this.concatTypeValue(FILTER_TYPES.STATUS, "Rejected")) == false) {
+      if (status.status == STATUS.REJECTED) {
+        if (hasRejectedFilter == false && this.props.specialFilters.includes(this.concatTypeValue(FILTER_TYPES.STATUS, STATUS.REJECTED)) == false) {
           status.projects = [];
         }
       }
@@ -140,13 +145,17 @@ class SalesChart extends Component {
 
   updateData = () => {
     // Update data
-    let updatedData = DataGenerator.updateData(this.state.data);
+    if (this.state.speed == 0) { return }
+
+    let actualMoment = this.state.actualMoment.clone().add(60 * this.state.speed / 100, 'seconds');
+    let updatedData = DataGenerator.updateData(this.state.data, actualMoment);
     let validData = this.getValidData(updatedData);
     let filteredData = this.filterData(validData);
     this.setState({
       data: updatedData,
       validData: validData,
       filteredData: filteredData,
+      actualMoment: actualMoment,
     }, () => this.props.updateData(validData));
   }
 
@@ -154,9 +163,20 @@ class SalesChart extends Component {
     window.setInterval(this.updateData, interval);
   }
 
+  updateSpeed = (e) => {
+    this.setState(
+      {
+        speed: e.target.value,
+      }
+    )
+  }
+
   render = () => (
     <div className="col-md">
       <Card type="primary" /* header="Venta de pólizas" title="Tiempo real" text="Gráfica en tiempo real de las pólizas que se están creando"*/ >
+        <div>
+          Hora: {this.state.actualMoment.format('HH:mm:ss')} - Velocidad: <input type="range" min="0" max="200" value={this.state.speed} onChange={this.updateSpeed} /> {this.state.speed}%
+        </div>
         <BubbleChart data={this.state.filteredData} />
       </Card>
     </div>

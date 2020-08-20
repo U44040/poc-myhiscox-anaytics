@@ -160,7 +160,7 @@ class SidebarFilters extends Component {
     }
 
     OptionComponent = props => (
-        <Option addSpecialFilterValue={this.addSpecialFilterValue} removeSpecialFilterValue={this.removeSpecialFilterValue} {...props}></Option>
+        <Option key={props.value} specialFilterValues={this.state.specialFilterValues} addSpecialFilterValue={this.addSpecialFilterValue} removeSpecialFilterValue={this.removeSpecialFilterValue} {...props}></Option>
     );
 
     components = {
@@ -224,9 +224,6 @@ class SidebarFilters extends Component {
     }
 
     changeSearchValue = (value) => {
-        if (value !== ""){
-            console.log(true);
-        }
         this.setState({
             inputValue: value
         });

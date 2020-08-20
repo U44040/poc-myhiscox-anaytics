@@ -1,12 +1,13 @@
 import moment from 'moment';
 import rfdc from 'rfdc';
+import * as STATUS from './StatusTypes';
 
 const deepClone = rfdc();
 
 const users = [
     {
         "id": 1,
-        "name": "Hiscox User",
+        "name": "Albert Pérez Moliné",
         "brokerage": {
             "id": 1,
             "name": "Hiscox",
@@ -22,7 +23,7 @@ const users = [
     },
     {
         "id": 2,
-        "name": "Hiscox User 2",
+        "name": "Carlos Luis Sanchez Torres",
         "brokerage": {
             "id": 2,
             "name": "Abella Mediación",
@@ -38,7 +39,7 @@ const users = [
     },
     {
         "id": 3,
-        "name": "Hiscox User 3",
+        "name": "Estefania Morales",
         "brokerage": {
             "id": 3,
             "name": "ALBROKSA",
@@ -54,7 +55,7 @@ const users = [
     },
     {
         "id": 4,
-        "name": "Hiscox User 4",
+        "name": "Laura Santana",
         "brokerage": {
             "id": 4,
             "name": "AICO MEDIACIÓN",
@@ -70,7 +71,7 @@ const users = [
     },
     {
         "id": 5,
-        "name": "Hiscox User 5",
+        "name": "Manuel Naranjo González-Coviella",
         "brokerage": {
             "id": 5,
             "name": "AON",
@@ -128,111 +129,133 @@ export const averageSales = {
     15: 546,
 };
 
-export const generateData = () => {
+const STATUS_LIST = [STATUS.DRAFT, STATUS.PENDING_INFO, STATUS.BINDING_REQUEST_PENDING, STATUS.MANUAL_QUOTATION_REQUIRED, STATUS.TO_BE_ISSUED, STATUS.APPROVED, STATUS.REJECTED];
+
+export const generateData = (momentInitial) => {
 
     let data = [];
 
     let maxId = 1;
 
-    const status = ['Draft', 'Pending Info', 'Binding Request Pending', 'Manual Quotation Required', 'To be Issued', 'Approved', 'Rejected'];
+    const status = STATUS_LIST;
     for (let i = 0; i < status.length; i++) {
-
-        let numItems = 20 + getRandomInt(0, 20);
-        let projects = [];
-
-        if (status[i] === 'Approved' || status[i] === 'Rejected') {
-            data.push({
-                status: status[i],
-                projects: projects,
-            })
-            continue;
-        }
-
-        for (let k = 0; k < numItems; k++) {
-
-            let fullTotalRate = 0;
-            let fullPercentAverage = 0;
-
-            let numProducts = getRandomInt(1, 3);
-
-            let products = [];
-            for (let p = 0; p < numProducts; p++) {
-
-                const randomRate = getRandomInt(100, 500);
-                fullTotalRate += randomRate;
-
-                let productVariant = getRandomValueFromArray(productVariants);
-                productVariant.totalRate = randomRate;
-                productVariant.percentAverage = (randomRate - averageSales[productVariant.idProductVariant]) / averageSales[productVariant.idProductVariant] * 100;
-                fullPercentAverage += productVariant.percentAverage;
-                products.push(productVariant);
-            }
-
-            fullPercentAverage = (fullPercentAverage / numProducts);
-
-            let isClean;
-            if (['Pending Info', 'Manual Quotation Required'].includes(status[i])) {
-                isClean = false;
-            } else if (['Binding Request Pending', 'To Be Issued'].includes(status[i])) {
-                isClean = true;
-            } else {
-                isClean = ((Math.round(Math.random())) === 0)
-            }
-
-            let createdAt = moment().subtract(getRandomFloat(-10, 180), 'minutes'); // createdAt with future / past (-10,+10min)
-            let finishedAt = createdAt.clone().add(getRandomFloat(160, 180), 'minutes'); // finishedAt (10, 12min) from createdAt
-
-            let project = {
-                "id": maxId++,
-                "reference": "AX" + i + k,
-                "status": status[i],
-                "user": getRandomValueFromArray(users),
-                "createdAt": createdAt.format('YYYY-MM-DD HH:mm:ss'),
-                "finishedAt": finishedAt.format('YYYY-MM-DD HH:mm:ss'),
-                "elapsedTime": moment.duration(moment().diff(createdAt)).asMinutes(),
-                "productVariants": products,
-                "isClean": isClean,
-                "source": ((Math.round(Math.random())) === 0 ? "MyHiscox" : "API"),
-                "totalRate": fullTotalRate,
-                "fullPercentAverage": fullPercentAverage,
-            }
-            projects.push(project);
-        }
-
         data.push({
             status: status[i],
-            projects: projects,
+            projects: [],
         })
     }
+
+    let numProjects = getRandomInt(40, 50);
+    let projects = [];
+
+    for (let k = 0; k < numProjects; k++) {
+
+        let fullTotalRate = 0;
+        let fullPercentAverage = 0;
+
+        let numProducts = getRandomInt(1, 3);
+
+        let products = [];
+        for (let p = 0; p < numProducts; p++) {
+            const randomRate = getRandomInt(100, 500);
+            fullTotalRate += randomRate;
+
+            let productVariant = getRandomValueFromArray(productVariants);
+            productVariant.totalRate = randomRate;
+            productVariant.percentAverage = (randomRate - averageSales[productVariant.idProductVariant]) / averageSales[productVariant.idProductVariant] * 100;
+            fullPercentAverage += productVariant.percentAverage;
+            products.push(productVariant);
+        }
+
+        fullPercentAverage = (fullPercentAverage / numProducts);
+
+        let isClean = ((Math.round(Math.random())) === 0)
+
+        let createdAt = momentInitial.clone().add(getRandomFloat(0, 720), 'minutes'); // (8:00,20:00)
+        let finishedAt = createdAt.clone().add(getRandomFloat(60, 180), 'minutes'); // finishedAt (30, 120min) from createdAt
+        let timePoints = calculateTimePoints(createdAt, finishedAt);
+
+        let project = {
+            "id": maxId++,
+            "reference": "AX" + 0 + k,
+            "status": status[0],
+            "user": getRandomValueFromArray(users),
+            "createdAt": createdAt.format('YYYY-MM-DD HH:mm:ss'),
+            "finishedAt": finishedAt.format('YYYY-MM-DD HH:mm:ss'),
+            "timePoints": timePoints, // for status change
+            "elapsedTime": moment.duration(momentInitial.diff(createdAt)).asMinutes(),
+            "productVariants": products,
+            "isClean": isClean,
+            "source": ((Math.round(Math.random())) === 0 ? "MyHiscox" : "API"),
+            "totalRate": fullTotalRate,
+            "fullPercentAverage": fullPercentAverage,
+        }
+        projects.push(project);
+    }
+
+    let statusDraft = data[STATUS_LIST.indexOf(STATUS.DRAFT)];
+    statusDraft.projects = projects;
 
     return data;
 }
 
-export const updateData = (d) => {
+export const updateData = (d, actualMoment) => {
     // deep copy from input data to avoid modification of original    
     let data = deepClone(d);
     for (let status of data) {
-        if (status.status === "Approved" || status.status === "Rejected") { continue; }
-
+        if (status.status === STATUS.APPROVED || status.status === STATUS.REJECTED) { continue; }
         for (let project of status.projects) {
-            project.elapsedTime = moment.duration(moment().diff(project.createdAt)).asMinutes();
-            if (moment().format('YYYY-MM-DD HH:mm:ss') >= project.finishedAt) {
+            project.elapsedTime = moment.duration(actualMoment.diff(project.createdAt)).asMinutes();
+            if (actualMoment.format('YYYY-MM-DD HH:mm:ss') >= project.timePoints[0]) {
+                let nextState = getNextState(project);
                 let copyProject = deepClone(project);
-                let approved = (Math.random() > 0.1);
-                if (approved == true) {
-                    copyProject.status = 'Approved';
-                    data[5].projects.push(copyProject);
-                }
-                else {
-                    copyProject.status = 'Rejected';
-                    data[6].projects.push(copyProject);
-                }
+
+                copyProject.status = nextState;
+                copyProject.timePoints.shift();
+
+                data[STATUS_LIST.indexOf(nextState)].projects.push(copyProject);
                 project.remove = true;
             }
         }
         status.projects = status.projects.filter(d => d.remove != true);
     }
     return data;
+}
+
+const calculateTimePoints = (createdAt, finishedAt) => {
+    let totalDuration = moment.duration(finishedAt.diff(createdAt)).asMinutes();
+    let timePoint = createdAt.clone();
+    let timePoints = [];
+    for (let i = 0; i < 3; i++) {
+        timePoint = timePoint.clone().add(totalDuration / 3, 'minutes');
+        timePoints.push(timePoint.format('YYYY-MM-DD HH:mm:ss'));
+    }
+    return timePoints;
+}
+
+const getNextState = (project) => {
+
+    switch (project.status) {
+        case STATUS.DRAFT:
+            if (project.isClean) {
+                return STATUS.BINDING_REQUEST_PENDING;
+            } else {
+                return STATUS.PENDING_INFO;
+            }
+
+
+        case STATUS.PENDING_INFO:
+            return STATUS.MANUAL_QUOTATION_REQUIRED;
+
+        case STATUS.BINDING_REQUEST_PENDING:
+            return STATUS.TO_BE_ISSUED;
+
+        case STATUS.MANUAL_QUOTATION_REQUIRED:
+        case STATUS.TO_BE_ISSUED:
+            let approved = (Math.random() > 0.1);
+            if (approved) { return STATUS.APPROVED }
+            else { return STATUS.REJECTED }
+    }
 }
 
 const getRandomValueFromArray = (array) => {
