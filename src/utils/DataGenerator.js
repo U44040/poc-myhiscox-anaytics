@@ -128,7 +128,7 @@ export const averageSales = {
     15: 546,
 };
 
-export const generateData = () => {
+export const generateData = (momentInitial) => {
 
     let data = [];
 
@@ -179,8 +179,8 @@ export const generateData = () => {
                 isClean = ((Math.round(Math.random())) === 0)
             }
 
-            let createdAt = moment().subtract(getRandomFloat(-10, 180), 'minutes'); // createdAt with future / past (-10,+10min)
-            let finishedAt = createdAt.clone().add(getRandomFloat(160, 180), 'minutes'); // finishedAt (10, 12min) from createdAt
+            let createdAt = momentInitial.clone().add(getRandomFloat(0, 720), 'minutes'); // (8:00,20:00)
+            let finishedAt = createdAt.clone().add(getRandomFloat(60, 180), 'minutes'); // finishedAt (30, 120min) from createdAt
 
             let project = {
                 "id": maxId++,
@@ -189,7 +189,7 @@ export const generateData = () => {
                 "user": getRandomValueFromArray(users),
                 "createdAt": createdAt.format('YYYY-MM-DD HH:mm:ss'),
                 "finishedAt": finishedAt.format('YYYY-MM-DD HH:mm:ss'),
-                "elapsedTime": moment.duration(moment().diff(createdAt)).asMinutes(),
+                "elapsedTime": moment.duration(momentInitial.diff(createdAt)).asMinutes(),
                 "productVariants": products,
                 "isClean": isClean,
                 "source": ((Math.round(Math.random())) === 0 ? "MyHiscox" : "API"),
@@ -208,15 +208,15 @@ export const generateData = () => {
     return data;
 }
 
-export const updateData = (d) => {
+export const updateData = (d, actualMoment) => {
     // deep copy from input data to avoid modification of original    
     let data = deepClone(d);
     for (let status of data) {
         if (status.status === "Approved" || status.status === "Rejected") { continue; }
 
         for (let project of status.projects) {
-            project.elapsedTime = moment.duration(moment().diff(project.createdAt)).asMinutes();
-            if (moment().format('YYYY-MM-DD HH:mm:ss') >= project.finishedAt) {
+            project.elapsedTime = moment.duration(actualMoment.diff(project.createdAt)).asMinutes();
+            if (actualMoment.format('YYYY-MM-DD HH:mm:ss') >= project.finishedAt) {
                 let copyProject = deepClone(project);
                 let approved = (Math.random() > 0.1);
                 if (approved == true) {

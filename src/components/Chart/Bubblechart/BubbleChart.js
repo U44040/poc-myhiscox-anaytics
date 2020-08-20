@@ -42,10 +42,10 @@ class BubbleChart extends Component {
             maximums.push(d3.max(status.projects.map((d) => d.elapsedTime)));
         }
         let max = d3.max(maximums);
-        if (Number.isNaN(max)) {
+        if (max == undefined) {
             max = 0;
         }
-        return d3.scaleLinear().domain([0, max + 5]).range([0, this.state.width])
+        return d3.scaleLinear().domain([0, max+5]).range([0, this.state.width])
     };
 
     yScale = () => (d3.scaleLinear().domain([-110, 110]).range([this.state.height, 0]));
@@ -56,6 +56,15 @@ class BubbleChart extends Component {
         }
         return d3.scaleLinear().domain([0, d3.max(maximums)]).range([0, 20]);
     }
+
+    xScaleTransformed = () => {
+        return this.xScale();
+    }
+
+    yScaleTransformed = () => {
+        return this.yScale();
+    }
+
 
     getXValue = (d) => d.elapsedTime;
     getYValue = (d) => {
@@ -77,6 +86,9 @@ class BubbleChart extends Component {
             xScale: this.xScale(),
             yScale: this.yScale(),
             zScale: this.zScale(),
+
+            xScaleTransformed: this.xScaleTransformed(),
+            yScaleTransformed: this.yScaleTransformed(),
         }
     }
 
@@ -118,7 +130,7 @@ class BubbleChart extends Component {
             .scaleExtent([1, 60])  // This control how much you can unzoom (x0.5) and zoom (x20)
             .extent([[0, 0], [this.state.width, this.state.height]])
             .translateExtent([[0, 0], [Infinity, this.state.height]])
-            .on("zoom", () => this.updateChartZoom(scales.xScale, this.xAxis, scales.yScale, this.yAxis));
+            .on("zoom", () => this.updateChartZoom(this.xAxis, this.yAxis));
 
     
         d3.select(this.svgEl).call(zoom).on("dblclick.zoom", null);
@@ -203,7 +215,7 @@ class BubbleChart extends Component {
         let scales = this.getScales();
 
         // Axis
-        this.xAxis.call(d3.axisBottom(scales.xScale));
+        this.xAxis.call(d3.axisBottom(this.xScaleTransformed()));
         //this.yAxis.call(d3.axisLeft(scales.yScale).tickFormat((d, i) => d + "%"));
 
         // Add the points
@@ -232,8 +244,8 @@ class BubbleChart extends Component {
             //.on("mousemove", function(d){ component.showTooltip(d, this)})
             .on("mouseout", function (d) { component.hideTooltip(d) })
             .on("contextmenu", function (d) { component.hideProject(d, this) })
-            .attr("cx", (d) => scales.xScale(this.getXValue(d)))
-            .attr("cy", (d) => scales.yScale(this.getYValue(d) > 100 ? 100 : this.getYValue(d) < -100 ? -100 : this.getYValue(d)))
+            .attr("cx", (d) => scales.xScaleTransformed(this.getXValue(d)))
+            .attr("cy", (d) => scales.yScaleTransformed(this.getYValue(d) > 100 ? 100 : this.getYValue(d) < -100 ? -100 : this.getYValue(d)))
             .attr("r", (d) => scales.zScale(d.totalRate))
             .style("opacity", "0.9")
             .attr("stroke", (d) => this.strokeColor(d.isClean));
@@ -357,20 +369,26 @@ class BubbleChart extends Component {
         d3.select(element).style("display", "none");
     }
 
-    updateChartZoom = (xScale, xAxis, yScale, yAxis) => {
+    updateChartZoom = (xAxis, yAxis) => {
+
+        const scales = this.getScales();
+
         // recover the new scale
-        var newX = d3.event.transform.rescaleX(xScale);
-        var newY = d3.event.transform.rescaleY(yScale);
+        var newX = d3.event.transform.rescaleX(scales.xScale);
+        var newY = d3.event.transform.rescaleY(scales.yScale);
 
-        console.log(xScale(1));
-
-
-        this.xScale = () => newX;
-        this.yScale = () => newY;
+        if (d3.event.transform.k == 1) {
+            this.xScaleTransformed = () => this.xScale();
+            this.yScaleTransformed = () => this.yScale();
+        }
+        else {
+            this.xScaleTransformed = () => newX;
+            this.yScaleTransformed = () => newY;
+        }
 
         // update axes with these new boundaries
-        xAxis.attr("transform", "translate(0," + newY(0) + ")").call(d3.axisBottom(newX));
-        yAxis.call(d3.axisLeft(newY).tickFormat((d, i) => d + "%"));
+        xAxis.attr("transform", "translate(0," + this.yScaleTransformed()(0) + ")").call(d3.axisBottom(this.xScaleTransformed()));
+        yAxis.call(d3.axisLeft(this.yScaleTransformed()).tickFormat((d, i) => d + "%"));
 
         // update circle position
         this.scatter
