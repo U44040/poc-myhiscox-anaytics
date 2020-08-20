@@ -41,6 +41,7 @@ class BubbleChart extends Component {
         for (let status of this.props.data) {
             maximums.push(d3.max(status.projects.map((d) => d.elapsedTime)));
         }
+        console.log(d3.max(maximums));
         return d3.scaleLinear().domain([0, d3.max(maximums) + 5]).range([0, this.state.width])
     };
 
@@ -357,6 +358,9 @@ class BubbleChart extends Component {
         // recover the new scale
         var newX = d3.event.transform.rescaleX(xScale);
         var newY = d3.event.transform.rescaleY(yScale);
+
+        console.log(xScale(1));
+
 
         this.xScale = () => newX;
         this.yScale = () => newY;
