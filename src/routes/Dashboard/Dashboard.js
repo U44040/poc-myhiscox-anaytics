@@ -7,7 +7,8 @@ import SidebarFilters from '../../components/SidebarFilters/SidebarFilters';
 class Dashboard extends Component {
 
     state = {
-        filters: []
+        filters: {},
+        specialFilters: [],
     }
 
     updateSalesChartData = (data) => {
@@ -22,30 +23,44 @@ class Dashboard extends Component {
         )
     }
 
+    updateSpecialFilters = (specialFilters) => {
+        this.setState(
+            { specialFilters: specialFilters }
+        )
+    }
+
     render = () => {
+        let boxes = <div className="row mb-4">
+            <div className="col-md-6">
+                <Callout type="info">
+                    <h4 id="dealing-with-specificity">Estimated sales amount</h4>
+                    <p>€ 120K</p>
+                </Callout>
+            </div>
+            <div className="col-md-6">
+                <Callout type="info">
+                    <h4 id="dealing-with-specificity">Accumulated sales amount</h4>
+                    <p>€ 60K</p>
+                </Callout>
+            </div>
+        </div>;
+
         return (
             <React.Fragment>
-                <SidebarFilters collapsed={true} sidebarFixed={false} salesChartData={this.state.salesChartData} updateFilters={this.updateFilters} />
+                <SidebarFilters
+                    collapsed={true}
+                    sidebarFixed={false}
+                    salesChartData={this.state.salesChartData}
+                    updateFilters={this.updateFilters} 
+                    updateSpecialFilters={this.updateSpecialFilters}
+                />
                 <div className="col py-3">
                     <div className="container-fluid">
                         <h3 className="text-gray-800">Dashboard</h3>
                         <div className="row mb-4">
-                            <div className="col-md-6">
-                                <Callout type="info">
-                                    <h4 id="dealing-with-specificity">Importe de ventas estimado</h4>
-                                    <p>€ 120K</p>
-                                </Callout>
-                            </div>
-                            <div className="col-md-6">
-                                <Callout type="info">
-                                    <h4 id="dealing-with-specificity">Importe de ventas acumulado</h4>
-                                    <p>€ 60K</p>
-                                </Callout>
-                            </div>
+                            <SalesChart updateData={this.updateSalesChartData} filters={this.state.filters} specialFilters={this.state.specialFilters} />
                         </div>
-                        <div className="row mb-4">
-                            <SalesChart updateData={this.updateSalesChartData} filters={this.state.filters} />
-                        </div>
+                        {boxes}
                     </div>
                 </div>
             </React.Fragment>

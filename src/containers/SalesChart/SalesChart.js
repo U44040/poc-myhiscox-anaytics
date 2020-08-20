@@ -36,7 +36,7 @@ class SalesChart extends Component {
   }
 
   componentDidUpdate = (prevProps) => {
-    if (prevProps.filters != this.props.filters) {
+    if (prevProps.filters != this.props.filters || prevProps.specialFilters != this.props.specialFilters) {
       this.setState((oldState, oldProps) => (
         {
           filteredData: this.filterData(oldState.validData)
@@ -67,25 +67,75 @@ class SalesChart extends Component {
     for (let filterType in this.props.filters){
       let filters = this.props.filters[filterType].map(d=>d.value);
       switch (filterType) {
-        case FILTER_TYPES.STATE:
-          for (let state of filteredData) {
-            if (filters.includes(this.concatTypeValue(FILTER_TYPES.STATE, state.state)) == false) {
-              state.projects = [];
+        case FILTER_TYPES.STATUS:
+          for (let status of filteredData) {
+            if (filters.includes(this.concatTypeValue(FILTER_TYPES.STATUS, status.status)) == false) {
+              status.projects = [];
             }
           }
           break;
 
         case FILTER_TYPES.BROKER:
-          for (let state of filteredData) {
-            state.projects = state.projects.filter(d => filters.includes(this.concatTypeValue(FILTER_TYPES.BROKER, d.user.brokerage.id)));
+          for (let status of filteredData) {
+            status.projects = status.projects.filter(d => filters.includes(this.concatTypeValue(FILTER_TYPES.BROKER, d.user.id)));
+          }
+          break;
+
+        case FILTER_TYPES.BROKERAGE:
+          for (let status of filteredData) {
+            status.projects = status.projects.filter(d => filters.includes(this.concatTypeValue(FILTER_TYPES.BROKERAGE, d.user.brokerage.id)));
           }
           break;
 
         case FILTER_TYPES.NETWORK:
-          for (let state of filteredData) {
-            state.projects = state.projects.filter(d => filters.includes(this.concatTypeValue(FILTER_TYPES.NETWORK, d.user.brokerage.network.id)));
+          for (let status of filteredData) {
+            status.projects = status.projects.filter(d => filters.includes(this.concatTypeValue(FILTER_TYPES.NETWORK, d.user.brokerage.network.id)));
           }
           break;
+
+        case FILTER_TYPES.SOURCE:
+          for (let status of filteredData) {
+            status.projects = status.projects.filter(d => filters.includes(this.concatTypeValue(FILTER_TYPES.SOURCE, d.source)));
+          }
+          break;
+
+        case FILTER_TYPES.PRODUCT:
+          for (let status of filteredData) {
+            for (let project of status.projects) {
+              project.productVariants = project.productVariants.filter(d => filters.includes(this.concatTypeValue(FILTER_TYPES.PRODUCT, d.idProductVariant)));
+              status.projects = status.projects.filter(d => d.productVariants.length != 0);
+            }
+          }
+          break;
+      }
+    }
+
+    let hasApprovedFilter = false;
+    let hasRejectedFilter = false;
+
+    if (this.props.filters[FILTER_TYPES.STATUS]) {
+      let filters = this.props.filters[FILTER_TYPES.STATUS].map(d=>d.value);
+      if (filters.includes(this.concatTypeValue(FILTER_TYPES.STATUS, "Approved"))) {
+        hasApprovedFilter = true;
+      }
+      if (filters.includes(this.concatTypeValue(FILTER_TYPES.STATUS, "Rejected"))) {
+        hasRejectedFilter = true;
+      }
+    }
+
+
+    for (let status of filteredData) {
+
+      if (status.status == "Approved") {
+        if (hasApprovedFilter == false && this.props.specialFilters.includes(this.concatTypeValue(FILTER_TYPES.STATUS, "Approved")) == false) {
+          status.projects = [];
+        }
+      }
+
+      if (status.status == "Rejected") {
+        if (hasRejectedFilter == false && this.props.specialFilters.includes(this.concatTypeValue(FILTER_TYPES.STATUS, "Rejected")) == false) {
+          status.projects = [];
+        }
       }
     }
 
@@ -121,7 +171,7 @@ class SalesChart extends Component {
 
   render = () => (
     <div className="col-md">
-      <Card type="primary" header="Venta de pólizas" title="Tiempo real" text="Gráfica en tiempo real de las pólizas que se están creando">
+      <Card type="primary" /* header="Venta de pólizas" title="Tiempo real" text="Gráfica en tiempo real de las pólizas que se están creando"*/ >
         <div>
           Hora: {this.state.actualMoment.format('HH:mm:ss')} - Velocidad: <input type="range" min="0" max="200" value={this.state.speed} onChange={this.updateSpeed} /> {this.state.speed}%
         </div>

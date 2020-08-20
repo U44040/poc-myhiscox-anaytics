@@ -3,9 +3,111 @@
         color: #000;
         
         .react-select-filters {
-            &-option {
-
+            
+            &__control {
+             margin: 0px 3px;
             }
+
+            &__menu {
+             background-color: transparent;  
+             padding-top: 0px;
+
+             &-list {
+                max-height: 700px;
+             }
+            }
+
+            &__group {
+                background-color: #fff;
+                margin-left: 3px;
+                margin-right: 3px;
+                margin-bottom: 5px;
+                border-radius: 5px;
+                padding: 0px;
+
+
+                &-wrapper {
+                    &--is-searching {
+                       div.react-select-filters__group {
+                           div:nth-child(2) {
+                               display: block !important;
+                           }
+   
+                           div.react-select-filters__group-heading {
+                               &::after{
+                                   content: "\f0d8";
+                               }
+                           }
+                       }
+   
+                    }
+                }
+
+
+
+
+
+                >div:nth-child(2) {
+                    padding-bottom: 8px;
+                    display: none;
+                }
+                
+                &-heading {
+
+                    padding-top: 8px;
+                    padding-bottom: 8px;
+
+                    &::after {
+                        font: normal normal normal 14px/1 FontAwesome;
+                        float: right;
+                        content: "\f0d7";
+                    }
+                }
+
+                &.group-expanded {
+                    div.react-select-filters__group-heading {
+                        &::after {
+                            content: "\f0d8";
+                        }
+                    }
+                    div:nth-child(2) {
+                        display: block;
+                    }
+                }                
+                
+            }
+
+            &__option-wrapper {
+                &--disabled {
+                    color: #ccc;
+                    &:hover{
+                        background-color: #eeeeee;
+                        color: #aaa
+                    }
+                }
+            }
+
+            &__option {
+
+                padding: 3px 10px;
+                white-space: nowrap;
+
+                &--is-selected {
+                    background-color: transparent;
+                    color: #000;
+                }
+
+                input {
+                    margin-right: 5px;
+                    vertical-align: middle;
+                }
+
+                label {
+                    font-size: 0.75rem;
+                }
+            }
+
+
         }
     }
 }

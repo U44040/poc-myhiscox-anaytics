@@ -134,15 +134,15 @@ export const generateData = (momentInitial) => {
 
     let maxId = 1;
 
-    const state = ['Draft', 'Policy Holder Step', 'Start Date Step', 'Pending Info', 'Binding Request Pending', 'Issued'];
-    for (let i = 0; i < state.length; i++) {
+    const status = ['Draft', 'Pending Info', 'Binding Request Pending', 'Manual Quotation Required', 'To be Issued', 'Approved', 'Rejected'];
+    for (let i = 0; i < status.length; i++) {
 
         let numItems = 20 + getRandomInt(0, 20);
         let projects = [];
 
-        if (state[i] === 'Issued') {
+        if (status[i] === 'Approved' || status[i] === 'Rejected') {
             data.push({
-                state: state[i],
+                status: status[i],
                 projects: projects,
             })
             continue;
@@ -171,9 +171,9 @@ export const generateData = (momentInitial) => {
             fullPercentAverage = (fullPercentAverage / numProducts);
 
             let isClean;
-            if (state[i] === 'Pending Info') {
+            if (['Pending Info', 'Manual Quotation Required'].includes(status[i])) {
                 isClean = false;
-            } else if (['Start Date Step', 'Binding Request Pending'].includes(state[i])) {
+            } else if (['Binding Request Pending', 'To Be Issued'].includes(status[i])) {
                 isClean = true;
             } else {
                 isClean = ((Math.round(Math.random())) === 0)
@@ -185,13 +185,14 @@ export const generateData = (momentInitial) => {
             let project = {
                 "id": maxId++,
                 "reference": "AX" + i + k,
+                "status": status[i],
                 "user": getRandomValueFromArray(users),
                 "createdAt": createdAt.format('YYYY-MM-DD HH:mm:ss'),
                 "finishedAt": finishedAt.format('YYYY-MM-DD HH:mm:ss'),
                 "elapsedTime": moment.duration(momentInitial.diff(createdAt)).asMinutes(),
                 "productVariants": products,
                 "isClean": isClean,
-                "source": ((Math.round(Math.random())) === 0 ? "web" : "api"),
+                "source": ((Math.round(Math.random())) === 0 ? "MyHiscox" : "API"),
                 "totalRate": fullTotalRate,
                 "fullPercentAverage": fullPercentAverage,
             }
@@ -199,7 +200,7 @@ export const generateData = (momentInitial) => {
         }
 
         data.push({
-            state: state[i],
+            status: status[i],
             projects: projects,
         })
     }
@@ -210,17 +211,26 @@ export const generateData = (momentInitial) => {
 export const updateData = (d, actualMoment) => {
     // deep copy from input data to avoid modification of original    
     let data = deepClone(d);
-    for (let state of data) {
-        if (state.state === "Issued") { continue; }
+    for (let status of data) {
+        if (status.status === "Approved" || status.status === "Rejected") { continue; }
 
-        for (let project of state.projects) {
+        for (let project of status.projects) {
             project.elapsedTime = moment.duration(actualMoment.diff(project.createdAt)).asMinutes();
             if (actualMoment.format('YYYY-MM-DD HH:mm:ss') >= project.finishedAt) {
-                data[5].projects.push(deepClone(project));
+                let copyProject = deepClone(project);
+                let approved = (Math.random() > 0.1);
+                if (approved == true) {
+                    copyProject.status = 'Approved';
+                    data[5].projects.push(copyProject);
+                }
+                else {
+                    copyProject.status = 'Rejected';
+                    data[6].projects.push(copyProject);
+                }
                 project.remove = true;
             }
         }
-        state.projects = state.projects.filter(d => d.remove != true);
+        status.projects = status.projects.filter(d => d.remove != true);
     }
     return data;
 }

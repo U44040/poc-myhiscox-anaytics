@@ -33,6 +33,13 @@ body {
       top: 56px;
   }
 
+  @media (max-height: 700px) {
+    .sticky-height-control {
+      position: inherit;
+    }
+
+  }
+
   &>main > .row {
     margin-left: 0;
     margin-right: 0;
@@ -50,9 +57,17 @@ body {
           width: 230px;
       }
       &.sidebar-collapsed {
-          width: 10px;
+          width: 15px;
           .list-group {
             display: none;
+          }
+
+          &::after{
+            margin-left: 1px;
+            font: normal normal normal 14px/1 FontAwesome;
+            content: "\f061";
+            position: sticky;
+            top: 50%;
           }
       }
 
@@ -81,6 +96,7 @@ body {
       /* Separators */
       .sidebar-separator-title {
           background-color: #333;
+          color: #b4b4b4;
           height: 35px;
       }
       .sidebar-separator {
@@ -113,7 +129,14 @@ body {
 }
 
 #tooltip-bubble {
+  background-color: #f8f2b2e0;
+  color: #000;
   p {
     margin-bottom: initial;
+    font-size: 0.75rem;
+  }
+
+  li {
+    font-size: 0.75rem;
   }
 }

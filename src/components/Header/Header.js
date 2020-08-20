@@ -9,9 +9,9 @@ const Header = (props) => {
         <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="mr-auto">
                 <Nav.Link href="/dashboard">Dashboard</Nav.Link>
-                <NavDropdown title="Gráficas" id="basic-nav-dropdown">
-                    <NavDropdown.Item href="/dashboard/1">Gráfica 1</NavDropdown.Item>
-                    <NavDropdown.Item href="/dashboard/2">Gráfica 2</NavDropdown.Item>
+                <NavDropdown title="Graphs" id="basic-nav-dropdown">
+                    <NavDropdown.Item href="/dashboard/1">Graph 1</NavDropdown.Item>
+                    <NavDropdown.Item href="/dashboard/2">Graph 2</NavDropdown.Item>
                 </NavDropdown>
             </Nav>
         </Navbar.Collapse>
