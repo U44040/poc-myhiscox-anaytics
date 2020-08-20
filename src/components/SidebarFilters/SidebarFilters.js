@@ -3,6 +3,7 @@ import './SidebarFilters.scss';
 import Select, { components } from 'react-select';
 import rfdc from 'rfdc';
 import * as FILTER_TYPES from './FilterTypes';
+import * as STATUS from '../../utils/StatusTypes';
 import Option from './Option/Option';
 
 const deepClone = rfdc();
@@ -42,13 +43,13 @@ class SidebarFilters extends Component {
         let sourceOptions = {};
         let productOptions = {};
 
-        for (let status of this.props.salesChartData) {
+        for (let status of this.getFilteredData()) {
 
             if (Array.isArray(status.projects) && status.projects.length === 0) {
                 continue;
             }
 
-            if (status.status != 'Approved' && status.status != "Rejected") {
+            if (status.status != STATUS.APPROVED && status.status != STATUS.REJECTED) {
                 statusOptions.push({
                     label: status.status,
                     value: this.concatTypeValue(FILTER_TYPES.STATUS, status.status),
@@ -94,13 +95,13 @@ class SidebarFilters extends Component {
         statusOptions = statusOptions.sort(this.compareLabels);
 
         statusOptions.push({
-            label: "Approved",
-            value: this.concatTypeValue(FILTER_TYPES.STATUS, "Approved"),
+            label: STATUS.APPROVED,
+            value: this.concatTypeValue(FILTER_TYPES.STATUS, STATUS.APPROVED),
             type: FILTER_TYPES.STATUS,
         });
         statusOptions.push({
-            label: "Rejected",
-            value: this.concatTypeValue(FILTER_TYPES.STATUS, "Rejected"),
+            label: STATUS.REJECTED,
+            value: this.concatTypeValue(FILTER_TYPES.STATUS, STATUS.REJECTED),
             type: FILTER_TYPES.STATUS,
         });
 
@@ -130,27 +131,27 @@ class SidebarFilters extends Component {
         const node = document.querySelector(`#${id}`).parentElement.parentElement;
         const classes = node.classList;
         if (classes.contains("group-expanded")) {
-          node.classList.remove("group-expanded");
+            node.classList.remove("group-expanded");
         } else {
-          node.classList.add("group-expanded");
+            node.classList.add("group-expanded");
         }
-      };
+    };
 
     CustomGroupHeading = props => {
         return (
-          <div
-            className="group-heading-wrapper"
-            onClick={() => this.handleHeaderClick(props.id)}
-          >
-            <components.GroupHeading {...props} />
-          </div>
+            <div
+                className="group-heading-wrapper"
+                onClick={() => this.handleHeaderClick(props.id)}
+            >
+                <components.GroupHeading {...props} />
+            </div>
         );
     };
 
     GroupComponent = props => {
         let className = [props.selectProps.classNamePrefix + "__group-wrapper"];
         if (this.state.inputValue !== "") {
-           className.push(props.selectProps.classNamePrefix + "__group-wrapper--is-searching")
+            className.push(props.selectProps.classNamePrefix + "__group-wrapper--is-searching")
         }
         return (
             <div className={className.join(" ")}>
@@ -190,18 +191,81 @@ class SidebarFilters extends Component {
     }
 
     filterChange = (values) => {
+        let filtersByType = this.getFiltersByType(values);
+        this.setState({
+            filterValue: values
+        }, () => this.props.updateFilters(filtersByType));
+    }
+
+    getFiltersByType = (values) => {
         let filtersByType = {};
         if (Array.isArray(values)) {
             for (let filter of values) {
                 if (filtersByType[filter.type] == undefined) {
-                  filtersByType[filter.type] = [];
+                    filtersByType[filter.type] = [];
                 }
                 filtersByType[filter.type].push(filter);
-              }
+            }
         }
-        this.setState({
-            filterValue: values
-        }, () => this.props.updateFilters(filtersByType));
+        return filtersByType;
+    }
+
+    getFilteredData = () => {
+        let data = deepClone(this.props.salesChartData);
+        let filtersByType = this.getFiltersByType(this.state.filterValue);
+        for (let filterType in filtersByType) {
+            let filters = filtersByType[filterType].map(d => d.value);
+
+            switch (filterType) {
+                case FILTER_TYPES.BROKER:
+                    for (let status of data) {
+                        status.projects = status.projects.filter(d => filters.includes(this.concatTypeValue(FILTER_TYPES.BROKER, d.user.id)));
+                    }
+                    break;
+
+                case FILTER_TYPES.BROKERAGE:
+                    for (let status of data) {
+                        status.projects = status.projects.filter(d => filters.includes(this.concatTypeValue(FILTER_TYPES.BROKERAGE, d.user.brokerage.id)));
+                    }
+                    break;
+
+                case FILTER_TYPES.NETWORK:
+                    for (let status of data) {
+                        status.projects = status.projects.filter(d => filters.includes(this.concatTypeValue(FILTER_TYPES.NETWORK, d.user.brokerage.network.id)));
+                    }
+                    break;
+
+            }
+        }
+
+        let hasApprovedFilter = false;
+        let hasRejectedFilter = false;
+
+        if (filtersByType[FILTER_TYPES.STATUS]) {
+            let filters = filtersByType[FILTER_TYPES.STATUS].map(d=>d.value);
+            if (filters.includes(this.concatTypeValue(FILTER_TYPES.STATUS, STATUS.APPROVED))) {
+                hasApprovedFilter = true;
+            }
+            if (filters.includes(this.concatTypeValue(FILTER_TYPES.STATUS, STATUS.REJECTED))) {
+                hasRejectedFilter = true;
+            }
+        }
+
+        for (let status of data) {
+            if (status.status == STATUS.APPROVED) {
+                if (hasApprovedFilter == false && this.state.specialFilterValues.includes(this.concatTypeValue(FILTER_TYPES.STATUS, STATUS.APPROVED)) == false) {
+                status.projects = [];
+                }
+            }
+
+            if (status.status == STATUS.REJECTED) {
+                if (hasRejectedFilter == false && this.state.specialFilterValues.includes(this.concatTypeValue(FILTER_TYPES.STATUS, STATUS.REJECTED)) == false) {
+                status.projects = [];
+                }
+            }
+        }
+
+        return data;
     }
 
     addSpecialFilterValue = (value) => {
