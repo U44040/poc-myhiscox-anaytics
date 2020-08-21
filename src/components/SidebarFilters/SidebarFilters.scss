@@ -1,11 +1,14 @@
 #sidebar-container {
     .react-select-container-filters {
+
+        padding-left: 3px;
+        padding-right: 3px;
         color: #000;
         
         .react-select-filters {
             
             &__control {
-             margin: 8px 3px 0px 3px;
+             margin: 8px 0px 0px 3px;
             }
 
             &__menu {
