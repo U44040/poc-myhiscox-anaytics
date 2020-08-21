@@ -104,7 +104,7 @@ class BubbleChart extends Component {
 
         // Labels
         // Y-Label
-        d3.select(this.svgEl).append("text")
+        this.yLabel = d3.select(this.svgEl).append("text")
             .attr('x', () => - 175)
             .attr('y', (d, i) => 4)
             .text((d, i) => "Products vs Market")
@@ -112,9 +112,9 @@ class BubbleChart extends Component {
             .style("font-weight", "bold")
             .style("transform", "rotate(-90deg)");
         // X-Label
-        d3.select(this.svgEl).append("text")
+        this.xLabel = d3.select(this.svgEl).append("text")
             .attr('x', () => this.state.width - 5)
-            .attr('y', (d, i) => this.state.height)
+            .attr('y', (d, i) => scales.yScale(0) + 3)
             .text((d, i) => "Time (minutes)")
             .style("font-size", 5)
             .style("font-weight", "bold");
@@ -395,6 +395,7 @@ class BubbleChart extends Component {
         // update axes with these new boundaries
         xAxis.attr("transform", "translate(0," + this.yScaleTransformed()(0) + ")").call(d3.axisBottom(this.xScaleTransformed()));
         yAxis.call(d3.axisLeft(this.yScaleTransformed()).tickFormat((d, i) => d + "%"));
+        this.xLabel.attr('y', () => this.yScaleTransformed()(0) + 3);
 
         // update circle position
         this.scatter
