@@ -2,7 +2,7 @@
 $body-bg: #f6f7fa;
 $body-color: #111;
 $theme-colors: (
-  "primary": #393D6A,
+  "primary": #535997,
   "danger": #ff4136
 );
 
@@ -110,7 +110,7 @@ body {
 
       /* Separators */
       .sidebar-separator-title {
-          background-color: #393D6A;
+          background-color: #535997;
           color: #fff;
           height: 35px;
       }
@@ -148,5 +148,16 @@ body {
 
   li {
     font-size: 0.75rem;
+  }
+
+  .tooltip-products {
+    ul {
+      display: none;
+    }
+    &:hover {
+      ul {
+        display: inherit;
+      }
+    }
   }
 }
