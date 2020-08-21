@@ -276,27 +276,13 @@ class BubbleChart extends Component {
             <p><strong>ΔX:</strong> ${ duration.hours() == 0 ? '' : duration.hours() + " hours"} ${ duration.minutes() } minutes </p>
             <p><strong>ΔY:</strong> <span class="${style}">${Math.round(this.getYValue(d))}%</span></p>
             <p><Strong>Reference:</strong> ${ d.reference}</p>
+            <p><Strong>Status:</strong> ${ d.status }</p>
             <p><strong>Broker:</strong> ${ d.user.name}</p>
             <p><strong>Brokerage:</strong> ${ d.user.brokerage.name}</p>
             <p><strong>Network:</strong> ${ d.user.brokerage.network.name}</p>
             <p><strong>Clean:</strong> ${ d.isClean ? '<span class="text-success font-weight-bold">Yes</span>' : '<span class="text-danger font-weight-bold">No</span>'}</p>
             <p><strong>Source:</strong> ${ d.source }</p>
-            <p><strong>Products:</strong></p>
-            <ul>
         `;
-
-        for (let productVariant of d.productVariants) {
-            if (Math.round(productVariant.percentAverage) >= 0) {
-                style = "text-success font-weight-bold";
-            }
-            else {
-                style = "text-danger font-weight-bold";
-            }
-
-            html += `<li>${productVariant.name} - (${productVariant.totalRate}€) <span class="${style}">[${Math.round(productVariant.percentAverage)}%]</span></li>`
-        }
-
-        html += '</ul>';
 
         let startDate = moment(d.createdAt, 'YYYY-MM-DD HH:mm:ss');
         html += `<p><strong>Start date:</strong> ${ startDate.format('DD-MM-YYYY HH:mm:ss') }</p>`;
@@ -314,6 +300,25 @@ class BubbleChart extends Component {
         }
 
         html += `<p><strong>Total rate:</strong> ${totalRate}€</p>`;
+
+        html += `
+        <div class="tooltip-products">
+                <p><strong>Products (+)</strong></p>
+                <ul>
+        `;
+
+        for (let productVariant of d.productVariants) {
+            if (Math.round(productVariant.percentAverage) >= 0) {
+                style = "text-success font-weight-bold";
+            }
+            else {
+                style = "text-danger font-weight-bold";
+            }
+
+            html += `<li>${productVariant.name} - (${productVariant.totalRate}€) <span class="${style}">[${Math.round(productVariant.percentAverage)}%]</span></li>`
+        }
+
+        html += '</ul></div>';
 
         this.tooltip
             .html(html)

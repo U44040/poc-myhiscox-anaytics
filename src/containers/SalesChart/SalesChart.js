@@ -148,6 +148,10 @@ class SalesChart extends Component {
     if (this.state.speed == 0) { return }
 
     let actualMoment = this.state.actualMoment.clone().add(60 * this.state.speed / 100, 'seconds');
+    if (actualMoment.dayOfYear() > moment().dayOfYear()) {
+      this.cancelInterval();
+    }
+
     let updatedData = DataGenerator.updateData(this.state.data, actualMoment);
     let validData = this.getValidData(updatedData);
     let filteredData = this.filterData(validData);
@@ -160,7 +164,14 @@ class SalesChart extends Component {
   }
 
   setIntervalRefresh = (interval) => {
-    window.setInterval(this.updateData, interval);
+    let windowInterval = window.setInterval(this.updateData, interval);
+    this.setState({
+      interval: windowInterval,
+    });
+  }
+
+  cancelInterval  = () => {
+    window.clearInterval(this.state.interval);
   }
 
   updateSpeed = (e) => {
