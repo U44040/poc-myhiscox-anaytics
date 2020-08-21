@@ -2,8 +2,21 @@
 $body-bg: #f6f7fa;
 $body-color: #111;
 $theme-colors: (
-  "primary": #0074d9,
+  "primary": #393D6A,
   "danger": #ff4136
+);
+
+$palette-colors: (
+  "light-pink": #FFADAD,
+  "deep-champagne": #FFD6A5,
+  "cadet-blue": #51A3A3,
+  "tea-green": #CAFFBF,
+  "liberty": #53599A,
+  "baby-blue-eyes": #A0C4FF,
+  "maximum-blue-purple": #BDB2FF,
+  "mauve": #FFC6FF,
+  "baby-powder": #FFFFFC,
+  "celeste": #9BF6FF,
 );
 
 $sidebar-bg-color: #1d1d1d;
@@ -47,9 +60,9 @@ body {
 
   #sidebar-container {
       min-height: 100vh;   
-      background-color: #333;
+      background-color: map-get($map: $palette-colors, $key: 'baby-powder');
       padding: 0;
-      color: #fff;
+      color: #000;
       transition: width 0.25s;
 
       /* Sidebar sizes when expanded and collapsed */
@@ -63,16 +76,18 @@ body {
           }
 
           &::after{
-            margin-left: 1px;
+            margin-left: 4px;
             font: normal normal normal 14px/1 FontAwesome;
-            content: "\f061";
+            content: "\f105";
             position: sticky;
             top: 50%;
+            font-size: 1rem;
           }
       }
 
       .sidebar-fixed-button {
         span {
+          color: map-get($map: $palette-colors, $key: 'liberty');
           cursor: pointer;
         }
       }
@@ -95,18 +110,13 @@ body {
 
       /* Separators */
       .sidebar-separator-title {
-          background-color: #333;
-          color: #b4b4b4;
+          background-color: #393D6A;
+          color: #fff;
           height: 35px;
       }
       .sidebar-separator {
           background-color: #333;
           height: 25px;
-      }
-
-      .logo-separator {
-          background-color: #333;    
-          height: 60px;
       }
 
       /* Closed submenu icon */
