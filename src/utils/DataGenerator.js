@@ -123,10 +123,10 @@ const productVariants = [
 ]
 
 export const averageSales = {
-    1: 200,
-    10: 400,
-    14: 600,
-    15: 546,
+    1: { average: 200, n: 150 },
+    10: { average: 400, n: 200 },
+    14: { average: 600, n: 100 },
+    15: { average: 546, n: 200 },
 };
 
 const STATUS_LIST = [STATUS.DRAFT, STATUS.PENDING_INFO, STATUS.BINDING_REQUEST_PENDING, STATUS.MANUAL_QUOTATION_REQUIRED, STATUS.TO_BE_ISSUED, STATUS.APPROVED, STATUS.REJECTED];
@@ -165,12 +165,12 @@ export const generateData = (momentInitial) => {
             let productVariant = getRandomValueFromArray(productVariants);
             productVariant.minimumRate = randomRate;
             productVariant.totalRate = randomRate;
-            productVariant.percentAverage = (randomRate - averageSales[productVariant.idProductVariant]) / averageSales[productVariant.idProductVariant] * 100;
+            productVariant.percentAverage = calculatePercentAverage(productVariant.totalRate, productVariant);
             fullPercentAverage += productVariant.percentAverage;
             products.push(productVariant);
         }
 
-        fullPercentAverage = (fullPercentAverage / numProducts);
+        fullPercentAverage = (fullPercentAverage / products.length);
 
         let isClean = ((Math.round(Math.random())) === 0)
 
@@ -207,12 +207,27 @@ export const updateData = (d, actualMoment) => {
     // deep copy from input data to avoid modification of original    
     let data = deepClone(d);
     for (let status of data) {
+
+        // Re-calculate percent
+        for (let project of status.projects) {
+            project.fullPercentAverage = 0;
+            for (let productVariant of project.productVariants) {
+                productVariant.percentAverage = calculatePercentAverage(productVariant.totalRate, productVariant);
+                project.fullPercentAverage += productVariant.percentAverage;
+            }
+            project.fullPercentAverage = (project.fullPercentAverage / project.productVariants.length);
+        }
+
         if (status.status === STATUS.APPROVED || status.status === STATUS.REJECTED) { continue; }
         for (let project of status.projects) {
             project.elapsedTime = moment.duration(actualMoment.diff(project.createdAt)).asMinutes();
             if (actualMoment.format('YYYY-MM-DD HH:mm:ss') >= project.timePoints[0]) {
                 let nextState = getNextState(project);
                 let copyProject = deepClone(project);
+
+                if (nextState === STATUS.APPROVED) {
+                    recalculateAverageSales(project);
+                }
 
                 copyProject.status = nextState;
                 copyProject.timePoints.shift();
@@ -224,6 +239,18 @@ export const updateData = (d, actualMoment) => {
         status.projects = status.projects.filter(d => d.remove != true);
     }
     return data;
+}
+
+const recalculateAverageSales = (project) => {
+    for (let productVariant of project.productVariants) {
+        let average = averageSales[productVariant.idProductVariant];
+        average.average = (average.average * average.n + productVariant.totalRate) / (average.n+1) ;
+        average.n++;
+    }
+}
+
+const calculatePercentAverage = (rate, productVariant) => {
+    return (rate - averageSales[productVariant.idProductVariant].average) / averageSales[productVariant.idProductVariant].average * 100;
 }
 
 const calculateTimePoints = (createdAt, finishedAt) => {

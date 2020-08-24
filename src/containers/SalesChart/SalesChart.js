@@ -22,7 +22,6 @@ class SalesChart extends Component {
       data,
       validData,
       filteredData,
-      averageSales: DataGenerator.averageSales,
       speed: 100,
       actualMoment,
     }
