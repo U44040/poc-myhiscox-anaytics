@@ -10,6 +10,10 @@ const deepClone = rfdc();
 
 class SidebarFilters extends Component {
 
+    /** 
+     * @TODO: Split component in sidebar, filters and settings 
+     * **/
+
     constructor(props) {
         super();
         this.state = {
@@ -24,6 +28,7 @@ class SidebarFilters extends Component {
             ],
             specialFilterValues: [],
             inputValue: '',
+            axisMode: 1,
         }
     }
 
@@ -293,6 +298,12 @@ class SidebarFilters extends Component {
         });
     }
 
+    updateAxisMode = (e) => {
+        this.setState({
+            axisMode: e.target.value,
+        })
+    }
+
     render = () => {
         let classes = ['d-none d-md-block'];
         if (this.state.collapsed) {
@@ -337,6 +348,25 @@ class SidebarFilters extends Component {
                         maxMenuHeight={500}
                     />
 
+                    <li className="list-group-item sidebar-separator-title align-items-center menu-collapsed d-flex">
+                        <small>AXIS</small>
+                    </li>
+
+                    <div className="div-group-item">
+                        <div class="form-check">
+                            <input class="form-check-input" name="axisSet" id="axisSet1" type="checkbox" value="1" checked={this.state.axisMode==1} onChange={this.updateAxisMode} />
+                            <label class="form-check-label" for="axisSet1">
+                                X (Time) / Y (Products in Market)
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" name="axisSet" id="axisSet2" type="checkbox" value="2" checked={this.state.axisMode==2} onChange={this.updateAxisMode} />
+                            <label class="form-check-label" for="axisSet2">
+                                X (Products in Market) / Y (Time)
+                            </label>
+                        </div>
+                    </div>
+                   
                     {
                         /*<a href="#submenu1" data-toggle="collapse" aria-expanded="false" className="bg-dark list-group-item list-group-item-action flex-column align-items-start collapsed">
                             <div className="d-flex w-100 justify-content-start align-items-center">

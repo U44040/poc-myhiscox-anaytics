@@ -141,6 +141,33 @@ body {
         text-align: right;
         padding-left: 10px;
       }
+
+      .list-group-item:last-child {
+        border-bottom-right-radius: initial;
+        border-bottom-left-radius: initial;
+      }
+
+      .div-group-item {
+          background-color: hsl(0,0%,100%);
+          border-radius: 4px;
+          box-shadow: 0 0 0 1px hsla(0,0%,0%,0.1), 0 4px 11px hsla(0,0%,0%,0.1);
+          margin-bottom: 8px;
+          margin-top: 8px;
+          margin-left: 3px;
+          margin-right: 3px;
+          box-sizing: border-box;
+          padding: 8px;
+      }
+
+      label {
+        font-size: 0.75rem;
+      }
+
+      .form-check {
+        &:hover {
+          background-color: #B2D4FF;
+        }
+      }
   }
 }
 
