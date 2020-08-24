@@ -59,14 +59,12 @@ class Dashboard extends Component {
         let boxes = <div className="row mb-4">
             <div className="col-md-6">
                 <Callout type="info">
-                    <h4>Estimated sales amount: </h4>
-                    <h5>{this.getEstimatedSalesAmount()}</h5>
+                    <h4>Estimated sales amount: <span className="text-dark">{this.getEstimatedSalesAmount()}</span></h4>
                 </Callout>
             </div>
             <div className="col-md-6">
                 <Callout type="info">
-                    <h4>Accumulated sales amount</h4>
-                    <h5>{this.getAccumulatedSalesAmount()}</h5>
+                    <h4>Accumulated sales amount: <span className="text-dark">{this.getAccumulatedSalesAmount()}</span></h4>
                 </Callout>
             </div>
         </div>;
