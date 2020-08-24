@@ -150,6 +150,7 @@ export const generateData = (momentInitial) => {
 
     for (let k = 0; k < numProjects; k++) {
 
+        let minimumRate = 0;
         let fullTotalRate = 0;
         let fullPercentAverage = 0;
 
@@ -158,9 +159,11 @@ export const generateData = (momentInitial) => {
         let products = [];
         for (let p = 0; p < numProducts; p++) {
             const randomRate = getRandomInt(100, 500);
+            minimumRate += randomRate;
             fullTotalRate += randomRate;
 
             let productVariant = getRandomValueFromArray(productVariants);
+            productVariant.minimumRate = randomRate;
             productVariant.totalRate = randomRate;
             productVariant.percentAverage = (randomRate - averageSales[productVariant.idProductVariant]) / averageSales[productVariant.idProductVariant] * 100;
             fullPercentAverage += productVariant.percentAverage;
@@ -187,6 +190,7 @@ export const generateData = (momentInitial) => {
             "productVariants": products,
             "isClean": isClean,
             "source": ((Math.round(Math.random())) === 0 ? "MyHiscox" : "API"),
+            "minimumRate": minimumRate,
             "totalRate": fullTotalRate,
             "fullPercentAverage": fullPercentAverage,
         }
