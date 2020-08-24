@@ -5,6 +5,8 @@ import rfdc from 'rfdc';
 import * as FILTER_TYPES from './FilterTypes';
 import * as STATUS from '../../utils/StatusTypes';
 import Option from './Option/Option';
+import ListGroupItem from './ListGroupItem/ListGroupItem';
+import AxisModeSelector from './AxisModeSelector/AxisModeSelector';
 
 const deepClone = rfdc();
 
@@ -327,45 +329,31 @@ class SidebarFilters extends Component {
                     <li className="sidebar-fixed-button text-right">
                         <span className={iconSidebarFixed} onClick={this.toggleSidebarFixed}></span>
                     </li>
-                    <li className="list-group-item sidebar-separator-title align-items-center menu-collapsed d-flex">
-                        <small>FILTERS</small>
-                    </li>
-
-                    <Select
-                        isMulti
-                        //key={JSON.stringify(this.state.options)}
-                        name="filters"
-                        menuIsOpen={true}
-                        hideSelectedOptions={false}
-                        className="react-select-container-filters"
-                        classNamePrefix="react-select-filters"
-                        options={this.state.options}
-                        components={this.components}
-                        value={this.state.filterValue}
-                        inputValue={this.state.inputValue}
-                        onChange={this.filterChange}
-                        onInputChange={this.changeSearchValue}
-                        maxMenuHeight={500}
-                    />
-
-                    <li className="list-group-item sidebar-separator-title align-items-center menu-collapsed d-flex">
-                        <small>AXIS</small>
-                    </li>
-
-                    <div className="div-group-item">
-                        <div class="form-check">
-                            <input class="form-check-input" name="axisSet" id="axisSet1" type="checkbox" value="1" checked={this.state.axisMode==1} onChange={this.updateAxisMode} />
-                            <label class="form-check-label" for="axisSet1">
-                                X (Time) / Y (Products in Market)
-                            </label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" name="axisSet" id="axisSet2" type="checkbox" value="2" checked={this.state.axisMode==2} onChange={this.updateAxisMode} />
-                            <label class="form-check-label" for="axisSet2">
-                                X (Products in Market) / Y (Time)
-                            </label>
-                        </div>
+                    
+                    <ListGroupItem title="FILTERS" isCollapsable collapsed></ListGroupItem>
+                    <div className="list-group-item-content">
+                        <Select
+                            isMulti
+                            //key={JSON.stringify(this.state.options)}
+                            name="filters"
+                            menuIsOpen={true}
+                            hideSelectedOptions={false}
+                            className="react-select-container-filters"
+                            classNamePrefix="react-select-filters"
+                            options={this.state.options}
+                            components={this.components}
+                            value={this.state.filterValue}
+                            inputValue={this.state.inputValue}
+                            onChange={this.filterChange}
+                            onInputChange={this.changeSearchValue}
+                            maxMenuHeight={500}
+                        />
                     </div>
+
+                    <ListGroupItem title="AXIS" isCollapsable collapsed></ListGroupItem>
+                    <div className="list-group-item-content">
+                        <AxisModeSelector />
+                    </div>                    
                    
                     {
                         /*<a href="#submenu1" data-toggle="collapse" aria-expanded="false" className="bg-dark list-group-item list-group-item-action flex-column align-items-start collapsed">
