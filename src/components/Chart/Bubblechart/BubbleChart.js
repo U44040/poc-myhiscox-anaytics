@@ -26,6 +26,7 @@ class BubbleChart extends Component {
             margin,
             width,
             height,
+            hiddenProjects: [],
         }
     }
 
@@ -91,6 +92,14 @@ class BubbleChart extends Component {
             xScaleTransformed: this.xScaleTransformed(),
             yScaleTransformed: this.yScaleTransformed(),
         }
+    }
+
+    addHiddenProject = (projectReference) => {
+        let hiddenProjects = this.state.hiddenProjects.map(d => d);
+        hiddenProjects.push(projectReference);
+        this.setState({
+            hiddenProjects
+        });
     }
 
     createChart = () => {
@@ -198,11 +207,8 @@ class BubbleChart extends Component {
     }
 
     updateInfoText = () => {
-        let totalProjects = 0;
-        for (let status of this.props.data) {
-            totalProjects+=status.projects.length;
-        }
-        this.infoText.text('Nº Projects: ' + totalProjects);
+        let circles = this.scatter.selectAll("circle").filter(function () { return d3.select(this).attr("isHidden") != "true"; });
+        this.infoText.text('Nº Projects: ' + circles.size());
     }
 
     mappedStatusForLegend = (status) => {
@@ -268,7 +274,10 @@ class BubbleChart extends Component {
             .attr("cy", (d) => scales.yScaleTransformed(this.getYValue(d) > 100 ? 100 : this.getYValue(d) < -100 ? -100 : this.getYValue(d)))
             .attr("r", (d) => scales.zScale(d.totalRate))
             .style("opacity", "0.9")
-            .attr("stroke", (d) => this.strokeColor(d.isClean));
+            .attr("stroke", (d) => this.strokeColor(d.isClean))
+            .style("display", (d) => this.state.hiddenProjects.includes(d.reference) ? "none" : "initial")
+            .attr("isHidden", (d) => this.state.hiddenProjects.includes(d.reference) ? "true" : "false")
+            ;
 
         scatterProject.exit().remove();
 
@@ -313,6 +322,13 @@ class BubbleChart extends Component {
             let endDate = moment(d.finishedAt, 'YYYY-MM-DD HH:mm:ss');
             html += `<p><Strong>End date:</strong> ${ endDate.format('DD-MM-YYYY HH:mm:ss') }</p>`;
         }
+        
+        let minimumRate = 0;
+        if (d.productVariants.length != 0) {
+            for (let productVariant of d.productVariants) {
+                minimumRate += productVariant.minimumRate;
+            }
+        }
 
         let totalRate = 0;
         if (d.productVariants.length != 0) {
@@ -321,8 +337,12 @@ class BubbleChart extends Component {
             }
         }
 
-        html += `<p><strong>Total rate:</strong> ${totalRate}€</p>`;
-
+        if (d.isClean) {
+            html += `<p><strong>Total rate:</strong> ${totalRate}€</p>`;
+        } else {
+            html += `<p><strong>Minimum rate:</strong> ${minimumRate}€</p>`;
+        }
+            
         html += `
         <div class="tooltip-products">
                 <p><strong>Products (+)</strong></p>
@@ -394,7 +414,8 @@ class BubbleChart extends Component {
 
     hideProject = (d, element) => {
         d3.event.preventDefault();
-        d3.select(element).style("display", "none");
+        d3.select(element).style("display", "none").attr("isHidden", true);
+        this.addHiddenProject(d.reference);
     }
 
     updateChartZoom = (xAxis, yAxis) => {
