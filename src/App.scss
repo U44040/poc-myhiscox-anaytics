@@ -119,6 +119,29 @@ body {
           background-color: #535997;
           color: #fff;
           height: 35px;
+
+          &.menu-collapsable {
+            &::after{
+              content: " \f0d8";
+              font-family: FontAwesome;
+              display: inline;
+              text-align: right;
+              position: absolute;
+              right:10px;
+            }
+  
+            &.menu-collapsed {
+              &::after{
+                content: "\f0d7";
+              }
+  
+              +.list-group-item-content {
+                display: none;
+              }
+            }
+          }
+
+          
       }
       .sidebar-separator {
           background-color: #333;
@@ -161,6 +184,7 @@ body {
 
       label {
         font-size: 0.75rem;
+        width: 100%;
       }
 
       .form-check {
