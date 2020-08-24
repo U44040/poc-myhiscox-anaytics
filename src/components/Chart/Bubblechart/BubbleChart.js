@@ -148,6 +148,7 @@ class BubbleChart extends Component {
         this.scatter = this.svg.append('g').attr("class", "data-bubble").attr("clip-path", "url(#clip)");
 
         this.createLegend();
+        this.createInfoText();
         this.createTooltip();
         this.updateChart();
     }
@@ -170,7 +171,7 @@ class BubbleChart extends Component {
             .append("text")
             .attr("class", "legend-bubble")
             .attr('x', () => this.state.width + 3)
-            .attr('y', (d, i) => this.state.height - 10 - (10 * i))
+            .attr('y', (d, i) => this.state.height - 20 - (10 * i))
             .text((d, i) => this.mappedStatusForLegend(d.status))
             .style("fill", (d) => this.fillColor(d.status))
             .style("font-size", 5)
@@ -180,10 +181,28 @@ class BubbleChart extends Component {
             .append("rect")
             .attr("class", "legend-bubble")
             .attr('x', () => this.state.width + 50)
-            .attr('y', (d, i) => this.state.height - 15 - (10 * i))
+            .attr('y', (d, i) => this.state.height - 25 - (10 * i))
             .attr('width', 5)
             .attr('height', 5)
             .style("fill", (d) => this.fillColor(d.status));
+    }
+
+    createInfoText = () => {
+        this.infoText = this.svg
+        .append('text')
+        .attr('class', 'info-text')
+        .attr('x', () => this.state.width + 3)
+        .attr('y', () => this.state.height - 10)
+        .style("font-size", 5)
+        .style("font-weight", "bold");
+    }
+
+    updateInfoText = () => {
+        let totalProjects = 0;
+        for (let status of this.props.data) {
+            totalProjects+=status.projects.length;
+        }
+        this.infoText.text('Nº Projects: ' + totalProjects);
     }
 
     mappedStatusForLegend = (status) => {
@@ -252,6 +271,9 @@ class BubbleChart extends Component {
             .attr("stroke", (d) => this.strokeColor(d.isClean));
 
         scatterProject.exit().remove();
+
+        this.updateInfoText();
+
     }
 
     showTooltip = (d, element) => {

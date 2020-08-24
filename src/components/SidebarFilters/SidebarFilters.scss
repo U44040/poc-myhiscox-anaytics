@@ -17,14 +17,15 @@
              position: inherit;
 
              &-list {
+                overflow-x: hidden;
                 max-height: 700px;
              }
             }
 
             &__group {
                 background-color: #e9eff9;
-                margin-left: 3px;
-                margin-right: 3px;
+                margin-left: 2px;
+                margin-right: 2px;
                 margin-bottom: 5px;
                 border-radius: 5px;
                 padding: 0px;
