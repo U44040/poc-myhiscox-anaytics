@@ -6,6 +6,8 @@ import * as STATUS from '../../utils/StatusTypes';
 import rfdc from 'rfdc';
 import * as FILTER_TYPES from '../../components/SidebarFilters/FilterTypes';
 import moment from 'moment';
+import userContext from '../../context/userContext';
+import * as ROLES from '../../utils/RoleTypes';
 
 const deepClone = rfdc();
 const INTERVAL_REFRESH = 1000;
@@ -26,6 +28,8 @@ class SalesChart extends Component {
       actualMoment,
     }
   }
+
+  static contextType = userContext;
 
   componentDidMount = () => {
     this.props.updateData(this.state.validData);
@@ -52,20 +56,58 @@ class SalesChart extends Component {
 
   getValidData = (data) => {
     // return only projects with elapsed time > 0. (<0 are future projects)
-    return data.map((d) => {
+    let validData = data.map((d) => {
       return {
         ...d,
         projects: d.projects.filter((p) => p.elapsedTime >= 0)
       }
     })
+
+    if (this.context && this.context.user) {
+      let user = this.context.user;
+      switch (user.role) {
+        case ROLES.NETWORK_MANAGER_ROLE:
+          validData = validData.map((d) => {
+            return {
+              ...d,
+              projects: d.projects.filter((p) => p.user.brokerage.network.id == user.network)
+            }
+          })
+          break;
+
+        case ROLES.BROKERAGE_MANAGER_ROLE:
+          validData = validData.map((d) => {
+            return {
+              ...d,
+              projects: d.projects.filter((p) => p.user.brokerage.id == user.brokerage && p.user.brokerage.network.id == user.network)
+            }
+          })
+          break;
+
+        case ROLES.USER_ROLE:
+          validData = validData.map((d) => {
+            return {
+              ...d,
+              projects: d.projects.filter((p) => p.user.id == user.id)
+            }
+          })
+          break;
+
+        default:
+          break;
+      }
+
+    }
+
+    return validData;
   }
 
   concatTypeValue = (type, value) => (type + "_" + value);
 
   filterData = (data) => {
     let filteredData = deepClone(data);
-    for (let filterType in this.props.filters){
-      let filters = this.props.filters[filterType].map(d=>d.value);
+    for (let filterType in this.props.filters) {
+      let filters = this.props.filters[filterType].map(d => d.value);
       switch (filterType) {
         case FILTER_TYPES.STATUS:
           for (let status of filteredData) {
@@ -114,7 +156,7 @@ class SalesChart extends Component {
     let hasRejectedFilter = false;
 
     if (this.props.filters[FILTER_TYPES.STATUS]) {
-      let filters = this.props.filters[FILTER_TYPES.STATUS].map(d=>d.value);
+      let filters = this.props.filters[FILTER_TYPES.STATUS].map(d => d.value);
       if (filters.includes(this.concatTypeValue(FILTER_TYPES.STATUS, STATUS.APPROVED))) {
         hasApprovedFilter = true;
       }
@@ -169,7 +211,7 @@ class SalesChart extends Component {
     });
   }
 
-  cancelInterval  = () => {
+  cancelInterval = () => {
     window.clearInterval(this.state.interval);
   }
 

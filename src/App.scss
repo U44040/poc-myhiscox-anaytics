@@ -35,6 +35,7 @@ $icon-size: 35px;
 
 @import url('https://fonts.googleapis.com/css?family=Roboto&display=swap');
 @import url('https://fonts.googleapis.com/css?family=Nunito&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
 
 @import "~bootstrap/scss/bootstrap";
 
@@ -43,10 +44,13 @@ body {
   height: 100vh;
   color: #353535;
   font-family: "Nunito",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
-  padding-top: 56px;
 }
 
 .app {
+
+  .section-dashboard {
+    padding-top: 56px;
+  }
 
   .sticky-offset {
       top: 56px;
