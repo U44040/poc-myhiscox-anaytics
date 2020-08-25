@@ -10,27 +10,17 @@ import AxisModeSelector from './AxisModeSelector/AxisModeSelector';
 import userContext from '../../context/userContext';
 import * as ROLES from '../../utils/RoleTypes';
 import Sidebar from '../Shared/Sidebar/Sidebar';
+import FilterSelector from './FilterSelector/FilterSelector';
 
 const deepClone = rfdc();
 
 class SidebarFilters extends Component {
 
-    /** 
-     * @TODO: Split component in sidebar, filters and settings 
-     * **/
-
     constructor(props) {
         super();
         this.state = {
-            filterValue: [
-                /*{
-                    label: "Hide Issued",
-                    value: "HIDE_ISSUED",
-                    type: FILTER_TYPES.STATUS,
-                }*/
-            ],
+            filterValue: [],
             specialFilterValues: [],
-            inputValue: '',
             axisMode: 1,
         }
     }
@@ -157,50 +147,6 @@ class SidebarFilters extends Component {
 
     compareLabels = (a, b) => a.label.localeCompare(b.label);
 
-    handleHeaderClick = id => {
-        const node = document.querySelector(`#${id}`).parentElement.parentElement;
-        const classes = node.classList;
-        if (classes.contains("group-expanded")) {
-            node.classList.remove("group-expanded");
-        } else {
-            node.classList.add("group-expanded");
-        }
-    };
-
-    CustomGroupHeading = props => {
-        return (
-            <div
-                className="group-heading-wrapper"
-                onClick={() => this.handleHeaderClick(props.id)}
-            >
-                <components.GroupHeading {...props} />
-            </div>
-        );
-    };
-
-    GroupComponent = props => {
-        let className = [props.selectProps.classNamePrefix + "__group-wrapper"];
-        if (this.state.inputValue !== "") {
-            className.push(props.selectProps.classNamePrefix + "__group-wrapper--is-searching")
-        }
-        return (
-            <div className={className.join(" ")}>
-                <components.Group {...props} />
-            </div>
-        );
-    }
-
-    OptionComponent = props => (
-        <Option key={props.value} specialFilterValues={this.state.specialFilterValues} addSpecialFilterValue={this.addSpecialFilterValue} removeSpecialFilterValue={this.removeSpecialFilterValue} {...props}></Option>
-    );
-
-    components = {
-        DropdownIndicator: null,
-        GroupHeading: this.CustomGroupHeading,
-        Option: this.OptionComponent,
-        Group: this.GroupComponent,
-    }
-
     filterChange = (values) => {
         let filtersByType = this.getFiltersByType(values);
         this.setState({
@@ -298,12 +244,6 @@ class SidebarFilters extends Component {
         }, () => this.props.updateSpecialFilters(specialFilterValues));
     }
 
-    changeSearchValue = (value) => {
-        this.setState({
-            inputValue: value
-        });
-    }
-
     updateAxisMode = (e) => {
         this.setState({
             axisMode: e.target.value,
@@ -318,21 +258,13 @@ class SidebarFilters extends Component {
             >
                 <ListGroupItem title="FILTERS" isCollapsable collapsed></ListGroupItem>
                 <div className="list-group-item-content">
-                    <Select
-                        isMulti
-                        //key={JSON.stringify(this.state.options)}
-                        name="filters"
-                        menuIsOpen={true}
-                        hideSelectedOptions={false}
-                        className="react-select-container-filters"
-                        classNamePrefix="react-select-filters"
-                        options={this.state.options}
-                        components={this.components}
-                        value={this.state.filterValue}
-                        inputValue={this.state.inputValue}
-                        onChange={this.filterChange}
-                        onInputChange={this.changeSearchValue}
-                        maxMenuHeight={500}
+                    <FilterSelector
+                     options={this.state.options}
+                     value={this.state.filterValue}
+                     filterChange={this.filterChange}
+                     addSpecialFilterValue={this.addSpecialFilterValue}
+                     removeSpecialFilterValue={this.removeSpecialFilterValue}
+                     specialFilterValues={this.state.specialFilterValues}
                     />
                 </div>
 

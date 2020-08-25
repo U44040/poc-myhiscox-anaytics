@@ -5,6 +5,16 @@ import Option from '../Option/Option';
 class FilterSelector extends Component
 {
 
+    state = {
+        inputValue: '',
+    }
+
+    changeSearchValue = (value) => {
+        this.setState({
+            inputValue: value
+        });
+    }
+
     handleHeaderClick = id => {
         const node = document.querySelector(`#${id}`).parentElement.parentElement;
         const classes = node.classList;
@@ -28,7 +38,7 @@ class FilterSelector extends Component
 
     GroupComponent = props => {
         let className = [props.selectProps.classNamePrefix + "__group-wrapper"];
-        if (this.props.inputValue !== "") {
+        if (this.state.inputValue !== "") {
             className.push(props.selectProps.classNamePrefix + "__group-wrapper--is-searching")
         }
         return (
@@ -62,9 +72,9 @@ class FilterSelector extends Component
             options={this.props.options}
             components={this.components}
             value={this.props.filterValue}
-            inputValue={this.props.inputValue}
+            inputValue={this.state.inputValue}
             onChange={this.props.filterChange}
-            onInputChange={this.props.changeSearchValue}
+            onInputChange={this.changeSearchValue}
             maxMenuHeight={500}
         />
     )
