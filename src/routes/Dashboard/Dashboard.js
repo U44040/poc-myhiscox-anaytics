@@ -73,8 +73,6 @@ class Dashboard extends Component {
         return (
             <div className="section-dashboard row">
                 <SidebarFilters
-                    collapsed={true}
-                    sidebarFixed={false}
                     salesChartData={this.state.salesChartData}
                     updateFilters={this.updateFilters} 
                     updateSpecialFilters={this.updateSpecialFilters}
