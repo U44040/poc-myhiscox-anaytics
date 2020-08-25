@@ -54,7 +54,7 @@ class Option extends Component {
             classes.push(this.classNamePrefix + "--disabled");
             option = (
                 <div key={this.props.value} className="react-select-filters__option css-yt9ioa-option">
-                    <input type="checkbox" readonly="" disabled />
+                    <input type="checkbox" readOnly disabled />
                     <label>{this.props.label}</label>
                 </div>
             );

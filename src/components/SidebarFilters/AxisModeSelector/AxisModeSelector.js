@@ -31,7 +31,6 @@ class AxisModeSelector extends Component
 
     handleHeaderClick = id => {
         const node = document.querySelector(`#${id}`).parentElement.parentElement;
-        console.log(node);
         const classes = node.classList;
         if (classes.contains("group-expanded")) {
             node.classList.remove("group-expanded");

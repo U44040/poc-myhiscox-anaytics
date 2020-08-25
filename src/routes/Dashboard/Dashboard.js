@@ -3,6 +3,7 @@ import Callout from '../../components/Shared/Callout/Callout';
 import SalesChart from '../../containers/SalesChart/SalesChart';
 import SidebarFilters from '../../components/SidebarFilters/SidebarFilters';
 import * as STATUS from '../../utils/StatusTypes';
+import userContext from '../../context/userContext';
 
 
 class Dashboard extends Component {
@@ -70,7 +71,7 @@ class Dashboard extends Component {
         </div>;
 
         return (
-            <React.Fragment>
+            <div className="section-dashboard row">
                 <SidebarFilters
                     collapsed={true}
                     sidebarFixed={false}
@@ -87,7 +88,7 @@ class Dashboard extends Component {
                         {boxes}
                     </div>
                 </div>
-            </React.Fragment>
+            </div>
         );
     }
 

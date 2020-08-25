@@ -7,6 +7,8 @@ import * as STATUS from '../../utils/StatusTypes';
 import Option from './Option/Option';
 import ListGroupItem from './ListGroupItem/ListGroupItem';
 import AxisModeSelector from './AxisModeSelector/AxisModeSelector';
+import userContext from '../../context/userContext';
+import * as ROLES from '../../utils/RoleTypes';
 
 const deepClone = rfdc();
 
@@ -33,6 +35,8 @@ class SidebarFilters extends Component {
             axisMode: 1,
         }
     }
+
+    static contextType = userContext;
 
     componentDidUpdate = (prevProps) => {
         if (prevProps.salesChartData !== this.props.salesChartData) {
@@ -118,6 +122,26 @@ class SidebarFilters extends Component {
         sourceOptions = Object.values(sourceOptions).sort(this.compareLabels);
         productOptions = Object.values(productOptions);
 
+        if (this.context && this.context.user) {
+            let user = this.context.user;
+            switch (user.role) {
+                case ROLES.NETWORK_MANAGER_ROLE:
+                    networkOptions = [];
+                    break;
+
+                case ROLES.BROKERAGE_MANAGER_ROLE:
+                    networkOptions = [];
+                    brokerageOptions = [];
+                    break;
+
+                case ROLES.USER_ROLE:
+                    networkOptions = [];
+                    brokerageOptions = [];
+                    brokerOptions = [];
+                    break;
+            }
+        }
+
         const options = [
             { label: "Brokers", options: brokerOptions },
             { label: "Brokerages", options: brokerageOptions },
@@ -125,7 +149,7 @@ class SidebarFilters extends Component {
             { label: "Products", options: productOptions },
             { label: "Status", options: statusOptions },
             { label: "Source", options: sourceOptions },
-        ]
+        ];
 
         this.setState({
             options
@@ -249,7 +273,7 @@ class SidebarFilters extends Component {
         let hasRejectedFilter = false;
 
         if (filtersByType[FILTER_TYPES.STATUS]) {
-            let filters = filtersByType[FILTER_TYPES.STATUS].map(d=>d.value);
+            let filters = filtersByType[FILTER_TYPES.STATUS].map(d => d.value);
             if (filters.includes(this.concatTypeValue(FILTER_TYPES.STATUS, STATUS.APPROVED))) {
                 hasApprovedFilter = true;
             }
@@ -261,13 +285,13 @@ class SidebarFilters extends Component {
         for (let status of data) {
             if (status.status == STATUS.APPROVED) {
                 if (hasApprovedFilter == false && this.state.specialFilterValues.includes(this.concatTypeValue(FILTER_TYPES.STATUS, STATUS.APPROVED)) == false) {
-                status.projects = [];
+                    status.projects = [];
                 }
             }
 
             if (status.status == STATUS.REJECTED) {
                 if (hasRejectedFilter == false && this.state.specialFilterValues.includes(this.concatTypeValue(FILTER_TYPES.STATUS, STATUS.REJECTED)) == false) {
-                status.projects = [];
+                    status.projects = [];
                 }
             }
         }
@@ -329,7 +353,7 @@ class SidebarFilters extends Component {
                     <li className="sidebar-fixed-button text-right">
                         <span className={iconSidebarFixed} onClick={this.toggleSidebarFixed}></span>
                     </li>
-                    
+
                     <ListGroupItem title="FILTERS" isCollapsable collapsed></ListGroupItem>
                     <div className="list-group-item-content">
                         <Select
@@ -353,8 +377,8 @@ class SidebarFilters extends Component {
                     <ListGroupItem title="AXIS" isCollapsable collapsed></ListGroupItem>
                     <div className="list-group-item-content">
                         <AxisModeSelector />
-                    </div>                    
-                   
+                    </div>
+
                     {
                         /*<a href="#submenu1" data-toggle="collapse" aria-expanded="false" className="bg-dark list-group-item list-group-item-action flex-column align-items-start collapsed">
                             <div className="d-flex w-100 justify-content-start align-items-center">
