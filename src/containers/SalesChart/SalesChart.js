@@ -49,6 +49,10 @@ class SalesChart extends Component {
     }
   }
 
+  componentWillUnmount = () => {
+    this.cancelInterval();
+  }
+
   getData = (actualMoment) => {
     const data = DataGenerator.generateData(actualMoment);
     return data;
