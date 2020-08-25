@@ -9,6 +9,7 @@ import ListGroupItem from './ListGroupItem/ListGroupItem';
 import AxisModeSelector from './AxisModeSelector/AxisModeSelector';
 import userContext from '../../context/userContext';
 import * as ROLES from '../../utils/RoleTypes';
+import Sidebar from '../Shared/Sidebar/Sidebar';
 
 const deepClone = rfdc();
 
@@ -21,8 +22,6 @@ class SidebarFilters extends Component {
     constructor(props) {
         super();
         this.state = {
-            collapsed: props.collapsed,
-            sidebarFixed: props.sidebarFixed,
             filterValue: [
                 /*{
                     label: "Hide Issued",
@@ -202,25 +201,6 @@ class SidebarFilters extends Component {
         Group: this.GroupComponent,
     }
 
-    showSidebar = (e) => {
-        this.setState({
-            collapsed: false,
-        })
-    }
-
-    hideSidebar = (e) => {
-        if (this.state.sidebarFixed === true) { return; }
-        this.setState({
-            collapsed: true,
-        })
-    }
-
-    toggleSidebarFixed = (e) => {
-        this.setState((oldState, oldProps) => ({
-            sidebarFixed: !oldState.sidebarFixed
-        }))
-    }
-
     filterChange = (values) => {
         let filtersByType = this.getFiltersByType(values);
         this.setState({
@@ -331,79 +311,36 @@ class SidebarFilters extends Component {
     }
 
     render = () => {
-        let classes = ['d-none d-md-block'];
-        if (this.state.collapsed) {
-            classes.push('sidebar-collapsed');
-        }
-        else {
-            classes.push('sidebar-expanded');
-        }
-
-        let iconSidebarFixed;
-        if (this.state.sidebarFixed) {
-            iconSidebarFixed = 'fa fa-thumb-tack mr-3';
-        }
-        else {
-            iconSidebarFixed = 'fa fa-thumb-tack fa-rotate-90 mr-3';
-        }
-
         return (
-            <div id="sidebar-container" className={classes.join(' ')} onMouseEnter={this.showSidebar} onMouseLeave={this.hideSidebar}>
-                <ul className="list-group sticky-top sticky-offset sticky-height-control">
-                    <li className="sidebar-fixed-button text-right">
-                        <span className={iconSidebarFixed} onClick={this.toggleSidebarFixed}></span>
-                    </li>
+            <Sidebar
+                collapsed={true}
+                sidebarFixed={false}
+            >
+                <ListGroupItem title="FILTERS" isCollapsable collapsed></ListGroupItem>
+                <div className="list-group-item-content">
+                    <Select
+                        isMulti
+                        //key={JSON.stringify(this.state.options)}
+                        name="filters"
+                        menuIsOpen={true}
+                        hideSelectedOptions={false}
+                        className="react-select-container-filters"
+                        classNamePrefix="react-select-filters"
+                        options={this.state.options}
+                        components={this.components}
+                        value={this.state.filterValue}
+                        inputValue={this.state.inputValue}
+                        onChange={this.filterChange}
+                        onInputChange={this.changeSearchValue}
+                        maxMenuHeight={500}
+                    />
+                </div>
 
-                    <ListGroupItem title="FILTERS" isCollapsable collapsed></ListGroupItem>
-                    <div className="list-group-item-content">
-                        <Select
-                            isMulti
-                            //key={JSON.stringify(this.state.options)}
-                            name="filters"
-                            menuIsOpen={true}
-                            hideSelectedOptions={false}
-                            className="react-select-container-filters"
-                            classNamePrefix="react-select-filters"
-                            options={this.state.options}
-                            components={this.components}
-                            value={this.state.filterValue}
-                            inputValue={this.state.inputValue}
-                            onChange={this.filterChange}
-                            onInputChange={this.changeSearchValue}
-                            maxMenuHeight={500}
-                        />
-                    </div>
-
-                    <ListGroupItem title="AXIS" isCollapsable collapsed></ListGroupItem>
-                    <div className="list-group-item-content">
-                        <AxisModeSelector />
-                    </div>
-
-                    {
-                        /*<a href="#submenu1" data-toggle="collapse" aria-expanded="false" className="bg-dark list-group-item list-group-item-action flex-column align-items-start collapsed">
-                            <div className="d-flex w-100 justify-content-start align-items-center">
-                                <span className="fa fa-filter fa-fw mr-3"></span>
-                                <span className="menu-collapsed">Corredurías</span>
-                                <span className="submenu-icon ml-auto"></span>
-                            </div>
-                        </a>
-                        <a href="#submenu1" data-toggle="collapse" aria-expanded="false" className="bg-dark list-group-item list-group-item-action flex-column align-items-start collapsed">
-                            <div className="d-flex w-100 justify-content-start align-items-center">
-                                <span className="fa fa-dashboard fa-fw mr-3"></span>
-                                <span className="menu-collapsed">Redes</span>
-                                <span className="submenu-icon ml-auto"></span>
-                            </div>
-                        </a>
-                        <a href="#submenu1" data-toggle="collapse" aria-expanded="false" className="bg-dark list-group-item list-group-item-action flex-column align-items-start collapsed">
-                            <div className="d-flex w-100 justify-content-start align-items-center">
-                                <span className="fa fa-dashboard fa-fw mr-3"></span>
-                                <span className="menu-collapsed">Estado</span>
-                                <span className="submenu-icon ml-auto"></span>
-                            </div>
-                        </a>*/
-                    }
-                </ul>
-            </div>
+                <ListGroupItem title="AXIS" isCollapsable collapsed></ListGroupItem>
+                <div className="list-group-item-content">
+                    <AxisModeSelector />
+                </div>
+            </Sidebar>
         );
     }
 };
