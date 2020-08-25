@@ -20,16 +20,16 @@ const Header = (props) => {
             </Nav>
             <Nav>
                 <Navbar.Text>Welcome back {context.user.name}</Navbar.Text>
-                <NavDropdown alignRight title={<span class="fa fa-user"></span>}>
-                    <NavDropdown.Item href="/user/profile"><span class="fa fa-user"></span> Profile</NavDropdown.Item>
+                <NavDropdown alignRight title={<span className="fa fa-user"></span>}>
+                    <NavDropdown.Item href="/user/profile"><span className="fa fa-user"></span> Profile</NavDropdown.Item>
                     { (context.user.role == ROLES.SUPER_ADMIN_ROLE ?
                         <React.Fragment>
                             <NavDropdown.Divider></NavDropdown.Divider>
-                            <NavDropdown.Item href="/user/admin"><span class="fa fa-users"></span> Manage users</NavDropdown.Item>
+                            <NavDropdown.Item href="/user/admin"><span className="fa fa-users"></span> Manage users</NavDropdown.Item>
                         </React.Fragment> : '')
                     }
                     <NavDropdown.Divider></NavDropdown.Divider>
-                    <NavDropdown.Item onClick={context.logout}><span class="fa fa-sign-out"></span> Logout</NavDropdown.Item>
+                    <NavDropdown.Item onClick={context.logout}><span className="fa fa-sign-out"></span> Logout</NavDropdown.Item>
                 </NavDropdown>
             </Nav>
         </Navbar.Collapse>

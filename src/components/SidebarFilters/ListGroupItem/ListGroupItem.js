@@ -10,9 +10,9 @@ class ListGroupItem extends Component
     }
 
     handleClick = () => {
-        this.setState((oldState, oldProps) => {
-            this.setState({collapsed: !oldState.collapsed})
-        });
+        this.setState((oldState, oldProps) => (
+            { collapsed: !oldState.collapsed }
+        ));
     }
 
     render = () => {
