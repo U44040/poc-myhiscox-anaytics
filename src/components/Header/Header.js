@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import { Navbar, Nav, NavDropdown } from 'react-bootstrap';
 import userContext from '../../context/userContext';
 import * as ROLES from '../../utils/RoleTypes';
+import { Link } from 'react-router-dom';
 
 const Header = (props) => {
 
@@ -10,12 +11,18 @@ const Header = (props) => {
     return <Navbar className="shadow navbar-dark bg-primary fixed-top" expand="lg">
         <Navbar.Brand href="#home">Hiscox</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
-        <Navbar.Collapse id="basic-navbar-nav">
+        <Navbar.Collapse>
             <Nav className="mr-auto">
-                <Nav.Link href="/dashboard">Dashboard</Nav.Link>
-                <NavDropdown title="Graphs" id="basic-nav-dropdown">
-                    <NavDropdown.Item href="/dashboard/1">Graph 1</NavDropdown.Item>
-                    <NavDropdown.Item href="/dashboard/2">Graph 2</NavDropdown.Item>
+                <NavDropdown title="Graphs">
+                    <Link to="/graphs/bubble-chart">
+                        <NavDropdown.Item href="/graphs/bubble-chart">Bubble Chart</NavDropdown.Item>
+                    </Link>
+                    <Link to="/graphs/closed-insurance-policies">
+                        <NavDropdown.Item href="/graphs/closed-insurance-policies">Closed Insurance Policies</NavDropdown.Item>
+                    </Link>
+                    <Link to="/graphs/bar-chart-race">
+                        <NavDropdown.Item href="/graphs/bar-chart-race">Bar Chart Race</NavDropdown.Item>
+                    </Link>
                 </NavDropdown>
             </Nav>
             <Nav>

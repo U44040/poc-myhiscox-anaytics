@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import * as FILTER_TYPES from '../FilterTypes';
+import * as FILTER_TYPES from '../../../utils/FilterTypes';
 import { components } from 'react-select';
 import * as STATUS from '../../../utils/StatusTypes';
 

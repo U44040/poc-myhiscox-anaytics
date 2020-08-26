@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Select, {components} from 'react-select';
-import Option from '../Option/Option';
+import Option from '../../../Shared/Option/Option';
 
 class FilterSelector extends Component
 {

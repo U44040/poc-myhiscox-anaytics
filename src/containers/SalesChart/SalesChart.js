@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
-import BubbleChart from '../../components/Chart/Bubblechart/BubbleChart';
 import Card from '../../components/Shared/Card/Card';
 import * as DataGenerator from '../../utils/DataGenerator';
 import * as STATUS from '../../utils/StatusTypes';
 import rfdc from 'rfdc';
-import * as FILTER_TYPES from '../../components/SidebarFilters/FilterTypes';
+import * as FILTER_TYPES from '../../utils/FilterTypes';
 import moment from 'moment';
 import userContext from '../../context/userContext';
 import * as ROLES from '../../utils/RoleTypes';
+import BubbleChart from './../../components/SalesChart/Bubblechart/BubbleChart';
 
 const deepClone = rfdc();
 const INTERVAL_REFRESH = 1000;
