@@ -17,11 +17,11 @@ const Header = (props) => {
                     <Link to="/graphs/bubble-chart">
                         <NavDropdown.Item href="/graphs/bubble-chart">Bubble Chart</NavDropdown.Item>
                     </Link>
-                    <Link to="/graphs/closed-insurance-policies">
-                        <NavDropdown.Item href="/graphs/closed-insurance-policies">Closed Insurance Policies</NavDropdown.Item>
+                    <Link to="/graphs/total-accumulated-sales">
+                        <NavDropdown.Item href="/graphs/total-accumulated-sales">(WIP) Total accumulated Sales</NavDropdown.Item>
                     </Link>
                     <Link to="/graphs/bar-chart-race">
-                        <NavDropdown.Item href="/graphs/bar-chart-race">Bar Chart Race</NavDropdown.Item>
+                        <NavDropdown.Item href="/graphs/bar-chart-race">(WIP) Bar Chart Race</NavDropdown.Item>
                     </Link>
                 </NavDropdown>
             </Nav>

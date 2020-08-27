@@ -1,28 +1,30 @@
 import React, { Component } from 'react';
-import BubbleChart from '../../components/Chart/Bubblechart/BubbleChart';
 import Card from '../../components/Shared/Card/Card';
-import * as DataGenerator from '../../utils/DataGenerator';
+import * as DataGenerator from '../../utils/ScatterPlotChartDataGenerator';
 import * as STATUS from '../../utils/StatusTypes';
 import rfdc from 'rfdc';
 import * as FILTER_TYPES from '../../utils/FilterTypes';
 import moment from 'moment';
 import userContext from '../../context/userContext';
 import * as ROLES from '../../utils/RoleTypes';
+import ConnectedScatterPlotChart from '../../components/TotalAccumulatedSales/ConnectedScatterPlotChart/ConnectedScatterPlotChart';
 
 const deepClone = rfdc();
 const INTERVAL_REFRESH = 1000;
 
-class ClosedInsuranceChart extends Component {
+class TotalAccumulatedSalesChart extends Component {
 
   constructor(props) {
     super();
     const actualMoment = moment().hour(8).minute(0).second(0);
-    const data = this.getData(actualMoment);
-    const validData = this.getValidData(data);
-    const filteredData = validData;
+    const data = this.getData();
+    const segmentedData = this.getSegmentedData(data);
+    const aggregatedData = this.getAggregatedData(segmentedData);
+    const filteredData = aggregatedData;
     this.state = {
       data,
-      validData,
+      segmentedData,
+      aggregatedData,
       filteredData,
       speed: 100,
       actualMoment,
@@ -32,10 +34,10 @@ class ClosedInsuranceChart extends Component {
   static contextType = userContext;
 
   componentDidMount = () => {
-    this.props.updateData(this.state.validData);
-    this.setIntervalRefresh(INTERVAL_REFRESH);
+    this.props.updateData(this.state.aggregatedData);
+    //this.setIntervalRefresh(INTERVAL_REFRESH);
     this.setState((oldState, oldProps) => ({
-      filteredData: this.filterData(oldState.validData)
+      filteredData: this.filterData(oldState.aggregatedData)
     }))
   }
 
@@ -43,7 +45,7 @@ class ClosedInsuranceChart extends Component {
     if (prevProps.filters != this.props.filters || prevProps.specialFilters != this.props.specialFilters) {
       this.setState((oldState, oldProps) => (
         {
-          filteredData: this.filterData(oldState.validData)
+          filteredData: this.filterData(oldState.aggregatedData)
         }
       ));
     }
@@ -53,57 +55,77 @@ class ClosedInsuranceChart extends Component {
     this.cancelInterval();
   }
 
-  getData = (actualMoment) => {
-    const data = DataGenerator.generateData(actualMoment);
-    return data;
+  getData = () => {
+    return DataGenerator.generateData();
   }
 
-  getValidData = (data) => {
-    // return only projects with elapsed time > 0. (<0 are future projects)
-    let validData = data.map((d) => {
-      return {
-        ...d,
-        projects: d.projects.filter((p) => p.elapsedTime >= 0)
-      }
-    })
+  getSegmentedData = (data) => {
+    // TODO SEGMENT DATA
+    // TODO: Split each segmentation in a different serie
+    let originalData = deepClone(data);
+    let series = [];
 
-    if (this.context && this.context.user) {
-      let user = this.context.user;
-      switch (user.role) {
-        case ROLES.NETWORK_MANAGER_ROLE:
-          validData = validData.map((d) => {
-            return {
-              ...d,
-              projects: d.projects.filter((p) => p.user.brokerage.network.id == user.network)
-            }
-          })
-          break;
+    let segmentType = "network";
 
-        case ROLES.BROKERAGE_MANAGER_ROLE:
-          validData = validData.map((d) => {
-            return {
-              ...d,
-              projects: d.projects.filter((p) => p.user.brokerage.id == user.brokerage && p.user.brokerage.network.id == user.network)
-            }
-          })
-          break;
+      let serie = {
+        label: 'global',
+        values: [],
+      };
 
-        case ROLES.USER_ROLE:
-          validData = validData.map((d) => {
-            return {
-              ...d,
-              projects: d.projects.filter((p) => p.user.id == user.id)
-            }
-          })
-          break;
-
-        default:
-          break;
+      for (let d of originalData) {
+        serie.values.push(d);
       }
 
+    series.push(serie);
+    return series;
+  }
+
+  getAggregatedData = (data) => {
+    let series = deepClone(data);
+    let aggregatedSeries = [];
+
+    let aggregation = 'month';
+    let dateFormat = '';
+
+    switch (aggregation) {
+      case 'year':
+        dateFormat = 'YYYY';
+        break
+      case 'month':
+        dateFormat = 'YYYYMM';
+        break;
+      case 'day':
+        dateFormat = 'YYYYMMDD';
+        break;
     }
 
-    return validData;
+
+    for (let serie of series) {
+      let aggregatedSerie = {
+        ...serie,
+        values: {}
+      };
+
+      for (let d of serie.values) {
+        let dateFormatted = moment(d.date).locale('es').format(dateFormat);
+
+        if (aggregatedSerie.values[dateFormatted] == undefined) {
+          aggregatedSerie.values[dateFormatted] = {
+            keyTime: moment(dateFormatted, dateFormat),
+            items: [],
+            volume: 0,
+          };
+        }
+        
+        aggregatedSerie.values[dateFormatted].items.push(d);
+        aggregatedSerie.values[dateFormatted].volume += d.volume;
+      }
+
+      aggregatedSerie.values = Object.values(aggregatedSerie.values);
+      aggregatedSeries.push(aggregatedSerie);
+    }
+
+    return aggregatedSeries;
   }
 
   concatTypeValue = (type, value) => (type + "_" + value);
@@ -198,14 +220,16 @@ class ClosedInsuranceChart extends Component {
     }
 
     let updatedData = DataGenerator.updateData(this.state.data, actualMoment);
-    let validData = this.getValidData(updatedData);
-    let filteredData = this.filterData(validData);
+    let segmentedData = this.getSegmentedData(updatedData);
+    let aggregatedData = this.getAggregatedData(segmentedData);
+    let filteredData = this.filterData(aggregatedData);
     this.setState({
       data: updatedData,
-      validData: validData,
+      segmentedData: segmentedData,
+      aggregatedData: aggregatedData,
       filteredData: filteredData,
       actualMoment: actualMoment,
-    }, () => this.props.updateData(validData));
+    }, () => this.props.updateData(aggregatedData));
   }
 
   setIntervalRefresh = (interval) => {
@@ -229,14 +253,11 @@ class ClosedInsuranceChart extends Component {
 
   render = () => (
     <div className="col-md">
-      <Card type="primary" /* header="Venta de pólizas" title="Tiempo real" text="Gráfica en tiempo real de las pólizas que se están creando"*/ >
-        <div>
-          Hora: {this.state.actualMoment.format('HH:mm:ss')} - Velocidad: <input type="range" min="0" max="200" value={this.state.speed} onChange={this.updateSpeed} /> {this.state.speed}%
-        </div>
-        <BubbleChart data={this.state.filteredData} />
+      <Card type="primary">
+        <ConnectedScatterPlotChart data={this.state.filteredData} />
       </Card>
     </div>
   );
 }
 
-export default ClosedInsuranceChart;
+export default TotalAccumulatedSalesChart;

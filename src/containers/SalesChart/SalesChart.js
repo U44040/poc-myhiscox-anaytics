@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Card from '../../components/Shared/Card/Card';
-import * as DataGenerator from '../../utils/DataGenerator';
+import * as DataGenerator from '../../utils/SalesChartDataGenerator';
 import * as STATUS from '../../utils/StatusTypes';
 import rfdc from 'rfdc';
 import * as FILTER_TYPES from '../../utils/FilterTypes';

@@ -1,9 +1,34 @@
 import React, { Component } from 'react';
 import Callout from '../../components/Shared/Callout/Callout';
-import SidebarFilters from './../../components/ClosedInsurancePolicies/SidebarFilters/SidebarFilters';
+import SidebarFilters from '../../components/TotalAccumulatedSales/SidebarFilters/SidebarFilters';
+import TotalAccumulatedSalesChart from '../../containers/TotalAccumulatedSalesChart/TotalAccumulatedSalesChart';
 
-class ClosedInsurancePolicies extends Component
+class TotalAccumulatedSales extends Component
 {
+
+    state = {
+        filters: {},
+        specialFilters: [],
+        salesChartData: [],
+    }
+
+    updateChartData = (data) => {
+        this.setState(
+            { salesChartData: data }
+        )
+    }
+
+    updateFilters = (filters) => {
+        this.setState(
+            { filters: filters }
+        )
+    }
+
+    updateSpecialFilters = (specialFilters) => {
+        this.setState(
+            { specialFilters: specialFilters }
+        )
+    }
 
     render = () => {
         let boxes = <div className="row mb-4">
@@ -28,9 +53,9 @@ class ClosedInsurancePolicies extends Component
                 />*/}
                 <div className="col py-3">
                     <div className="container-fluid">
-                        <h3 className="text-gray-800">Closed Insurance Policies</h3>
+                        <h3 className="text-gray-800">Total accumulated Sales</h3>
                         <div className="row mb-4">
-                            { /*<SalesChart updateData={this.updateSalesChartData} filters={this.state.filters} specialFilters={this.state.specialFilters} /> */}
+                            { <TotalAccumulatedSalesChart updateData={this.updateChartData} filters={this.state.filters} specialFilters={this.state.specialFilters} /> }
                         </div>
                     </div>
                 </div>
@@ -40,4 +65,4 @@ class ClosedInsurancePolicies extends Component
     
 }
 
-export default ClosedInsurancePolicies;
+export default TotalAccumulatedSales;

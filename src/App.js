@@ -9,7 +9,7 @@ import Login from './routes/Login/Login';
 import userContext from './context/userContext';
 import Cookies from 'js-cookie';
 import * as ROLES from './utils/RoleTypes';
-import ClosedInsurancePolicies from './routes/Graphs/ClosedInsurancePolicies';
+import TotalAccumulatedSales from './routes/Graphs/TotalAccumulatedSales';
 
 const USERS = [
   {
@@ -115,7 +115,7 @@ class App extends Component {
           <Main>
             <Switch>
               <Route path="/login" component={Login} />
-              <Route path="/graphs/closed-insurance-policies" component={ClosedInsurancePolicies} />
+              <Route path="/graphs/total-accumulated-sales" component={TotalAccumulatedSales} />
               <Route path="/" component={Dashboard} />
             </Switch>
           </Main>
