@@ -53,7 +53,7 @@ class TotalAccumulatedSales extends Component
                 />*/}
                 <div className="col py-3">
                     <div className="container-fluid">
-                        <h3 className="text-gray-800">Total accumulated Sales</h3>
+                        <h3 className="text-gray-800">Total Accumulated Sales</h3>
                         <div className="row mb-4">
                             { <TotalAccumulatedSalesChart updateData={this.updateChartData} filters={this.state.filters} specialFilters={this.state.specialFilters} /> }
                         </div>

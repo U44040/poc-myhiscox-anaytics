@@ -78,7 +78,7 @@ class Dashboard extends Component {
                 />
                 <div className="col py-3">
                     <div className="container-fluid">
-                        <h3 className="text-gray-800">Real Time</h3>
+                        <h3 className="text-gray-800">Real-Time Sales Scatterplot</h3>
                         <div className="row mb-4">
                             <SalesChart updateData={this.updateSalesChartData} filters={this.state.filters} specialFilters={this.state.specialFilters} />
                         </div>

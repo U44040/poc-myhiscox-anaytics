@@ -8,6 +8,7 @@ import moment from 'moment';
 import userContext from '../../context/userContext';
 import * as ROLES from '../../utils/RoleTypes';
 import ConnectedScatterPlotChart from '../../components/TotalAccumulatedSales/ConnectedScatterPlotChart/ConnectedScatterPlotChart';
+import { Form, Row, Col } from 'react-bootstrap';
 
 const deepClone = rfdc();
 const INTERVAL_REFRESH = 1000;
@@ -18,13 +19,12 @@ class TotalAccumulatedSalesChart extends Component {
     super();
     const actualMoment = moment().hour(8).minute(0).second(0);
     const data = this.getData();
-    /*const filteredData = data;
-    const segmentedData = this.getSegmentedData(filteredData);
-    const aggregatedData = this.getAggregatedData(segmentedData);*/
     this.state = {
       data,
       speed: 100,
       actualMoment,
+      segmentType: '',
+      aggregatedBy: 'month',
     }
   }
 
@@ -72,16 +72,15 @@ class TotalAccumulatedSalesChart extends Component {
 
   getSegmentedData = (data) => {
 
-    let segmentType = "network";
     let series;
 
-    if (segmentType) {
+    if (this.state.segmentType) {
       let differentValues = {};
 
       for (let d of data) {
         for (let project of d.projects) {
           let segmentationObject;
-          switch (segmentType) {
+          switch (this.state.segmentType) {
             case 'network':
               segmentationObject = project.user.brokerage.network;
               break;
@@ -101,7 +100,7 @@ class TotalAccumulatedSalesChart extends Component {
       series = differentValues.map(d => {
         let values = deepClone(data);
         for (let value of values) {
-          switch (segmentType) {
+          switch (this.state.segmentType) {
             case 'network':
               value.projects = value.projects.filter(p => p.user.brokerage.network.id == d.id);
               value.volume = value.projects.reduce((accumulator, current) => (accumulator += current.totalRate), 0);
@@ -126,7 +125,7 @@ class TotalAccumulatedSalesChart extends Component {
       series = [
         {
           id: 0,
-          label: 'global',
+          label: 'Total',
           values: deepClone(data),
         }
       ];
@@ -139,10 +138,9 @@ class TotalAccumulatedSalesChart extends Component {
     let series = deepClone(data);
     let aggregatedSeries = [];
 
-    let aggregation = 'month';
     let dateFormat = '';
 
-    switch (aggregation) {
+    switch (this.state.aggregatedBy) {
       case 'year':
         dateFormat = 'YYYY';
         break
@@ -153,7 +151,6 @@ class TotalAccumulatedSalesChart extends Component {
         dateFormat = 'YYYYMMDD';
         break;
     }
-
 
     for (let serie of series) {
       let aggregatedSerie = {
@@ -281,10 +278,10 @@ class TotalAccumulatedSalesChart extends Component {
     this.setState({
       data: updatedData,
       filteredData: filteredData,
+      actualMoment: actualMoment,
       segmentedData: segmentedData,
       aggregatedData: aggregatedData,
-      actualMoment: actualMoment,
-    }, () => this.props.updateData(aggregatedData));
+    }, () => this.props.updateData(updatedData));
   }
 
   setIntervalRefresh = (interval) => {
@@ -306,6 +303,22 @@ class TotalAccumulatedSalesChart extends Component {
     )
   }
 
+  changeSegmentation = (e) => {
+    this.setState({
+      segmentType: e.target.value,
+    }, () => this.prepareData())
+  }
+
+  prepareData = () => {
+    let segmentedData = this.getSegmentedData(this.state.filteredData);
+    let aggregatedData = this.getAggregatedData(segmentedData);
+
+    this.setState({
+      segmentedData,
+      aggregatedData,
+    })
+  }
+
   render = () => {
     let chart = '';
     if (this.state.aggregatedData) {
@@ -314,6 +327,23 @@ class TotalAccumulatedSalesChart extends Component {
     return (
     <div className="col-md">
       <Card type="primary">
+        <div className="row">
+          <div className="col-12">
+            <Form inline>
+              <Form.Group>
+                <Form.Label>
+                  Segmentation
+                </Form.Label>
+                  <Form.Control className="mx-sm-3" as="select" value={this.state.segmentType} onChange={this.changeSegmentation}>
+                    <option value="">Total</option>
+                    <option value="broker">Broker</option>
+                    <option value="brokerage">Brokerage</option>
+                    <option value="network">Network</option>
+                  </Form.Control>
+              </Form.Group>
+            </Form>
+          </div>
+        </div>
         { chart }
       </Card>
     </div>

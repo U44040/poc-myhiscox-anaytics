@@ -10,7 +10,7 @@ class ConnectedScatterPlotChart extends Component {
     constructor(props) {
         super();
 
-        const margin = { top: 5, right: 20, bottom: 15, left: 38 };
+        const margin = { top: 5, right: 70, bottom: 15, left: 38 };
         const width = 670 - margin.left - margin.right;
         const height = 200 - margin.top - margin.bottom;
 
@@ -113,7 +113,9 @@ class ConnectedScatterPlotChart extends Component {
         // Axis
         this.xAxis = this.svg.append("g").style("font-size", "0.4rem").attr("transform", "translate(0," + this.state.height + ")").call(d3.axisBottom(scales.xScale).ticks(this.state.width/80))            
         this.yAxis = this.svg.append("g").style("font-size", "0.4rem").call(d3.axisLeft(scales.yScale).tickFormat((d, i) => d + "€"))
+            .call(g => g.selectAll(".tick line.grid").remove())
             .call(g => g.selectAll(".tick line").clone()
+                .attr("class","grid")
                 .attr("x2", this.state.width)
                 .attr("stroke-opacity", 0.1))
             .call(g => g.select(".tick:last-of-type text").clone()
@@ -169,43 +171,56 @@ class ConnectedScatterPlotChart extends Component {
         // Plot
         this.scatter = this.svg.append('g').attr("class", "data-scatterplot").attr("clip-path", "url(#clip)");
 
-        //this.createLegend();
         //this.createTooltip();
         this.updateChart();
     }
 
-    createLegend = () => {
+    updateLegend = () => {
+
+        this.svg.selectAll(".legend").remove();
+
         let legendGroup = this.svg
             .selectAll(".legend")
             .data(this.props.data)
             .enter()
             .append('g')
-            .on("mouseover", function (d) {
-                d3.select('.data-scatterplot').selectAll("g:not(." + StringSanitizer.sanitize(d.status)).transition().style("opacity", 0.1);
+            .attr("class","legend")
+            .on("mouseover", function (d, i) {
+                d3.select('.data-scatterplot').selectAll("g.serie:not(.serie-" + i).transition().style("opacity", 0.1);
                 //d3.selectAll('.legend').style("opacity", 0.5).style("text-decoration", "line-through");
             })
             .on("mouseout", function (d) {
                 d3.select('.data-scatterplot').selectAll("g").transition().style("opacity", 1);
-            });
+            })
+            
+           ;
 
         legendGroup
             .append("text")
+            .merge(legendGroup)
             .attr("class", "legend-bubble")
-            .attr('x', () => this.state.width + 3)
-            .attr('y', (d, i) => this.state.height - 20 - (10 * i))
-            .text((d, i) => this.mappedStatusForLegend(d.status))
-            .style("fill", (d) => this.fillColor(d.status))
-            .style("font-size", 5)
+            .attr('x', () => this.state.width + 8)
+            .attr('y', (d, i) => this.state.height - 10 - (10 * i))
+            .text((d) => {
+                if (d.label.length > 22) {
+                    return d.label.substring(0,22) + "...";
+                }
+                return d.label;
+            })
+            .style("fill", (d, i) => this.fillColor(i))
+            .style("font-size", 4)
             .style("font-weight", "bold");
 
         legendGroup
             .append("rect")
+            .merge(legendGroup)
+
             .attr("class", "legend-bubble")
-            .attr('x', () => this.state.width + 50)
-            .attr('y', (d, i) => this.state.height - 25 - (10 * i))
+            .attr('x', () => this.state.width + 60)
+            .attr('y', (d, i) => this.state.height - 15 - (10 * i))
             .attr('width', 5)
             .attr('height', 5)
-            .style("fill", (d) => this.fillColor(d.status));
+            .style("fill", (d, i) => this.fillColor(i));
     }
 
     mappedStatusForLegend = (status) => {
@@ -239,7 +254,20 @@ class ConnectedScatterPlotChart extends Component {
 
         // Axis
         //this.xAxis.call(d3.axisBottom(this.xScaleTransformed()).ticks(12));
-        //this.yAxis.call(d3.axisLeft(scales.yScale).tickFormat((d, i) => d + "%"));
+        this.yAxis.call(d3.axisLeft(scales.yScale).tickFormat((d, i) => d + "€"))
+        .call(g => g.selectAll(".tick line.grid").remove())
+        .call(g => g.selectAll(".tick line").clone()
+            .attr("class","grid")
+            .attr("x2", this.state.width)
+            .attr("stroke-opacity", 0.1))
+        .call(g => g.select(".tick:last-of-type text").clone()
+            .attr("x", 4)
+            .attr("text-anchor", "start")
+            .attr("font-weight", "bold")
+            .attr("fill", "black")
+        );
+
+        scatter.selectAll("g").remove();
 
         scatter = scatter
             .selectAll("g.serie")
@@ -260,7 +288,7 @@ class ConnectedScatterPlotChart extends Component {
         // Create path for first time
         if (scatterSerie.selectAll("path").size() == 0) {
 
-            let path = scatterSerie
+            scatterSerie
             .append("path")
             .datum(d => d.values)
                 .attr("fill", "none")
@@ -275,14 +303,20 @@ class ConnectedScatterPlotChart extends Component {
                 )
             ;
 
-            let length = path.node().getTotalLength();
-            path
-                .attr("stroke-dasharray", `0,${length}`)
-                .transition()
-                    .duration(3000)
-                    .ease(d3.easeLinear)
-                    .attr("stroke-dasharray", `${length},${length}`)
-            ;
+            scatterSerie.selectAll("path")
+                .each(function(d,i){
+                    const t = d3.select(this);
+                    const length = t.node().getTotalLength();
+                    
+                    t
+                    .attr("stroke-dasharray", `0,${length}`)
+                    .transition()
+                        .duration(3000)
+                        .ease(d3.easeLinear)
+                        .attr("stroke-dasharray", `${length},${length}`)
+                    ;
+                })
+
         }
         else {
             // Update existing path
@@ -349,7 +383,11 @@ class ConnectedScatterPlotChart extends Component {
             .duration(500)
             .attr("opacity", 1);
 
-        scatterSerie.exit().remove();
+        scatter.selectAll("path").transition().delay(5000).duration(1).attr("stroke-dasharray", 'none');
+
+        this.updateLegend();
+
+        //scatterSerie.exit().remove();
     }
 
     showTooltip = (d, element) => {
@@ -507,7 +545,7 @@ class ConnectedScatterPlotChart extends Component {
 
         // update axes with these new boundaries
         xAxis.attr("transform", "translate(0," + this.state.height + ")").call(d3.axisBottom(this.xScaleTransformed()));
-        yAxis.call(d3.axisLeft(this.yScaleTransformed()).tickFormat((d, i) => d + "€"));
+        //yAxis.call(d3.axisLeft(this.yScaleTransformed()).tickFormat((d, i) => d + "€"));
 
         // update circle position
         this.scatter

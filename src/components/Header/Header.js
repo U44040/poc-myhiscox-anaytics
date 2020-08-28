@@ -14,8 +14,8 @@ const Header = (props) => {
         <Navbar.Collapse>
             <Nav className="mr-auto">
                 <NavDropdown title="Graphs">
-                    <Link to="/graphs/bubble-chart">
-                        <NavDropdown.Item href="/graphs/bubble-chart">Bubble Chart</NavDropdown.Item>
+                    <Link to="/graphs/real-time-sales-scatterplot">
+                        <NavDropdown.Item href="/graphs/real-time-sales-scatterplot">Real-Time Sales Scatterplot</NavDropdown.Item>
                     </Link>
                     <Link to="/graphs/total-accumulated-sales">
                         <NavDropdown.Item href="/graphs/total-accumulated-sales">(WIP) Total accumulated Sales</NavDropdown.Item>
