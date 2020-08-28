@@ -242,7 +242,7 @@ class ConnectedScatterPlotChart extends Component {
         //this.yAxis.call(d3.axisLeft(scales.yScale).tickFormat((d, i) => d + "%"));
 
         scatter = scatter
-            .selectAll("g")
+            .selectAll("g.serie")
             .data(this.props.data);
 
         let scatterSerie = scatter
@@ -254,7 +254,7 @@ class ConnectedScatterPlotChart extends Component {
             .style("fill", (d, i) => this.fillColor(i))
             .style("opacity", "1")
             .attr("stroke", (d) => '#fff')
-            .attr("class", (d, i) => 'serie-' + i)
+            .attr("class", (d, i) => 'serie serie-' + i)
             // Second we need to enter in the 'values' part of this group
 
         // Create path for first time
@@ -264,7 +264,7 @@ class ConnectedScatterPlotChart extends Component {
             .append("path")
             .datum(d => d.values)
                 .attr("fill", "none")
-                .attr("stroke", "black")
+                .attr("stroke", (d, i) => this.fillColor(i))
                 .attr("stroke-width", 1)
                 .attr("stroke-linejoin", "round")
                 .attr("stroke-linecap", "round")
