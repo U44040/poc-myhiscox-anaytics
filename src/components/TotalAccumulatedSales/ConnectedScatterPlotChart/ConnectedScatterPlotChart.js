@@ -254,7 +254,7 @@ class ConnectedScatterPlotChart extends Component {
 
         // Axis
         //this.xAxis.call(d3.axisBottom(this.xScaleTransformed()).ticks(12));
-        this.yAxis.call(d3.axisLeft(scales.yScale).tickFormat((d, i) => d + "€"))
+        this.yAxis.call(d3.axisLeft(this.yScaleTransformed()).tickFormat((d, i) => d + "€"))
         .call(g => g.selectAll(".tick line.grid").remove())
         .call(g => g.selectAll(".tick line").clone()
             .attr("class","grid")
@@ -536,11 +536,11 @@ class ConnectedScatterPlotChart extends Component {
 
         if (d3.event.transform.k == 1) {
             this.xScaleTransformed = () => this.xScale();
-            this.yScaleTransformed = () => this.yScale();
+            //this.yScaleTransformed = () => this.yScale();
         }
         else {
             this.xScaleTransformed = () => newX;
-            this.yScaleTransformed = () => newY;
+            //this.yScaleTransformed = () => newY;
         }
 
         // update axes with these new boundaries
