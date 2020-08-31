@@ -47,23 +47,22 @@ class TotalAccumulatedSalesChart extends Component {
   }
 
   componentDidUpdate = (prevProps) => {
-    if (prevProps.filters != this.props.filters || prevProps.specialFilters != this.props.specialFilters) {
+    if (prevProps.filters != this.props.filters || prevProps.dateFilters != this.props.dateFilters || prevProps.specialFilters != this.props.specialFilters) {
       this.setState((oldState, oldProps) => {
         let filteredData = this.filterData(oldState.data);
         let segmentedData = this.getSegmentedData(filteredData);
-        let aggregatedData = this.getAggregatedData(segmentedData);
-
+        let aggregatedData = this.getAggregatedData(segmentedData);        
         return {
           filteredData,
           segmentedData,
           aggregatedData,
         }
-      });
+      }/*, () => this.props.updateData(this.state.filteredData)*/);
     }
   }
 
   componentWillUnmount = () => {
-    this.cancelInterval();
+    //this.cancelInterval();
   }
 
   getData = () => {
@@ -103,7 +102,6 @@ class TotalAccumulatedSalesChart extends Component {
           switch (this.state.segmentType) {
             case 'network':
               value.projects = value.projects.filter(p => p.user.brokerage.network.id == d.id);
-              value.volume = value.projects.reduce((accumulator, current) => (accumulator += current.totalRate), 0);
               break;
             case 'brokerage':
               value.projects = value.projects.filter(p => p.user.brokerage.id == d.id);
@@ -122,15 +120,20 @@ class TotalAccumulatedSalesChart extends Component {
       });
 
     } else {
+
+      let values = deepClone(data);
+      for (let value of values) {
+        value.volume = value.projects.reduce((accumulator, current) => (accumulator += current.totalRate), 0);
+      }
+
       series = [
         {
           id: 0,
           label: 'Total',
-          values: deepClone(data),
+          values: values,
         }
       ];
     }
-
     return series;
   }
 
@@ -184,6 +187,26 @@ class TotalAccumulatedSalesChart extends Component {
 
   filterData = (data) => {
     let filteredData = deepClone(data);
+
+    if (this.props.dateFilters) {
+      let startDate = moment(this.props.dateFilters.startDate);
+      let endDate = moment(this.props.dateFilters.endDate);
+
+      if (startDate.isValid() && endDate.isValid()){
+        let dateFilteredData = [];
+  
+        for (let item of filteredData) {
+          let day = moment(item.date);
+          if (day >= startDate && day <= endDate) {
+            dateFilteredData.push(item);
+          }
+        }
+  
+        filteredData = dateFilteredData;
+      }
+
+    }
+
     for (let filterType in this.props.filters) {
       let filters = this.props.filters[filterType].map(d => d.value);
       switch (filterType) {
@@ -230,39 +253,11 @@ class TotalAccumulatedSalesChart extends Component {
       }
     }
 
-    let hasApprovedFilter = false;
-    let hasRejectedFilter = false;
-
-    if (this.props.filters[FILTER_TYPES.STATUS]) {
-      let filters = this.props.filters[FILTER_TYPES.STATUS].map(d => d.value);
-      if (filters.includes(this.concatTypeValue(FILTER_TYPES.STATUS, STATUS.APPROVED))) {
-        hasApprovedFilter = true;
-      }
-      if (filters.includes(this.concatTypeValue(FILTER_TYPES.STATUS, STATUS.REJECTED))) {
-        hasRejectedFilter = true;
-      }
-    }
-
-
-    for (let status of filteredData) {
-
-      if (status.status == STATUS.APPROVED) {
-        if (hasApprovedFilter == false && this.props.specialFilters.includes(this.concatTypeValue(FILTER_TYPES.STATUS, STATUS.APPROVED)) == false) {
-          status.projects = [];
-        }
-      }
-
-      if (status.status == STATUS.REJECTED) {
-        if (hasRejectedFilter == false && this.props.specialFilters.includes(this.concatTypeValue(FILTER_TYPES.STATUS, STATUS.REJECTED)) == false) {
-          status.projects = [];
-        }
-      }
-    }
 
     return filteredData;
   }
 
-  updateData = () => {
+  /*updateData = () => {
     // Update data
     if (this.state.speed == 0) { return }
 
@@ -282,26 +277,26 @@ class TotalAccumulatedSalesChart extends Component {
       segmentedData: segmentedData,
       aggregatedData: aggregatedData,
     }, () => this.props.updateData(updatedData));
-  }
+  }*/
 
-  setIntervalRefresh = (interval) => {
+  /*setIntervalRefresh = (interval) => {
     let windowInterval = window.setInterval(this.updateData, interval);
     this.setState({
       interval: windowInterval,
     });
-  }
+  }*/
 
-  cancelInterval = () => {
+  /*cancelInterval = () => {
     window.clearInterval(this.state.interval);
-  }
+  }*/
 
-  updateSpeed = (e) => {
+  /*updateSpeed = (e) => {
     this.setState(
       {
         speed: e.target.value,
       }
     )
-  }
+  }*/
 
   changeSegmentation = (e) => {
     this.setState({
@@ -322,7 +317,7 @@ class TotalAccumulatedSalesChart extends Component {
   render = () => {
     let chart = '';
     if (this.state.aggregatedData) {
-      chart = <ConnectedScatterPlotChart data={this.state.aggregatedData} />
+      chart = <ConnectedScatterPlotChart segmentType={this.state.segmentType} data={this.state.aggregatedData} />
     }
     return (
     <div className="col-md">

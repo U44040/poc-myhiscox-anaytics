@@ -11,11 +11,11 @@ class AxisModeSelector extends Component
         let options = [
             { label: "X-AXIS", options: [
                 { label: 'Time', value: "X1", type: 'X-AXIS' },
-                { label: 'Products in Market', value: "X2", type: 'X-AXIS' },
+                { label: 'Total accumulated sales', value: "X2", type: 'X-AXIS' },
             ]},
             { label: "Y-AXIS", options: [
                 { label: 'Time', value: "Y1", type: 'Y-AXIS' },
-                { label: 'Products in Market', value: "Y2", type: 'Y-AXIS' },
+                { label: 'Total accumulated sales', value: "Y2", type: 'Y-AXIS' },
             ]},
         ];
 
@@ -24,7 +24,7 @@ class AxisModeSelector extends Component
             inputValue: '',
             value: [
                 { label: 'Time', value: "X1", type: 'X-AXIS' },
-                { label: 'Products in Market', value: "Y2", type: 'Y-AXIS' },
+                { label: 'Total accumulated sales', value: "Y2", type: 'Y-AXIS' },
             ]
         }
     }

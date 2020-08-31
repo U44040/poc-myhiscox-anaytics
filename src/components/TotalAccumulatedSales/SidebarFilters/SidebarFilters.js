@@ -9,6 +9,10 @@ import userContext from '../../../context/userContext';
 import * as ROLES from '../../../utils/RoleTypes';
 import Sidebar from '../../Shared/Sidebar/Sidebar';
 import FilterSelector from './FilterSelector/FilterSelector';
+import DatePicker from 'react-datepicker';
+import moment from 'moment';
+import { FormGroup } from 'react-bootstrap';
+
 
 const deepClone = rfdc();
 
@@ -27,35 +31,43 @@ class SidebarFilters extends Component {
 
     componentDidUpdate = (prevProps) => {
         if (prevProps.salesChartData !== this.props.salesChartData) {
+            this.prepareDatePicker();
             this.prepareFilters();
+            this.setState((oldState, oldProps) => (
+                {
+                    options: [
+                        { label: "Brokers", options: oldState.brokerOptions },
+                        { label: "Brokerages", options: oldState.brokerageOptions },
+                        { label: "Networks", options: oldState.networkOptions },
+                    ]
+                }
+            ));
         }
     }
 
     concatTypeValue = (type, value) => (type + "_" + value);
 
+    prepareDatePicker = () => {
+        let startDate = moment(this.props.salesChartData[0].date).toDate();
+        let endDate = moment(this.props.salesChartData[this.props.salesChartData.length-1].date).toDate();
+
+        this.setState({
+            originalStartDate: startDate,
+            startDate,
+            originalEndDate: endDate,
+            endDate,
+        })
+    }
+
     prepareFilters = () => {
-        let statusOptions = [];
         let brokerOptions = {};
         let brokerageOptions = {};
         let networkOptions = {};
         let sourceOptions = {};
-        let productOptions = {};
 
-        for (let status of this.getFilteredData()) {
+        for (let data of this.getFilteredData()) {
 
-            if (Array.isArray(status.projects) && status.projects.length === 0) {
-                continue;
-            }
-
-            if (status.status != STATUS.APPROVED && status.status != STATUS.REJECTED) {
-                statusOptions.push({
-                    label: status.status,
-                    value: this.concatTypeValue(FILTER_TYPES.STATUS, status.status),
-                    type: FILTER_TYPES.STATUS,
-                });
-            }
-
-            for (let project of status.projects) {
+            for (let project of data.projects) {
                 brokerOptions[project.user.id] = {
                     label: project.user.name,
                     value: this.concatTypeValue(FILTER_TYPES.BROKER, project.user.id),
@@ -79,35 +91,13 @@ class SidebarFilters extends Component {
                     value: this.concatTypeValue(FILTER_TYPES.SOURCE, project.source),
                     type: FILTER_TYPES.SOURCE,
                 };
-
-                for (let productVariant of project.productVariants) {
-                    productOptions[productVariant.idProductVariant] = {
-                        label: productVariant.name,
-                        value: this.concatTypeValue(FILTER_TYPES.PRODUCT, productVariant.idProductVariant),
-                        type: FILTER_TYPES.PRODUCT,
-                    }
-                }
             }
         }
-
-        statusOptions = statusOptions.sort(this.compareLabels);
-
-        statusOptions.push({
-            label: STATUS.APPROVED,
-            value: this.concatTypeValue(FILTER_TYPES.STATUS, STATUS.APPROVED),
-            type: FILTER_TYPES.STATUS,
-        });
-        statusOptions.push({
-            label: STATUS.REJECTED,
-            value: this.concatTypeValue(FILTER_TYPES.STATUS, STATUS.REJECTED),
-            type: FILTER_TYPES.STATUS,
-        });
 
         brokerOptions = Object.values(brokerOptions).sort(this.compareLabels);
         brokerageOptions = Object.values(brokerageOptions).sort(this.compareLabels);
         networkOptions = Object.values(networkOptions).sort(this.compareLabels);
         sourceOptions = Object.values(sourceOptions).sort(this.compareLabels);
-        productOptions = Object.values(productOptions);
 
         if (this.context && this.context.user) {
             let user = this.context.user;
@@ -129,17 +119,10 @@ class SidebarFilters extends Component {
             }
         }
 
-        const options = [
-            { label: "Brokers", options: brokerOptions },
-            { label: "Brokerages", options: brokerageOptions },
-            { label: "Networks", options: networkOptions },
-            { label: "Products", options: productOptions },
-            { label: "Status", options: statusOptions },
-            { label: "Source", options: sourceOptions },
-        ];
-
         this.setState({
-            options
+            brokerOptions,
+            brokerageOptions,
+            networkOptions,
         })
     }
 
@@ -149,7 +132,53 @@ class SidebarFilters extends Component {
         let filtersByType = this.getFiltersByType(values);
         this.setState({
             filterValue: values
-        }, () => this.props.updateFilters(filtersByType));
+        }, () => {
+            this.recheckOptions(values);
+            this.props.updateFilters(filtersByType);
+        });
+    }
+
+    recheckOptions = (values) => {
+        let filtersByType = this.getFiltersByType(values);
+
+        if (Object.keys(filtersByType).length > 0) {
+            let keepGroup = Object.keys(filtersByType)[0];
+            let keepOptions;
+            let keepObject;
+            switch (keepGroup) {
+                case FILTER_TYPES.BROKER:
+                    keepOptions = deepClone(this.state.brokerOptions);
+                    keepObject = { brokerOptions: keepOptions }
+                    break;
+
+                case FILTER_TYPES.BROKERAGE:
+                    keepOptions = deepClone(this.state.brokerageOptions);
+                    keepObject = { brokerageOptions: keepOptions }
+                    break
+
+                case FILTER_TYPES.NETWORK:
+                    keepOptions = deepClone(this.state.networkOptions);
+                    keepObject = { networkOptions: keepOptions }
+                    break;
+
+                default:
+                    break;
+            }
+
+            this.prepareFilters();
+            this.setState(keepObject);
+        }
+        else {
+            this.prepareFilters();
+        }
+
+        this.setState((oldState, oldProps) => ({
+            options: [
+                { label: "Brokers", options: oldState.brokerOptions },
+                { label: "Brokerages", options: oldState.brokerageOptions },
+                { label: "Networks", options: oldState.networkOptions },
+            ]
+        }));
     }
 
     getFiltersByType = (values) => {
@@ -173,50 +202,22 @@ class SidebarFilters extends Component {
 
             switch (filterType) {
                 case FILTER_TYPES.BROKER:
-                    for (let status of data) {
-                        status.projects = status.projects.filter(d => filters.includes(this.concatTypeValue(FILTER_TYPES.BROKER, d.user.id)));
+                    for (let d of data) {
+                        d.projects = d.projects.filter(d => filters.includes(this.concatTypeValue(FILTER_TYPES.BROKER, d.user.id)));
                     }
                     break;
 
                 case FILTER_TYPES.BROKERAGE:
-                    for (let status of data) {
-                        status.projects = status.projects.filter(d => filters.includes(this.concatTypeValue(FILTER_TYPES.BROKERAGE, d.user.brokerage.id)));
+                    for (let d of data) {
+                        d.projects = d.projects.filter(d => filters.includes(this.concatTypeValue(FILTER_TYPES.BROKERAGE, d.user.brokerage.id)));
                     }
                     break;
 
                 case FILTER_TYPES.NETWORK:
-                    for (let status of data) {
-                        status.projects = status.projects.filter(d => filters.includes(this.concatTypeValue(FILTER_TYPES.NETWORK, d.user.brokerage.network.id)));
+                    for (let d of data) {
+                        d.projects = d.projects.filter(d => filters.includes(this.concatTypeValue(FILTER_TYPES.NETWORK, d.user.brokerage.network.id)));
                     }
                     break;
-
-            }
-        }
-
-        let hasApprovedFilter = false;
-        let hasRejectedFilter = false;
-
-        if (filtersByType[FILTER_TYPES.STATUS]) {
-            let filters = filtersByType[FILTER_TYPES.STATUS].map(d => d.value);
-            if (filters.includes(this.concatTypeValue(FILTER_TYPES.STATUS, STATUS.APPROVED))) {
-                hasApprovedFilter = true;
-            }
-            if (filters.includes(this.concatTypeValue(FILTER_TYPES.STATUS, STATUS.REJECTED))) {
-                hasRejectedFilter = true;
-            }
-        }
-
-        for (let status of data) {
-            if (status.status == STATUS.APPROVED) {
-                if (hasApprovedFilter == false && this.state.specialFilterValues.includes(this.concatTypeValue(FILTER_TYPES.STATUS, STATUS.APPROVED)) == false) {
-                    status.projects = [];
-                }
-            }
-
-            if (status.status == STATUS.REJECTED) {
-                if (hasRejectedFilter == false && this.state.specialFilterValues.includes(this.concatTypeValue(FILTER_TYPES.STATUS, STATUS.REJECTED)) == false) {
-                    status.projects = [];
-                }
             }
         }
 
@@ -248,21 +249,81 @@ class SidebarFilters extends Component {
         })
     }
 
+    setStartDate = (date) => {
+        let startDate = date;
+        if (startDate == null) {
+            startDate = this.state.originalStartDate;
+        }
+
+        this.setState({
+            startDate
+        }, () => this.updateDateFilters() );
+    }
+
+    setEndDate = (date) => {
+        let endDate = date;
+        if (endDate == null) {
+            endDate = this.state.originalEndDate;
+        }
+        this.setState({
+            endDate
+        }, () => this.updateDateFilters() );
+    }
+
+    updateDateFilters = () => {
+        this.props.updateDateFilters({
+            startDate: this.state.startDate,
+            endDate: this.state.endDate,
+        })
+    }
+
     render = () => {
         return (
             <Sidebar
                 collapsed={true}
                 sidebarFixed={false}
             >
+
                 <ListGroupItem title="FILTERS" isCollapsable collapsed></ListGroupItem>
                 <div className="list-group-item-content">
+
+                    <FormGroup className="mx-2">
+                        <label htmlFor="startDate">From</label>
+                        <DatePicker
+                            selected={this.state.startDate}
+                            onChange={this.setStartDate}
+                            selectsStart
+                            startDate={this.state.startDate}
+                            endDate={this.state.endDate}
+                            minDate={this.state.originalStartDate}
+                            maxDate={this.state.originalEndDate}
+                            dateFormat="dd/MM/y"
+                            customInput={<input id="startDate" type="text" className="form-control" />}
+                        />
+                    </FormGroup>
+
+                    <FormGroup className="mx-2">
+                        <label htmlFor="endDate">To</label>
+                        <DatePicker
+                            selected={this.state.endDate}
+                            onChange={this.setEndDate}
+                            selectsEnd
+                            startDate={this.state.startDate}
+                            endDate={this.state.endDate}
+                            minDate={this.state.startDate}
+                            maxDate={this.state.originalEndDate}
+                            dateFormat="dd/MM/y"
+                            customInput={<input id="endDate" type="text" className="form-control" />}
+                        />
+                    </FormGroup>
+
                     <FilterSelector
-                     options={this.state.options}
-                     value={this.state.filterValue}
-                     filterChange={this.filterChange}
-                     addSpecialFilterValue={this.addSpecialFilterValue}
-                     removeSpecialFilterValue={this.removeSpecialFilterValue}
-                     specialFilterValues={this.state.specialFilterValues}
+                        options={this.state.options}
+                        value={this.state.filterValue}
+                        filterChange={this.filterChange}
+                        addSpecialFilterValue={this.addSpecialFilterValue}
+                        removeSpecialFilterValue={this.removeSpecialFilterValue}
+                        specialFilterValues={this.state.specialFilterValues}
                     />
                 </div>
 

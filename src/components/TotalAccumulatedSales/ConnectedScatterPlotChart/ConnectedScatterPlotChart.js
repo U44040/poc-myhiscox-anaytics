@@ -24,6 +24,7 @@ class ConnectedScatterPlotChart extends Component {
         this.strokeWidth = '0.5px';
 
         this.state = {
+            segmentType: null,
             margin,
             width,
             height,
@@ -35,8 +36,17 @@ class ConnectedScatterPlotChart extends Component {
         this.createChart()
     }
 
-    componentDidUpdate() {
-        this.updateChart()
+    shouldComponentUpdate = (nextProps, nextState) => {
+        return (nextProps.data != this.props.data);
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (prevProps.data != this.props.data) {
+            this.updateChart();
+            this.setState({
+                segmentType: this.props.segmentType,
+            })
+        }
     }
 
     xScale = () => {
@@ -253,7 +263,7 @@ class ConnectedScatterPlotChart extends Component {
         let scales = this.getScales();
 
         // Axis
-        //this.xAxis.call(d3.axisBottom(this.xScaleTransformed()).ticks(12));
+        this.xAxis.call(d3.axisBottom(this.xScaleTransformed()));
         this.yAxis.call(d3.axisLeft(this.yScaleTransformed()).tickFormat((d, i) => d + "€"))
         .call(g => g.selectAll(".tick line.grid").remove())
         .call(g => g.selectAll(".tick line").clone()
@@ -303,19 +313,21 @@ class ConnectedScatterPlotChart extends Component {
                 )
             ;
 
-            scatterSerie.selectAll("path")
-                .each(function(d,i){
-                    const t = d3.select(this);
-                    const length = t.node().getTotalLength();
-                    
-                    t
-                    .attr("stroke-dasharray", `0,${length}`)
-                    .transition()
-                        .duration(3000)
-                        .ease(d3.easeLinear)
-                        .attr("stroke-dasharray", `${length},${length}`)
-                    ;
-                })
+            if (this.props.segmentType !== this.state.segmentType) {
+                scatterSerie.selectAll("path")
+                    .each(function(d,i){
+                        const t = d3.select(this);
+                        const length = t.node().getTotalLength();
+                        
+                        t
+                        .attr("stroke-dasharray", `0,${length}`)
+                        .transition()
+                            .duration(3000)
+                            .ease(d3.easeLinear)
+                            .attr("stroke-dasharray", `${length},${length}`)
+                        ;
+                    })
+            }
 
         }
         else {
@@ -354,8 +366,11 @@ class ConnectedScatterPlotChart extends Component {
                 .attr("font-size", 4)
                 .attr("stroke-width", 0)
                 .attr("class", "labelpoint")
-                .attr("transform", d => `translate(${(scales.xScaleTransformed(this.getXValue(d)))},${scales.yScaleTransformed(this.getYValue(d))})`)
-                .attr("opacity", 0);
+                .attr("transform", d => `translate(${(scales.xScaleTransformed(this.getXValue(d)))},${scales.yScaleTransformed(this.getYValue(d))})`);
+
+        if (this.props.segmentType !== this.state.segmentType) {
+            label.attr("opacity", 0);
+        }
             
         let last = 0;
         let num = 0;
@@ -378,10 +393,12 @@ class ConnectedScatterPlotChart extends Component {
                 last = d.volume;
             })
            
-        label.transition()
-            .delay((d, i) => 3000)
-            .duration(500)
-            .attr("opacity", 1);
+        if (this.props.segmentType !== this.state.segmentType) {
+            label.transition()
+                .delay((d, i) => 3000)
+                .duration(500)
+                .attr("opacity", 1);
+        }
 
         scatter.selectAll("path").transition().delay(5000).duration(1).attr("stroke-dasharray", 'none');
 

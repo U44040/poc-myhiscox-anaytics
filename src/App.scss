@@ -38,6 +38,7 @@ $icon-size: 35px;
 @import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
 
 @import "~bootstrap/scss/bootstrap";
+@import "~react-datepicker/dist/react-datepicker.css";
 
 body {
   margin: 0;
@@ -197,6 +198,10 @@ body {
         }
       }
   }
+}
+
+.react-datepicker-popper {
+  z-index: 2 !important;
 }
 
 #tooltip-bubble {
