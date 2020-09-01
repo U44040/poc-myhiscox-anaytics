@@ -31,14 +31,16 @@ class TotalAccumulatedSalesChart extends Component {
   static contextType = userContext;
 
   componentDidMount = () => {
-    this.props.updateData(this.state.data);
+    let validData = this.getValidData(this.state.data);
+    this.props.updateData(validData);
     //this.setIntervalRefresh(INTERVAL_REFRESH);
     this.setState((oldState, oldProps) => {
-      let filteredData = this.filterData(oldState.data);
+      let filteredData = this.filterData(validData);
       let segmentedData = this.getSegmentedData(filteredData);
       let aggregatedData = this.getAggregatedData(segmentedData);
 
       return {
+        validData,
         filteredData,
         segmentedData,
         aggregatedData,
@@ -49,7 +51,7 @@ class TotalAccumulatedSalesChart extends Component {
   componentDidUpdate = (prevProps) => {
     if (prevProps.filters != this.props.filters || prevProps.dateFilters != this.props.dateFilters || prevProps.specialFilters != this.props.specialFilters) {
       this.setState((oldState, oldProps) => {
-        let filteredData = this.filterData(oldState.data);
+        let filteredData = this.filterData(oldState.validData);
         let segmentedData = this.getSegmentedData(filteredData);
         let aggregatedData = this.getAggregatedData(segmentedData);        
         return {
@@ -67,6 +69,52 @@ class TotalAccumulatedSalesChart extends Component {
 
   getData = () => {
     return DataGenerator.generateData();
+  }
+
+  getValidData = (data) => {
+    
+    let validData = deepClone(data);
+
+    if (this.context && this.context.user) {
+      let user = this.context.user;
+
+      switch (user.role) {
+        case ROLES.NETWORK_MANAGER_ROLE:
+          validData = validData.map((d) => {
+            return {
+              ...d,
+              projects: d.projects.filter((p) => p.user.brokerage.network.id == user.network)
+            }
+          })
+          break;
+
+        case ROLES.BROKERAGE_MANAGER_ROLE:
+          validData = validData.map((d) => {
+            console.log(d);
+
+            return {
+              ...d,
+              projects: d.projects.filter((p) => p.user.brokerage.id == user.brokerage && p.user.brokerage.network.id == user.network)
+            }
+          })
+          break;
+
+        case ROLES.USER_ROLE:
+          validData = validData.map((d) => {
+            return {
+              ...d,
+              projects: d.projects.filter((p) => p.user.id == user.id)
+            }
+          })
+          break;
+
+        default:
+          break;
+      }
+
+    }
+
+    return validData;
   }
 
   getSegmentedData = (data) => {
