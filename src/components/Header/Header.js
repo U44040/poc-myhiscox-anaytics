@@ -9,7 +9,11 @@ const Header = (props) => {
     const context = useContext(userContext);
 
     return <Navbar className="shadow navbar-dark bg-primary fixed-top" expand="lg">
-        <Navbar.Brand href="#home">Hiscox</Navbar.Brand>
+        <Navbar.Brand href="#home">
+            <img className="hiscox-icon" src="/hiscox-inverse.png"></img>
+            <span className="brand-text">B-Eye</span>
+            <img className="app-icon" src="/colibri.png"></img>
+        </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse>
             <Nav className="mr-auto">
@@ -18,7 +22,7 @@ const Header = (props) => {
                         <NavDropdown.Item href="/graphs/real-time-sales-scatterplot">Real-Time Sales Scatterplot</NavDropdown.Item>
                     </Link>
                     <Link to="/graphs/total-accumulated-sales">
-                        <NavDropdown.Item href="/graphs/total-accumulated-sales">(WIP) Total accumulated Sales</NavDropdown.Item>
+                        <NavDropdown.Item href="/graphs/total-accumulated-sales">Total accumulated Sales</NavDropdown.Item>
                     </Link>
                     <Link to="/graphs/bar-chart-race">
                         <NavDropdown.Item href="/graphs/bar-chart-race">(WIP) Bar Chart Race</NavDropdown.Item>

@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import './SidebarFilters.scss';
 import rfdc from 'rfdc';
 import * as FILTER_TYPES from '../../../utils/FilterTypes';
 import * as STATUS from '../../../utils/StatusTypes';
