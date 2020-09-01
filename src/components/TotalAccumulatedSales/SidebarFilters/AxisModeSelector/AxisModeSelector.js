@@ -106,6 +106,7 @@ class AxisModeSelector extends Component
         value={this.state.value}
         onChange={this.modeChange}
         maxMenuHeight={500}
+        captureMenuScroll={false}
     />
     );
     

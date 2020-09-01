@@ -77,6 +77,7 @@ class FilterSelector extends Component
             onInputChange={this.changeSearchValue}
             maxMenuHeight={500}
             placeholder="Search..."
+            captureMenuScroll={false}
         />
     )
 
