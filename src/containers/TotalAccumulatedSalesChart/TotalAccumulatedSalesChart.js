@@ -53,7 +53,7 @@ class TotalAccumulatedSalesChart extends Component {
       this.setState((oldState, oldProps) => {
         let filteredData = this.filterData(oldState.validData);
         let segmentedData = this.getSegmentedData(filteredData);
-        let aggregatedData = this.getAggregatedData(segmentedData);        
+        let aggregatedData = this.getAggregatedData(segmentedData);
         return {
           filteredData,
           segmentedData,
@@ -72,7 +72,7 @@ class TotalAccumulatedSalesChart extends Component {
   }
 
   getValidData = (data) => {
-    
+
     let validData = deepClone(data);
 
     if (this.context && this.context.user) {
@@ -90,8 +90,6 @@ class TotalAccumulatedSalesChart extends Component {
 
         case ROLES.BROKERAGE_MANAGER_ROLE:
           validData = validData.map((d) => {
-            console.log(d);
-
             return {
               ...d,
               projects: d.projects.filter((p) => p.user.brokerage.id == user.brokerage && p.user.brokerage.network.id == user.network)
@@ -138,11 +136,11 @@ class TotalAccumulatedSalesChart extends Component {
               segmentationObject = project.user;
               break;
           }
-  
+
           differentValues[segmentationObject.id] = segmentationObject;
-        } 
+        }
       }
-  
+
       differentValues = Object.values(differentValues);
       series = differentValues.map(d => {
         let values = deepClone(data);
@@ -219,7 +217,7 @@ class TotalAccumulatedSalesChart extends Component {
             volume: 0,
           };
         }
-        
+
         aggregatedSerie.values[dateFormatted].items.push(d);
         aggregatedSerie.values[dateFormatted].volume += d.volume;
       }
@@ -240,16 +238,16 @@ class TotalAccumulatedSalesChart extends Component {
       let startDate = moment(this.props.dateFilters.startDate);
       let endDate = moment(this.props.dateFilters.endDate);
 
-      if (startDate.isValid() && endDate.isValid()){
+      if (startDate.isValid() && endDate.isValid()) {
         let dateFilteredData = [];
-  
+
         for (let item of filteredData) {
           let day = moment(item.date);
           if (day >= startDate && day <= endDate) {
             dateFilteredData.push(item);
           }
         }
-  
+
         filteredData = dateFilteredData;
       }
 
@@ -368,14 +366,14 @@ class TotalAccumulatedSalesChart extends Component {
       chart = <ConnectedScatterPlotChart segmentType={this.state.segmentType} data={this.state.aggregatedData} />
     }
     return (
-    <div className="col-md">
-      <Card type="primary">
-        <div className="row">
-          <div className="col-12">
-            <Form inline>
-              <Form.Group>
-                <Form.Label>
-                  Segmentation
+      <div className="col-md">
+        <Card type="primary">
+          <div className="row">
+            <div className="col-12">
+              <Form inline>
+                <Form.Group>
+                  <Form.Label>
+                    Segmentation
                 </Form.Label>
                   <Form.Control className="mx-sm-3" as="select" value={this.state.segmentType} onChange={this.changeSegmentation}>
                     <option value="">Total</option>
@@ -383,13 +381,13 @@ class TotalAccumulatedSalesChart extends Component {
                     <option value="brokerage">Brokerage</option>
                     <option value="network">Network</option>
                   </Form.Control>
-              </Form.Group>
-            </Form>
+                </Form.Group>
+              </Form>
+            </div>
           </div>
-        </div>
-        { chart }
-      </Card>
-    </div>
+          {chart}
+        </Card>
+      </div>
     );
   };
 }
