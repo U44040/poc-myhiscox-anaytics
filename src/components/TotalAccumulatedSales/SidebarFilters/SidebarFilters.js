@@ -254,8 +254,14 @@ class SidebarFilters extends Component {
             startDate = this.state.originalStartDate;
         }
 
+        let endDate = this.state.endDate;
+        if (startDate>endDate) {
+            endDate = startDate;
+        }
+
         this.setState({
-            startDate
+            startDate,
+            endDate,
         }, () => this.updateDateFilters() );
     }
 
