@@ -288,7 +288,7 @@ class SidebarFilters extends Component {
                 <div className="list-group-item-content">
 
                     <FormGroup className="mx-2">
-                        <label htmlFor="startDate">From</label>
+                        <label htmlFor="startDate"><span class="fa fa-calendar text-primary mr-1"></span>From</label>
                         <DatePicker
                             selected={this.state.startDate}
                             onChange={this.setStartDate}
@@ -298,12 +298,12 @@ class SidebarFilters extends Component {
                             minDate={this.state.originalStartDate}
                             maxDate={this.state.originalEndDate}
                             dateFormat="dd/MM/y"
-                            customInput={<input id="startDate" type="text" className="form-control" />}
+                            customInput={<input id="startDate" type="text" className="form-control form-control-sm" />}
                         />
                     </FormGroup>
 
                     <FormGroup className="mx-2">
-                        <label htmlFor="endDate">To</label>
+                        <label htmlFor="endDate"><span class="fa fa-calendar text-primary mr-1"></span>To</label>
                         <DatePicker
                             selected={this.state.endDate}
                             onChange={this.setEndDate}
@@ -313,7 +313,7 @@ class SidebarFilters extends Component {
                             minDate={this.state.startDate}
                             maxDate={this.state.originalEndDate}
                             dateFormat="dd/MM/y"
-                            customInput={<input id="endDate" type="text" className="form-control" />}
+                            customInput={<input id="endDate" type="text" className="form-control form-control-sm" />}
                         />
                     </FormGroup>
 

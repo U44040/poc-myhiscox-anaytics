@@ -76,6 +76,7 @@ class FilterSelector extends Component
             onChange={this.props.filterChange}
             onInputChange={this.changeSearchValue}
             maxMenuHeight={500}
+            placeholder="Search..."
         />
     )
 

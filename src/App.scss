@@ -204,6 +204,15 @@ body {
   z-index: 2 !important;
 }
 
+.react-datepicker-wrapper {
+  width: 100%;
+
+  input.form-control {
+    text-align: center;
+    cursor: pointer;
+  }
+}
+
 #tooltip-bubble {
   background-color: #f8f2b2e0;
   color: #000;
