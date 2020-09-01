@@ -593,7 +593,7 @@ class ConnectedScatterPlotChart extends Component {
         const height = this.state.height + this.state.margin.top + this.state.margin.bottom;
 
         return (
-            <div id="bubbleChartSales" ref={el => this.divEl = el}>
+            <div id="connectedScatterPlotChart" ref={el => this.divEl = el}>
                 <svg ref={el => this.svgEl = el}
                     //width={width}
                     //height={height}
