@@ -10,6 +10,7 @@ import userContext from './context/userContext';
 import Cookies from 'js-cookie';
 import * as ROLES from './utils/RoleTypes';
 import TotalAccumulatedSales from './routes/Graphs/TotalAccumulatedSales';
+import BarChartRace from './routes/Graphs/BarChartRace';
 
 const USERS = [
   {
@@ -116,6 +117,7 @@ class App extends Component {
             <Switch>
               <Route path="/login" component={Login} />
               <Route path="/graphs/total-accumulated-sales" component={TotalAccumulatedSales} />
+              <Route path="/graphs/bar-chart-race" component={BarChartRace} />
               <Route path="/" component={Dashboard} />
             </Switch>
           </Main>
