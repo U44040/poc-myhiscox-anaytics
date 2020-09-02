@@ -55,15 +55,28 @@ class Login extends Component {
 
         return (
             <div className="section-login login-page">
+                <div className="bg-image"></div>
                 {this.state.loginRedirect}
                 <div className="limiter">
                     <div className="container-login100">
                         <div className="wrap-login100">
                             <form className="login100-form validate-form">
 
-                                <span className="login100-form-logo">
-                                    <i className="zmdi zmdi-landscape"></i>
+                                <span className="login100-form-logo mb-2">
+                                    <i className="zmdi zmdi-landscape">
+                                        <img src="/colibri.png" style={{height:"90px"}}></img>
+                                    </i>
                                 </span>
+
+                                <span className="app-name login100-form-title p-b-34 p-t-27">
+                                    <img className="hiscox-icon" src="/hiscox-inverse.png"></img>
+                                    <span>B-Eye</span>
+                                </span>
+
+                                <span className="app-slogan login100-form-title p-b-34 p-t-27 mb-5">
+                                    <small><em>"A Bird-Eye view over Hiscox Iberia Business"</em></small>
+                                </span>
+
 
                                 <span className="login100-form-title p-b-34 p-t-27">
                                     Log in
@@ -81,7 +94,7 @@ class Login extends Component {
 
                                 <div className="contact100-form-checkbox">
                                     <input className="input-checkbox100" id="ckb1" type="checkbox" name="remember-me" />
-                                    <label className="label-checkbox100" for="ckb1">
+                                    <label className="label-checkbox100" htmlFor="ckb1">
                                         Remember me
                                     </label>
                                 </div>

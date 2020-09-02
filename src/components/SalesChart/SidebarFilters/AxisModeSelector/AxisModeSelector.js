@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import Select, {components} from 'react-select';
-import Option from '../Option/Option';
+import Option from '../../../Shared/Option/Option';
 
 class AxisModeSelector extends Component
 {
@@ -106,6 +106,7 @@ class AxisModeSelector extends Component
         value={this.state.value}
         onChange={this.modeChange}
         maxMenuHeight={500}
+        captureMenuScroll={false}
     />
     );
     

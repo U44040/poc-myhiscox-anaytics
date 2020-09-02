@@ -38,6 +38,7 @@ $icon-size: 35px;
 @import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
 
 @import "~bootstrap/scss/bootstrap";
+@import "~react-datepicker/dist/react-datepicker.css";
 
 body {
   margin: 0;
@@ -48,12 +49,34 @@ body {
 
 .app {
 
+  .navbar-brand {
+    .hiscox-icon {
+      height: 30px;
+    }
+
+    .brand-text {
+      font-size: 0.9rem;
+      font-weight: 500;
+      position: relative;
+      top: 10px;
+      margin-left: 5px;
+      opacity: 0.75;
+    }
+
+    .app-icon {
+      height: 35px;
+      position: relative;
+      left: -12px;
+    }
+
+  }
+
   .section-dashboard {
-    padding-top: 56px;
+    padding-top: 61px;
   }
 
   .sticky-offset {
-      top: 56px;
+      top: 61px;
   }
 
   @media (max-height: 700px) {
@@ -199,6 +222,19 @@ body {
   }
 }
 
+.react-datepicker-popper {
+  z-index: 2 !important;
+}
+
+.react-datepicker-wrapper {
+  width: 100%;
+
+  input.form-control {
+    text-align: center;
+    cursor: pointer;
+  }
+}
+
 #tooltip-bubble {
   background-color: #f8f2b2e0;
   color: #000;
@@ -220,5 +256,132 @@ body {
         display: inherit;
       }
     }
+  }
+}
+
+/* SidebarFilters */
+
+#sidebar-container {
+  .react-select-container-filters {
+
+      padding-left: 3px;
+      padding-right: 3px;
+      color: #000;
+      
+      .react-select-filters {
+          
+          &__control {
+           margin: 8px 0px 0px 3px;
+          }
+
+          &__menu {
+           background-color: transparent;  
+           padding-top: 0px;
+           position: inherit;
+
+           &-list {
+              overflow-x: hidden;
+              max-height: 700px;
+           }
+          }
+
+          &__group {
+              background-color: #e9eff9;
+              margin-left: 2px;
+              margin-right: 2px;
+              margin-bottom: 5px;
+              border-radius: 5px;
+              padding: 0px;
+
+
+              &-wrapper {
+                  &--is-searching {
+                     div.react-select-filters__group {
+                         div:nth-child(2) {
+                             display: block !important;
+                         }
+ 
+                         div.react-select-filters__group-heading {
+                             &::after{
+                                 content: "\f0d8";
+                             }
+                         }
+                     }
+ 
+                  }
+              }
+
+
+
+
+
+              >div:nth-child(2) {
+                  padding-bottom: 8px;
+                  display: none;
+              }
+              
+              &-heading {
+
+                  color: #53599A;
+                  padding-top: 8px;
+                  padding-bottom: 8px;
+
+                  &::after {
+                      font: normal normal normal 14px/1 FontAwesome;
+                      float: right;
+                      content: "\f0d7";
+                  }
+              }
+
+              &.group-expanded {
+                  div.react-select-filters__group-heading {
+                      &::after {
+                          content: "\f0d8";
+                      }
+                  }
+                  div:nth-child(2) {
+                      display: block;
+                  }
+              }                
+              
+          }
+
+          &__option-wrapper {
+              &--disabled {
+                  color: #ccc;
+                  &:hover{
+                      background-color: #eeeeee;
+                      color: #aaa
+                  }
+              }
+          }
+
+          &__option {
+
+              padding: 3px 10px;
+              white-space: nowrap;
+
+              &--is-selected {
+                  background-color: transparent;
+                  color: #000;
+              }
+
+              &--is-focused {
+                background-color: #ecc581;
+                opacity: 1;
+              }
+
+              input {
+                  margin-right: 5px;
+                  vertical-align: middle;
+              }
+
+              label {
+                  font-size: 0.75rem;
+              }
+          }
+
+
+      }
   }
 }

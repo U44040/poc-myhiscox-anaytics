@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import Callout from '../../components/Shared/Callout/Callout';
 import SalesChart from '../../containers/SalesChart/SalesChart';
-import SidebarFilters from '../../components/SidebarFilters/SidebarFilters';
+import SidebarFilters from '../../components/SalesChart/SidebarFilters/SidebarFilters';
 import * as STATUS from '../../utils/StatusTypes';
-import userContext from '../../context/userContext';
 
 
 class Dashboard extends Component {
@@ -79,7 +78,7 @@ class Dashboard extends Component {
                 />
                 <div className="col py-3">
                     <div className="container-fluid">
-                        <h3 className="text-gray-800">Dashboard</h3>
+                        <h3 className="text-gray-800">Real-Time Sales</h3>
                         <div className="row mb-4">
                             <SalesChart updateData={this.updateSalesChartData} filters={this.state.filters} specialFilters={this.state.specialFilters} />
                         </div>

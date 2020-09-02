@@ -3,16 +3,14 @@
     width: 100%;
     margin: 0 auto;
     background-color: #a3a3a3;
+    background-image: url('/login-background.jpg');
     
-
     * {
-        margin: 0px; 
-        padding: 0px; 
-        box-sizing: border-box;
+      margin: 0px; 
+      padding: 0px; 
+      box-sizing: border-box;
     }
-    
-    
-    
+        
     /*---------------------------------------------*/
     a {
         font-size: 14px;
@@ -149,7 +147,7 @@
       height: 100%;
       top: 0;
       left: 0;
-      background-color: rgba(255,255,255,0.9);
+      background-color: rgba(255, 255, 255, 0.85);
     }
     
     .wrap-login100 {
@@ -158,11 +156,16 @@
       overflow: hidden;
       padding: 55px 55px 37px 55px;
     
-      background: #9152f8;
-      background: -webkit-linear-gradient(top, #7579ff, #b224ef);
-      background: -o-linear-gradient(top, #7579ff, #b224ef);
-      background: -moz-linear-gradient(top, #7579ff, #b224ef);
-      background: linear-gradient(#7579ff, #b224ef);
+      background: #2ea1d6;
+      background: -webkit-linear-gradient(top, #2ea1d6, #2ea1d6);
+      background: -o-linear-gradient(top, #2ea1d6, #2ea1d6);
+      background: -moz-linear-gradient(top, #2ea1d6, #2ea1d6);
+      background: linear-gradient(#2ea1d6, #2ea1d6);
+
+      -webkit-box-shadow: 0px 6px 16px -2px #525252;
+      -moz-box-shadow: 0px 6px 16px -2px #525252;
+      box-shadow: 0px 6px 16px -2px #525252;
+
     }
     
     
@@ -384,11 +387,16 @@
       height: 50px;
       border-radius: 25px;
     
-      background: #9152f8;
-      background: -webkit-linear-gradient(bottom, #7579ff, #b224ef);
-      background: -o-linear-gradient(bottom, #7579ff, #b224ef);
-      background: -moz-linear-gradient(bottom, #7579ff, #b224ef);
-      background: linear-gradient(bottom, #7579ff, #b224ef);
+      background: #fb9e11;
+      background: -webkit-linear-gradient(to bottom, #fab34a, #fb9e11);
+      background: -o-linear-gradient(to bottom, #fab34a, #fb9e11);
+      background: -moz-linear-gradient(to bottom, #fab34a, #fb9e11);
+      background: linear-gradient(to bottom, #fab34a, #fb9e11);
+
+      -webkit-box-shadow: 0px 6px 16px -2px #525252;
+      -moz-box-shadow: 0px 6px 16px -2px #525252;
+      box-shadow: 0px 6px 16px -2px #525252;
+
       position: relative;
       z-index: 1;
     
@@ -504,6 +512,36 @@
         opacity: 1;
       }
     }
+
+
+
+    /*------------------------------------------------------------------
+    [ CUSTOM ]*/
+    .app-name {
+      font-size:2rem;
+      margin-top:10px;
+      margin-bottom: 10px;
+
+      .hiscox-icon {
+        height: 50px;
+      }
+
+      span {
+        position: relative;
+        top: 18px;
+        margin-left: 10px;
+        font-size: 1.8rem;
+        opacity: 0.9;
+      }
+    }
+
+    .app-slogan {
+      font-size: 1rem;
+      text-transform: initial;
+    }
+
+
+
 }
   
   

@@ -2,20 +2,31 @@ import React, { useContext } from 'react';
 import { Navbar, Nav, NavDropdown } from 'react-bootstrap';
 import userContext from '../../context/userContext';
 import * as ROLES from '../../utils/RoleTypes';
+import { Link } from 'react-router-dom';
 
 const Header = (props) => {
 
     const context = useContext(userContext);
 
     return <Navbar className="shadow navbar-dark bg-primary fixed-top" expand="lg">
-        <Navbar.Brand href="#home">Hiscox</Navbar.Brand>
+        <Navbar.Brand href="#home">
+            <img className="hiscox-icon" src="/hiscox-inverse.png"></img>
+            <span className="brand-text">B-Eye</span>
+            <img className="app-icon" src="/colibri.png"></img>
+        </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
-        <Navbar.Collapse id="basic-navbar-nav">
+        <Navbar.Collapse>
             <Nav className="mr-auto">
-                <Nav.Link href="/dashboard">Dashboard</Nav.Link>
-                <NavDropdown title="Graphs" id="basic-nav-dropdown">
-                    <NavDropdown.Item href="/dashboard/1">Graph 1</NavDropdown.Item>
-                    <NavDropdown.Item href="/dashboard/2">Graph 2</NavDropdown.Item>
+                <NavDropdown title="Graphs">
+                    <Link to="/graphs/real-time-sales-scatterplot">
+                        <NavDropdown.Item href="/graphs/real-time-sales-scatterplot">Real-Time Sales Scatterplot</NavDropdown.Item>
+                    </Link>
+                    <Link to="/graphs/total-accumulated-sales">
+                        <NavDropdown.Item href="/graphs/total-accumulated-sales">Total accumulated Sales</NavDropdown.Item>
+                    </Link>
+                    <Link to="/graphs/bar-chart-race">
+                        <NavDropdown.Item href="/graphs/bar-chart-race">(WIP) Bar Chart Race</NavDropdown.Item>
+                    </Link>
                 </NavDropdown>
             </Nav>
             <Nav>

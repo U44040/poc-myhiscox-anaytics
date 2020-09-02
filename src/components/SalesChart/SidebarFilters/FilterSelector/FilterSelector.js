@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Select, {components} from 'react-select';
-import Option from '../Option/Option';
+import Option from '../../../Shared/Option/Option';
 
 class FilterSelector extends Component
 {
@@ -76,6 +76,7 @@ class FilterSelector extends Component
             onChange={this.props.filterChange}
             onInputChange={this.changeSearchValue}
             maxMenuHeight={500}
+            captureMenuScroll={false}
         />
     )
 

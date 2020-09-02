@@ -1,15 +1,12 @@
 import React, { Component } from 'react';
-import './SidebarFilters.scss';
-import Select, { components } from 'react-select';
 import rfdc from 'rfdc';
-import * as FILTER_TYPES from './FilterTypes';
-import * as STATUS from '../../utils/StatusTypes';
-import Option from './Option/Option';
-import ListGroupItem from './ListGroupItem/ListGroupItem';
+import * as FILTER_TYPES from '../../../utils/FilterTypes';
+import * as STATUS from '../../../utils/StatusTypes';
+import ListGroupItem from '../../Shared/ListGroupItem/ListGroupItem';
 import AxisModeSelector from './AxisModeSelector/AxisModeSelector';
-import userContext from '../../context/userContext';
-import * as ROLES from '../../utils/RoleTypes';
-import Sidebar from '../Shared/Sidebar/Sidebar';
+import userContext from '../../../context/userContext';
+import * as ROLES from '../../../utils/RoleTypes';
+import Sidebar from '../../Shared/Sidebar/Sidebar';
 import FilterSelector from './FilterSelector/FilterSelector';
 
 const deepClone = rfdc();
