@@ -10,7 +10,7 @@ class BubbleChart extends Component {
     constructor(props) {
         super();
 
-        const margin = { top: 5, right: 60, bottom: 5, left: 38 };
+        const margin = { top: 5, right: 70, bottom: 5, left: 38 };
         const width = 670 - margin.left - margin.right;
         const height = 300 - margin.top - margin.bottom;
 
@@ -36,6 +36,10 @@ class BubbleChart extends Component {
 
     componentDidUpdate() {
         this.updateChart()
+    }
+
+    componentWillUnmount = () => {
+        this.tooltip.remove();
     }
 
     xScale = () => {
@@ -117,7 +121,7 @@ class BubbleChart extends Component {
             .attr('x', () => - 175)
             .attr('y', (d, i) => 4)
             .text((d, i) => "Products vs Market")
-            .style("font-size", 5)
+            .style("font-size", 6)
             .style("font-weight", "bold")
             .style("transform", "rotate(-90deg)");
         // X-Label
@@ -125,7 +129,7 @@ class BubbleChart extends Component {
             .attr('x', () => this.state.width - 5)
             .attr('y', (d, i) => scales.yScale(0) + 3)
             .text((d, i) => "Time (minutes)")
-            .style("font-size", 5)
+            .style("font-size", 6)
             .style("font-weight", "bold");
 
         let clip = this.svg.append("defs").append("SVG:clipPath")
@@ -179,17 +183,17 @@ class BubbleChart extends Component {
         legendGroup
             .append("text")
             .attr("class", "legend-bubble")
-            .attr('x', () => this.state.width + 3)
+            .attr('x', () => this.state.width + 5)
             .attr('y', (d, i) => this.state.height - 20 - (10 * i))
             .text((d, i) => this.mappedStatusForLegend(d.status))
             .style("fill", (d) => this.fillColor(d.status))
-            .style("font-size", 5)
+            .style("font-size", 6)
             .style("font-weight", "bold");
 
         legendGroup
             .append("rect")
             .attr("class", "legend-bubble")
-            .attr('x', () => this.state.width + 50)
+            .attr('x', () => this.state.width + 60)
             .attr('y', (d, i) => this.state.height - 25 - (10 * i))
             .attr('width', 5)
             .attr('height', 5)
@@ -200,9 +204,9 @@ class BubbleChart extends Component {
         this.infoText = this.svg
         .append('text')
         .attr('class', 'info-text')
-        .attr('x', () => this.state.width + 3)
+        .attr('x', () => this.state.width + 5)
         .attr('y', () => this.state.height - 10)
-        .style("font-size", 5)
+        .style("font-size", 6)
         .style("font-weight", "bold");
     }
 

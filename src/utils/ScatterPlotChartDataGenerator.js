@@ -125,7 +125,7 @@ const productVariants = [
 export const generateData = () => {
 
     let startDate = moment('20190101','YYYYMMDD');
-    let endDate = moment();
+    let endDate = moment().subtract(1, 'months').endOf('month');
 
     let elapsedDays = moment.duration(endDate.diff(startDate)).asDays();
 

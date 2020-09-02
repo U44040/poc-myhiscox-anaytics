@@ -38,6 +38,7 @@ class SidebarFilters extends Component {
                         { label: "Brokers", options: oldState.brokerOptions },
                         { label: "Brokerages", options: oldState.brokerageOptions },
                         { label: "Networks", options: oldState.networkOptions },
+                        { label: "Source", options: oldState.sourceOptions },
                     ]
                 }
             ));
@@ -122,6 +123,7 @@ class SidebarFilters extends Component {
             brokerOptions,
             brokerageOptions,
             networkOptions,
+            sourceOptions,
         })
     }
 
@@ -160,6 +162,11 @@ class SidebarFilters extends Component {
                     keepObject = { networkOptions: keepOptions }
                     break;
 
+                case FILTER_TYPES.SOURCE:
+                    keepOptions = deepClone(this.state.sourceOptions);
+                    keepObject = { sourceOptions: keepOptions }
+                    break;
+
                 default:
                     break;
             }
@@ -176,6 +183,7 @@ class SidebarFilters extends Component {
                 { label: "Brokers", options: oldState.brokerOptions },
                 { label: "Brokerages", options: oldState.brokerageOptions },
                 { label: "Networks", options: oldState.networkOptions },
+                { label: "Source", options: oldState.sourceOptions },
             ]
         }));
     }
@@ -215,6 +223,12 @@ class SidebarFilters extends Component {
                 case FILTER_TYPES.NETWORK:
                     for (let d of data) {
                         d.projects = d.projects.filter(d => filters.includes(this.concatTypeValue(FILTER_TYPES.NETWORK, d.user.brokerage.network.id)));
+                    }
+                    break;
+
+                case FILTER_TYPES.SOURCE:
+                    for (let d of data) {
+                        d.projects = d.projects.filter(d => filters.includes(this.concatTypeValue(FILTER_TYPES.SOURCE, d.source)));
                     }
                     break;
             }
