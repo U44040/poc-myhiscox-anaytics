@@ -231,7 +231,7 @@ class SalesChart extends Component {
     <div className="col-md">
       <Card type="primary" /* header="Venta de pólizas" title="Tiempo real" text="Gráfica en tiempo real de las pólizas que se están creando"*/ >
         <div>
-          Hora: {this.state.actualMoment.format('HH:mm:ss')} - Velocidad: <input type="range" min="0" max="200" value={this.state.speed} onChange={this.updateSpeed} /> {this.state.speed}%
+          Hour: {this.state.actualMoment.format('HH:mm:ss')} - Speed: <input type="range" min="0" max="200" value={this.state.speed} onChange={this.updateSpeed} /> {this.state.speed}%
         </div>
         <BubbleChart data={this.state.filteredData} />
       </Card>
