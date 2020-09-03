@@ -66,12 +66,15 @@ class DataTable extends Component {
                     },
                 },
             ],
-            initialState: {
-                sortBy: [
-                    {id: 'fullPercentAverage', desc: true},
-                    {id: 'elapsedTime', desc: true},
-                    {id: 'totalRate', desc: true},
-                ],
+            tableOptions: {
+                isMultiSortEvent: (event) => (event.ctrlKey === true),
+                initialState: {
+                    sortBy: [
+                        {id: 'fullPercentAverage', desc: true},
+                        {id: 'elapsedTime', desc: true},
+                        {id: 'totalRate', desc: true},
+                    ],
+                },
             },
             rowStyle: this.getRowStyle,
         }
@@ -110,7 +113,7 @@ class DataTable extends Component {
                     <SmartDataTable
                         columns={this.state.columns}
                         data={this.state.data}
-                        initialState={this.state.initialState}
+                        tableOptions={this.state.tableOptions}
                         rowStyle={this.state.rowStyle}
                         stripped
                         hover

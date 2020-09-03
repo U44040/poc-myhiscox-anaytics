@@ -18,7 +18,7 @@ const DataTable = (props) => {
     } = useTable({
         columns,
         data,
-        initialState: props.initialState,
+        ...props.tableOptions,
         autoResetPage: false,
         autoResetExpanded: false,
         autoResetGroupBy: false,
