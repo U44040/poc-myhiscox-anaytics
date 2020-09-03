@@ -37,7 +37,7 @@ const DataTable = (props) => {
                         {headerGroup.headers.map(column => (
                             // Add the sorting props to control sorting. For this example
                             // we can add them into the header props
-                            <th {...column.getHeaderProps(column.getSortByToggleProps({title: 'Shift+Click to multi-sort'}))}>
+                            <th {...column.getHeaderProps(column.getSortByToggleProps({title: 'Ctrl+Click to multi-sort'}))}>
                                 {column.render('Header')}
                                 {/* Add a sort direction indicator */}
                                 <span className="sort-icon">
