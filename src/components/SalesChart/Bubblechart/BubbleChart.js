@@ -26,7 +26,6 @@ class BubbleChart extends Component {
             margin,
             width,
             height,
-            hiddenProjects: [],
         }
     }
 
@@ -96,14 +95,6 @@ class BubbleChart extends Component {
             xScaleTransformed: this.xScaleTransformed(),
             yScaleTransformed: this.yScaleTransformed(),
         }
-    }
-
-    addHiddenProject = (projectReference) => {
-        let hiddenProjects = this.state.hiddenProjects.map(d => d);
-        hiddenProjects.push(projectReference);
-        this.setState({
-            hiddenProjects
-        });
     }
 
     createChart = () => {
@@ -279,8 +270,8 @@ class BubbleChart extends Component {
             .attr("r", (d) => scales.zScale(d.totalRate))
             .style("opacity", "0.9")
             .attr("stroke", (d) => this.strokeColor(d.isClean))
-            .style("display", (d) => this.state.hiddenProjects.includes(d.reference) ? "none" : "initial")
-            .attr("isHidden", (d) => this.state.hiddenProjects.includes(d.reference) ? "true" : "false")
+            //.style("display", (d) => this.state.hiddenProjects.includes(d.reference) ? "none" : "initial")
+            //.attr("isHidden", (d) => this.state.hiddenProjects.includes(d.reference) ? "true" : "false")
             ;
 
         scatterProject.exit().remove();
@@ -418,8 +409,8 @@ class BubbleChart extends Component {
 
     hideProject = (d, element) => {
         d3.event.preventDefault();
-        d3.select(element).style("display", "none").attr("isHidden", true);
-        this.addHiddenProject(d.reference);
+        //d3.select(element).style("display", "none").attr("isHidden", true);
+        this.props.addHiddenProject(d.reference);
     }
 
     updateChartZoom = (xAxis, yAxis) => {
