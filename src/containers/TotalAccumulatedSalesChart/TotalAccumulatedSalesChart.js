@@ -8,7 +8,7 @@ import moment from 'moment';
 import userContext from '../../context/userContext';
 import * as ROLES from '../../utils/RoleTypes';
 import ConnectedScatterPlotChart from '../../components/TotalAccumulatedSales/ConnectedScatterPlotChart/ConnectedScatterPlotChart';
-import { Form, Row, Col } from 'react-bootstrap';
+import { Form, Dropdown } from 'react-bootstrap';
 
 const deepClone = rfdc();
 const INTERVAL_REFRESH = 1000;
@@ -370,19 +370,32 @@ class TotalAccumulatedSalesChart extends Component {
         <Card type="primary">
           <div className="row">
             <div className="col-12">
-              <Form inline>
-                <Form.Group>
-                  <Form.Label>
-                    Segmentation
-                </Form.Label>
-                  <Form.Control className="mx-sm-3" as="select" value={this.state.segmentType} onChange={this.changeSegmentation}>
-                    <option value="">Total</option>
-                    <option value="broker">Broker</option>
-                    <option value="brokerage">Brokerage</option>
-                    <option value="network">Network</option>
-                  </Form.Control>
-                </Form.Group>
-              </Form>
+              <div className="pull-left">
+                <Form inline>
+                  <Form.Group>
+                    <Form.Label>
+                      Segmentation
+                  </Form.Label>
+                    <Form.Control className="mx-sm-3" as="select" value={this.state.segmentType} onChange={this.changeSegmentation}>
+                      <option value="">Total</option>
+                      <option value="broker">Broker</option>
+                      <option value="brokerage">Brokerage</option>
+                      <option value="network">Network</option>
+                    </Form.Control>
+                  </Form.Group>
+                </Form>
+              </div>
+              <div className="pull-right">
+                <Dropdown>
+                  <Dropdown.Toggle>
+                    Export
+                  </Dropdown.Toggle>
+                  <Dropdown.Menu>
+                    <Dropdown.Item>As CSV</Dropdown.Item>
+                    <Dropdown.Item>As PNG</Dropdown.Item>
+                  </Dropdown.Menu>
+                </Dropdown>
+              </div>
             </div>
           </div>
           {chart}

@@ -8,6 +8,7 @@ import moment from 'moment';
 import userContext from '../../context/userContext';
 import * as ROLES from '../../utils/RoleTypes';
 import BubbleChart from './../../components/SalesChart/Bubblechart/BubbleChart';
+import { Dropdown } from 'react-bootstrap';
 
 const deepClone = rfdc();
 const INTERVAL_REFRESH = 1000;
@@ -26,6 +27,7 @@ class SalesChart extends Component {
       filteredData,
       speed: 100,
       actualMoment,
+      hiddenProjects: [],
     }
   }
 
@@ -33,6 +35,7 @@ class SalesChart extends Component {
 
   componentDidMount = () => {
     this.props.updateData(this.state.validData);
+    this.props.updateFilteredData(this.state.filteredData);
     this.setIntervalRefresh(INTERVAL_REFRESH);
     this.setState((oldState, oldProps) => ({
       filteredData: this.filterData(oldState.validData)
@@ -41,11 +44,15 @@ class SalesChart extends Component {
 
   componentDidUpdate = (prevProps) => {
     if (prevProps.filters != this.props.filters || prevProps.specialFilters != this.props.specialFilters) {
-      this.setState((oldState, oldProps) => (
-        {
-          filteredData: this.filterData(oldState.validData)
+      let filteredData;
+      this.setState((oldState, oldProps) => {
+        filteredData = this.filterData(oldState.validData);
+        return {
+          filteredData: filteredData,
         }
-      ));
+      }, () => {
+        this.props.updateFilteredData(filteredData);
+      });
     }
   }
 
@@ -183,6 +190,8 @@ class SalesChart extends Component {
           status.projects = [];
         }
       }
+
+      status.projects = status.projects.filter((p) => this.state.hiddenProjects.includes(p.reference) == false);
     }
 
     return filteredData;
@@ -205,7 +214,10 @@ class SalesChart extends Component {
       validData: validData,
       filteredData: filteredData,
       actualMoment: actualMoment,
-    }, () => this.props.updateData(validData));
+    }, () => {
+      this.props.updateData(validData);
+      this.props.updateFilteredData(filteredData);
+    });
   }
 
   setIntervalRefresh = (interval) => {
@@ -227,16 +239,40 @@ class SalesChart extends Component {
     )
   }
 
-  render = () => (
-    <div className="col-md">
-      <Card type="primary" /* header="Venta de pólizas" title="Tiempo real" text="Gráfica en tiempo real de las pólizas que se están creando"*/ >
-        <div>
-          Hora: {this.state.actualMoment.format('HH:mm:ss')} - Velocidad: <input type="range" min="0" max="200" value={this.state.speed} onChange={this.updateSpeed} /> {this.state.speed}%
-        </div>
-        <BubbleChart data={this.state.filteredData} />
-      </Card>
-    </div>
-  );
-}
+  addHiddenProject = (projectReference) => {
+    let hiddenProjects = this.state.hiddenProjects.map(d => d);
+    hiddenProjects.push(projectReference);
+    this.setState({
+      hiddenProjects
+    }, () => {
+      let filteredData = this.filterData(this.state.validData);
+      this.setState({
+        filteredData: filteredData,
+      });
+    });
+  }
 
-export default SalesChart;
+  render = () => (
+        <div className="col-md">
+          <Card type="primary" /* header="Venta de pólizas" title="Tiempo real" text="Gráfica en tiempo real de las pólizas que se están creando"*/ >
+            <div className="pull-left">
+              Hora: {this.state.actualMoment.format('HH:mm:ss')} - Velocidad: <input type="range" min="0" max="200" value={this.state.speed} onChange={this.updateSpeed} /> {this.state.speed}%
+        </div>
+            <div className="pull-right">
+              <Dropdown>
+                <Dropdown.Toggle>
+                  Export
+            </Dropdown.Toggle>
+                <Dropdown.Menu>
+                  <Dropdown.Item>As CSV</Dropdown.Item>
+                  <Dropdown.Item>As PNG</Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
+            </div>
+            <BubbleChart data={this.state.filteredData} addHiddenProject={this.addHiddenProject} />
+          </Card>
+        </div>
+      );
+  }
+
+  export default SalesChart;
