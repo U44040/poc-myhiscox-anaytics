@@ -8,6 +8,7 @@ import userContext from '../../../context/userContext';
 import * as ROLES from '../../../utils/RoleTypes';
 import Sidebar from '../../Shared/Sidebar/Sidebar';
 import FilterSelector from './FilterSelector/FilterSelector';
+import { FormGroup, FormControl, InputGroup } from 'react-bootstrap';
 
 const deepClone = rfdc();
 
@@ -256,18 +257,55 @@ class SidebarFilters extends Component {
                 <ListGroupItem title="FILTERS" isCollapsable collapsed></ListGroupItem>
                 <div className="list-group-item-content">
                     <FilterSelector
-                     options={this.state.options}
-                     value={this.state.filterValue}
-                     filterChange={this.filterChange}
-                     addSpecialFilterValue={this.addSpecialFilterValue}
-                     removeSpecialFilterValue={this.removeSpecialFilterValue}
-                     specialFilterValues={this.state.specialFilterValues}
+                        options={this.state.options}
+                        value={this.state.filterValue}
+                        filterChange={this.filterChange}
+                        addSpecialFilterValue={this.addSpecialFilterValue}
+                        removeSpecialFilterValue={this.removeSpecialFilterValue}
+                        specialFilterValues={this.state.specialFilterValues}
                     />
                 </div>
 
                 <ListGroupItem title="AXIS" isCollapsable collapsed></ListGroupItem>
                 <div className="list-group-item-content">
                     <AxisModeSelector />
+                </div>
+
+                <ListGroupItem title="TRESHOLD" isCollapsable collapsed></ListGroupItem>
+                <div className="list-group-item-content pt-2">
+
+                    <FormGroup className="mx-2">
+                        <InputGroup>
+                            <label htmlFor="percentage">Percentage</label>
+                            <FormControl id="percentage" type="number" onInput={(e) => this.props.updateTreshold(e, 'percentage')} value={this.props.treshold.percentage} />
+                            <InputGroup.Append>
+                                <InputGroup.Text id="basic-addon2">%</InputGroup.Text>
+                            </InputGroup.Append>
+                        </InputGroup>
+                    </FormGroup>
+
+                    <FormGroup className="mx-2">
+                        <InputGroup>
+                            <label htmlFor="elapsedTime">Elapsed Time</label>
+                            <FormControl id="elapsedTime" type="number" min="0" onInput={(e) => this.props.updateTreshold(e, 'elapsedTime')} value={this.props.treshold.elapsedTime} />
+                            <InputGroup.Append>
+                                <InputGroup.Text id="basic-addon2">minutes</InputGroup.Text>
+                            </InputGroup.Append>
+                        </InputGroup>
+
+                    </FormGroup>
+                    <FormGroup className="mx-2">
+                        <InputGroup>
+
+                            <label htmlFor="totalRate">Total Rate</label>
+                            <FormControl id="totalRate" type="number" min="0" onInput={(e) => this.props.updateTreshold(e, 'totalRate')} value={this.props.treshold.totalRate} />
+                            <InputGroup.Append>
+                                <InputGroup.Text id="basic-addon2">€</InputGroup.Text>
+                            </InputGroup.Append>
+                        </InputGroup>
+
+                    </FormGroup>
+
                 </div>
             </Sidebar>
         );
