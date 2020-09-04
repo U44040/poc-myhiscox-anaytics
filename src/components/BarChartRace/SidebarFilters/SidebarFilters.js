@@ -317,10 +317,6 @@ class SidebarFilters extends Component {
                     />
                 </div>
 
-                <ListGroupItem title="AXIS" isCollapsable collapsed></ListGroupItem>
-                <div className="list-group-item-content">
-                    <AxisModeSelector />
-                </div>
             </Sidebar>
         );
     }

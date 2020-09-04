@@ -25,7 +25,7 @@ const Header = (props) => {
                         <NavDropdown.Item href="/graphs/total-accumulated-sales">Total accumulated Sales</NavDropdown.Item>
                     </Link>
                     <Link to="/graphs/sales-race">
-                        <NavDropdown.Item href="/graphs/sales-race">(WIP) Bar Chart Race</NavDropdown.Item>
+                        <NavDropdown.Item href="/graphs/sales-race">Sales Race</NavDropdown.Item>
                     </Link>
                 </NavDropdown>
             </Nav>
