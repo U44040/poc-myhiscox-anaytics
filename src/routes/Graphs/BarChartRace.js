@@ -73,12 +73,12 @@ class BarChartRace extends Component {
             <div className="section-dashboard row">
                 <SidebarFilters
                     salesChartData={this.state.salesChartData}
-                    updateFilters={this.updateFilters} 
+                    updateFilters={this.updateFilters}
                     updateSpecialFilters={this.updateSpecialFilters}
                 />
                 <div className="col py-3">
                     <div className="container-fluid">
-                        <h3 className="text-gray-800">Real-Time Bar Chart Race</h3>
+                        <h3 className="text-gray-800">Sales Race</h3>
                         <div className="row mb-4">
                             <BarChartRaceContainer updateData={this.updateSalesChartData} filters={this.state.filters} specialFilters={this.state.specialFilters} />
                         </div>

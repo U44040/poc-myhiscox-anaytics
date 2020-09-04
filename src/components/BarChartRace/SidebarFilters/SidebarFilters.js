@@ -29,9 +29,11 @@ class SidebarFilters extends Component {
     static contextType = userContext;
 
     componentDidUpdate = (prevProps) => {
+        // TODO CHECK WHEN UPDATE
         if (prevProps.salesChartData !== this.props.salesChartData) {
             this.prepareDatePicker();
             this.prepareFilters();
+            this.recheckOptions(this.state.filterValue);
             this.setState((oldState, oldProps) => (
                 {
                     options: [
@@ -49,7 +51,7 @@ class SidebarFilters extends Component {
 
     prepareDatePicker = () => {
         let startDate = moment(this.props.salesChartData[0].date).toDate();
-        let endDate = moment(this.props.salesChartData[this.props.salesChartData.length-1].date).toDate();
+        let endDate = moment(this.props.salesChartData[this.props.salesChartData.length - 1].date).toDate();
 
         this.setState({
             originalStartDate: startDate,
@@ -269,14 +271,14 @@ class SidebarFilters extends Component {
         }
 
         let endDate = this.state.endDate;
-        if (startDate>endDate) {
+        if (startDate > endDate) {
             endDate = startDate;
         }
 
         this.setState({
             startDate,
             endDate,
-        }, () => this.updateDateFilters() );
+        }, () => this.updateDateFilters());
     }
 
     setEndDate = (date) => {
@@ -286,7 +288,7 @@ class SidebarFilters extends Component {
         }
         this.setState({
             endDate
-        }, () => this.updateDateFilters() );
+        }, () => this.updateDateFilters());
     }
 
     updateDateFilters = () => {
@@ -305,37 +307,6 @@ class SidebarFilters extends Component {
 
                 <ListGroupItem title="FILTERS" isCollapsable collapsed></ListGroupItem>
                 <div className="list-group-item-content">
-
-                    <FormGroup className="mx-2">
-                        <label htmlFor="startDate"><span class="fa fa-calendar text-primary mr-1"></span>From</label>
-                        <DatePicker
-                            selected={this.state.startDate}
-                            onChange={this.setStartDate}
-                            selectsStart
-                            startDate={this.state.startDate}
-                            endDate={this.state.endDate}
-                            minDate={this.state.originalStartDate}
-                            maxDate={this.state.originalEndDate}
-                            dateFormat="dd/MM/y"
-                            customInput={<input id="startDate" type="text" className="form-control form-control-sm" />}
-                        />
-                    </FormGroup>
-
-                    <FormGroup className="mx-2">
-                        <label htmlFor="endDate"><span class="fa fa-calendar text-primary mr-1"></span>To</label>
-                        <DatePicker
-                            selected={this.state.endDate}
-                            onChange={this.setEndDate}
-                            selectsEnd
-                            startDate={this.state.startDate}
-                            endDate={this.state.endDate}
-                            minDate={this.state.startDate}
-                            maxDate={this.state.originalEndDate}
-                            dateFormat="dd/MM/y"
-                            customInput={<input id="endDate" type="text" className="form-control form-control-sm" />}
-                        />
-                    </FormGroup>
-
                     <FilterSelector
                         options={this.state.options}
                         value={this.state.filterValue}

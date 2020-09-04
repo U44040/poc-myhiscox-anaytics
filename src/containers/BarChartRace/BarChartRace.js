@@ -1,30 +1,29 @@
 import React, { Component } from 'react';
 import Card from '../../components/Shared/Card/Card';
-import * as DataGenerator from '../../utils/ScatterPlotChartDataGenerator';
+import * as DataGenerator from '../../utils/BarChartRaceDataGenerator';
 import * as STATUS from '../../utils/StatusTypes';
 import rfdc from 'rfdc';
 import * as FILTER_TYPES from '../../utils/FilterTypes';
 import moment from 'moment';
 import userContext from '../../context/userContext';
 import * as ROLES from '../../utils/RoleTypes';
-import ConnectedScatterPlotChart from '../../components/TotalAccumulatedSales/ConnectedScatterPlotChart/ConnectedScatterPlotChart';
-import { Form, Row, Col } from 'react-bootstrap';
+import { Form, Dropdown } from 'react-bootstrap';
+import BarChart from './../../components/BarChartRace/BarChart/BarChart';
 
 const deepClone = rfdc();
-const INTERVAL_REFRESH = 1000;
+const INTERVAL_REFRESH = 4000;
 
 class BarChartRace extends Component {
 
   constructor(props) {
     super();
-    const actualMoment = moment().hour(8).minute(0).second(0);
+    const actualMoment = moment();
     const data = this.getData();
     this.state = {
       data,
       speed: 100,
       actualMoment,
-      segmentType: '',
-      aggregatedBy: 'month',
+      segmentType: 'network',
     }
   }
 
@@ -33,7 +32,7 @@ class BarChartRace extends Component {
   componentDidMount = () => {
     let validData = this.getValidData(this.state.data);
     this.props.updateData(validData);
-    //this.setIntervalRefresh(INTERVAL_REFRESH);
+    this.setIntervalRefresh(INTERVAL_REFRESH);
     this.setState((oldState, oldProps) => {
       let filteredData = this.filterData(validData);
       let segmentedData = this.getSegmentedData(filteredData);
@@ -64,7 +63,7 @@ class BarChartRace extends Component {
   }
 
   componentWillUnmount = () => {
-    //this.cancelInterval();
+    this.cancelInterval();
   }
 
   getData = () => {
@@ -74,6 +73,13 @@ class BarChartRace extends Component {
   getValidData = (data) => {
 
     let validData = deepClone(data);
+
+    validData = validData.map((d) => {
+      return {
+        ...d,
+        projects: d.projects.filter((p) => moment(p.createdAt) <= this.state.actualMoment)
+      }
+    });
 
     if (this.context && this.context.user) {
       let user = this.context.user;
@@ -187,42 +193,20 @@ class BarChartRace extends Component {
     let series = deepClone(data);
     let aggregatedSeries = [];
 
-    let dateFormat = '';
-
-    switch (this.state.aggregatedBy) {
-      case 'year':
-        dateFormat = 'YYYY';
-        break
-      case 'month':
-        dateFormat = 'YYYYMM';
-        break;
-      case 'day':
-        dateFormat = 'YYYYMMDD';
-        break;
-    }
-
     for (let serie of series) {
       let aggregatedSerie = {
         ...serie,
-        values: {}
+        values: {
+          items: [],
+          volume: 0,
+        },
       };
 
       for (let d of serie.values) {
-        let dateFormatted = moment(d.date).locale('es').format(dateFormat);
-
-        if (aggregatedSerie.values[dateFormatted] == undefined) {
-          aggregatedSerie.values[dateFormatted] = {
-            keyTime: moment(dateFormatted, dateFormat),
-            items: [],
-            volume: 0,
-          };
-        }
-
-        aggregatedSerie.values[dateFormatted].items.push(d);
-        aggregatedSerie.values[dateFormatted].volume += d.volume;
+        aggregatedSerie.values.items.push(d);
+        aggregatedSerie.values.volume += d.volume;
       }
 
-      aggregatedSerie.values = Object.values(aggregatedSerie.values);
       aggregatedSeries.push(aggregatedSerie);
     }
 
@@ -303,51 +287,57 @@ class BarChartRace extends Component {
     return filteredData;
   }
 
-  /*updateData = () => {
+  updateData = () => {
     // Update data
     if (this.state.speed == 0) { return }
 
-    let actualMoment = this.state.actualMoment.clone().add(60 * this.state.speed / 100, 'seconds');
+    let actualMoment = this.state.actualMoment.clone().add(60 * this.state.speed / 100, 'minutes');
+    /*
     if (actualMoment.dayOfYear() > moment().dayOfYear()) {
       this.cancelInterval();
-    }
+    }*/
 
-    let updatedData = DataGenerator.updateData(this.state.data, actualMoment);
-    let filteredData = this.filterData(updatedData);
+    //let updatedData = DataGenerator.updateData(this.state.data, actualMoment);
+    let validData = this.getValidData(this.state.data);
+    let filteredData = this.filterData(validData);
     let segmentedData = this.getSegmentedData(filteredData);
     let aggregatedData = this.getAggregatedData(segmentedData);
     this.setState({
-      data: updatedData,
+      //data: updatedData,
       filteredData: filteredData,
       actualMoment: actualMoment,
       segmentedData: segmentedData,
       aggregatedData: aggregatedData,
-    }, () => this.props.updateData(updatedData));
-  }*/
+    }, () => this.props.updateData(validData));
+  }
 
-  /*setIntervalRefresh = (interval) => {
+  setIntervalRefresh = (interval) => {
     let windowInterval = window.setInterval(this.updateData, interval);
     this.setState({
       interval: windowInterval,
     });
-  }*/
+  }
 
-  /*cancelInterval = () => {
+  cancelInterval = () => {
     window.clearInterval(this.state.interval);
-  }*/
+  }
 
-  /*updateSpeed = (e) => {
+  updateSpeed = (e) => {
     this.setState(
       {
         speed: e.target.value,
       }
     )
-  }*/
+  }
 
   changeSegmentation = (e) => {
     this.setState({
       segmentType: e.target.value,
-    }, () => this.prepareData())
+    }, () => {
+      this.cancelInterval();
+      this.prepareData();
+      this.setIntervalRefresh(INTERVAL_REFRESH);
+    })
   }
 
   prepareData = () => {
@@ -363,26 +353,46 @@ class BarChartRace extends Component {
   render = () => {
     let chart = '';
     if (this.state.aggregatedData) {
-      chart = <ConnectedScatterPlotChart segmentType={this.state.segmentType} data={this.state.aggregatedData} />
+      chart = <BarChart segmentType={this.state.segmentType} data={this.state.aggregatedData} />
     }
     return (
       <div className="col-md">
         <Card type="primary">
           <div className="row">
             <div className="col-12">
-              <Form inline>
-                <Form.Group>
-                  <Form.Label>
-                    Segmentation
-                </Form.Label>
-                  <Form.Control className="mx-sm-3" as="select" value={this.state.segmentType} onChange={this.changeSegmentation}>
-                    <option value="">Total</option>
-                    <option value="broker">Broker</option>
-                    <option value="brokerage">Brokerage</option>
-                    <option value="network">Network</option>
-                  </Form.Control>
-                </Form.Group>
-              </Form>
+              <div className="pull-left">
+                <Form inline>
+                  <Form.Group>
+                    <Form.Label>
+                      Segmentation
+                  </Form.Label>
+                    <Form.Control className="mx-sm-3" as="select" value={this.state.segmentType} onChange={this.changeSegmentation}>
+                      <option value="">Total</option>
+                      <option value="broker">Broker</option>
+                      <option value="brokerage">Brokerage</option>
+                      <option value="network">Network</option>
+                    </Form.Control>
+                  </Form.Group>
+                  <Form.Group>
+                    <Form.Label>
+                      Date: {this.state.actualMoment.format('DD/MM/Y H:m:s')} - Speed:
+                    </Form.Label>
+
+                    <input className="mx-sm-3" type="range" min="0" max="200" value={this.state.speed} onChange={this.updateSpeed} /> {this.state.speed}%
+                  </Form.Group>
+                </Form>
+              </div>
+              <div className="pull-right">
+                <Dropdown>
+                  <Dropdown.Toggle>
+                    Export
+                </Dropdown.Toggle>
+                  <Dropdown.Menu>
+                    <Dropdown.Item>As CSV</Dropdown.Item>
+                    <Dropdown.Item>As PNG</Dropdown.Item>
+                  </Dropdown.Menu>
+                </Dropdown>
+              </div>
             </div>
           </div>
           {chart}

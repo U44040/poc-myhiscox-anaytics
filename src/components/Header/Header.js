@@ -18,14 +18,14 @@ const Header = (props) => {
         <Navbar.Collapse>
             <Nav className="mr-auto">
                 <NavDropdown title="Graphs">
-                    <Link to="/graphs/real-time-sales-scatterplot">
-                        <NavDropdown.Item href="/graphs/real-time-sales-scatterplot">Real-Time Sales Scatterplot</NavDropdown.Item>
+                    <Link to="/graphs/real-time-sales">
+                        <NavDropdown.Item href="/graphs/real-time-sales">Real-Time Sales</NavDropdown.Item>
                     </Link>
                     <Link to="/graphs/total-accumulated-sales">
                         <NavDropdown.Item href="/graphs/total-accumulated-sales">Total accumulated Sales</NavDropdown.Item>
                     </Link>
-                    <Link to="/graphs/bar-chart-race">
-                        <NavDropdown.Item href="/graphs/bar-chart-race">(WIP) Bar Chart Race</NavDropdown.Item>
+                    <Link to="/graphs/sales-race">
+                        <NavDropdown.Item href="/graphs/sales-race">(WIP) Bar Chart Race</NavDropdown.Item>
                     </Link>
                 </NavDropdown>
             </Nav>
@@ -33,7 +33,7 @@ const Header = (props) => {
                 <Navbar.Text>Welcome back {context.user.name}</Navbar.Text>
                 <NavDropdown alignRight title={<span className="fa fa-user"></span>}>
                     <NavDropdown.Item href="/user/profile"><span className="fa fa-user"></span> Profile</NavDropdown.Item>
-                    { (context.user.role == ROLES.SUPER_ADMIN_ROLE ?
+                    {(context.user.role == ROLES.SUPER_ADMIN_ROLE ?
                         <React.Fragment>
                             <NavDropdown.Divider></NavDropdown.Divider>
                             <NavDropdown.Item href="/user/admin"><span className="fa fa-users"></span> Manage users</NavDropdown.Item>
@@ -44,7 +44,7 @@ const Header = (props) => {
                 </NavDropdown>
             </Nav>
         </Navbar.Collapse>
-    
+
     </Navbar>;
 }
 
