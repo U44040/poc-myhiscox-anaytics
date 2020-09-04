@@ -14,7 +14,7 @@ class BarChart extends Component {
         const width = 670 - margin.left - margin.right;
         const height = 200 - margin.top - margin.bottom;
         const padding = { top: 15, right: 0, bottom: 0, left: 0 };
-        const barSize = 10;
+        const barSize = 40;
 
         this.svg = null;
         this.scatter = null;
@@ -24,7 +24,7 @@ class BarChart extends Component {
         this.zeroLine = null;
         this.radius = '1.5px';
         this.strokeWidth = '0.5px';
-        this.animationDuration = 2000;
+        this.animationDuration = 1500;
 
         this.state = {
             segmentType: null,
@@ -127,7 +127,7 @@ class BarChart extends Component {
         .style("font-size", 5)
         .style("font-weight", "bold");*/
 
-        let clip = this.svg.append("defs").append("SVG:clipPath")
+        this.clip = this.svg.append("defs").append("SVG:clipPath")
             .attr("id", "clip")
             .append("SVG:rect")
             .attr("width", this.state.width + 5)
@@ -135,14 +135,14 @@ class BarChart extends Component {
             .attr("x", 0)
             .attr("y", -5);
 
-        let zoom = d3.zoom()
+        /*let zoom = d3.zoom()
             .scaleExtent([1, 60])  // This control how much you can unzoom (x0.5) and zoom (x20)
             .extent([[0, 0], [this.state.width, this.state.height]])
             .translateExtent([[0, 0], [this.state.width, this.state.height]])
             .on("zoom", () => this.updateChartZoom(this.xAxis, this.yAxis));
 
 
-        d3.select(this.svgEl).call(zoom).on("dblclick.zoom", null);
+        d3.select(this.svgEl).call(zoom).on("dblclick.zoom", null);*/
 
         // This add an invisible rect on top of the chart area. This rect can recover pointer events: necessary to understand when the user click to dismiss tooltip
         this.svg.append("rect")
@@ -231,12 +231,16 @@ class BarChart extends Component {
     updateChart = () => {
 
         this.setState((oldState, oldProps) => (
-            { height: oldState.barSize * (oldProps.data.length + 10) }
+            { height: oldState.barSize * (oldProps.data.length) }
         ), () => {
 
             let component = this;
             let scatter = this.scatter;
             let scales = this.getScales();
+
+            this.clip
+                .attr("width", this.state.width + 5)
+                .attr("height", this.state.height + 5)
 
             // Axis
             this.xAxis.call(d3.axisTop(this.xScaleTransformed()).ticks(10).tickSizeInner(-this.state.height).tickSizeOuter(0));
@@ -269,6 +273,7 @@ class BarChart extends Component {
                 .attr("x", scales.xScaleTransformed(0))
                 .transition()
                 .duration(this.animationDuration)
+                .ease(d3.easeLinear)
                 .style("opacity", 0.75)
                 .attr("height", scales.yScaleTransformed.bandwidth())
                 .attr("y", d => scales.yScaleTransformed(this.getYValue(d)))
@@ -297,6 +302,7 @@ class BarChart extends Component {
             scatterSerieGroupLabel
                 .transition()
                 .duration(this.animationDuration)
+                .ease(d3.easeLinear)
                 .attr("transform", d => `translate(${scales.xScaleTransformed(this.getXValue(d)) - scales.xScaleTransformed(0)},${scales.yScaleTransformed(this.getYValue(d))})`)
                 ;
 
@@ -312,6 +318,7 @@ class BarChart extends Component {
                 .text(d => d.label)
                 .transition()
                 .duration(this.animationDuration)
+                .ease(d3.easeLinear)
                 .attr("font-size", 5)
                 .attr("stroke-width", 0)
                 .attr("text-anchor", "end")
@@ -337,6 +344,7 @@ class BarChart extends Component {
                 .merge(scatterSerieLabelNumber)
                 .transition()
                 .duration(this.animationDuration)
+                .ease(d3.easeLinear)
                 .attr("font-size", 4)
                 .attr("stroke-width", 0)
                 .attr("text-anchor", "end")
