@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import Card from './../../Shared/Card/Card';
 import SmartDataTable from './../../Shared/Table/DataTable';
 import moment from 'moment';
+import * as d3 from 'd3';
 
 class DataTable extends Component {
 
@@ -19,7 +20,7 @@ class DataTable extends Component {
                 {
                     id: 'totalRate',
                     Header: 'Total Rate',
-                    accessor: 'totalRate',
+                    accessor: (d) => d3.sum(d.productVariants.map(pv => pv.totalRate)),
                     Cell: (d) => {
                         return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(d.cell.value);
                     }
@@ -52,7 +53,7 @@ class DataTable extends Component {
                 {
                     id: 'fullPercentAverage',
                     Header: 'Percentage',
-                    accessor: (d) => Number(d.fullPercentAverage),
+                    accessor: (d) => d3.mean(d.productVariants.map(pv => pv.percentAverage)),
                     Cell: (d => Math.round(d.cell.value) + '%'),
                     sortType: 'basic',
                 },

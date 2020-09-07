@@ -508,6 +508,7 @@ class ConnectedScatterPlotChart extends Component {
             this.tooltip.attr('fixed', false);
             this.showTooltip(d, element);
             this.tooltip.attr('fixed', true);
+            this.scatter.selectAll('circle').attr('fixed', false);
             d3.select(element).attr('fixed', true);
         }
     }

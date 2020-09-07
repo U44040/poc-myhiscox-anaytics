@@ -38,6 +38,7 @@ class TotalAccumulatedSalesChart extends Component {
       let filteredData = this.filterData(validData);
       let segmentedData = this.getSegmentedData(filteredData);
       let aggregatedData = this.getAggregatedData(segmentedData);
+      this.props.updateAggregatedData(aggregatedData);
 
       return {
         validData,
@@ -54,6 +55,7 @@ class TotalAccumulatedSalesChart extends Component {
         let filteredData = this.filterData(oldState.validData);
         let segmentedData = this.getSegmentedData(filteredData);
         let aggregatedData = this.getAggregatedData(segmentedData);
+        this.props.updateAggregatedData(aggregatedData);
         return {
           filteredData,
           segmentedData,
@@ -353,6 +355,7 @@ class TotalAccumulatedSalesChart extends Component {
   prepareData = () => {
     let segmentedData = this.getSegmentedData(this.state.filteredData);
     let aggregatedData = this.getAggregatedData(segmentedData);
+    this.props.updateAggregatedData(aggregatedData);
 
     this.setState({
       segmentedData,

@@ -12,7 +12,7 @@ class BubbleChart extends Component {
 
         const margin = { top: 5, right: 70, bottom: 5, left: 38 };
         const width = 670 - margin.left - margin.right;
-        const height = 300 - margin.top - margin.bottom;
+        const height = 250 - margin.top - margin.bottom;
 
         this.svg = null;
         this.scatter = null;
