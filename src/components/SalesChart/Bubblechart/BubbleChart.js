@@ -260,6 +260,7 @@ class BubbleChart extends Component {
             .enter()
             .append("circle")
             .merge(scatterProject)
+            .attr("id", d => "project-" + d.reference)
             .on("click", function (d) { component.showTooltipAlways(d, this) })
             .on("mouseover", function (d) { component.showTooltip(d, this) })
             //.on("mousemove", function(d){ component.showTooltip(d, this)})
@@ -357,14 +358,18 @@ class BubbleChart extends Component {
 
         html += '</ul></div>';
 
+        let position = element.getBoundingClientRect();
+
         this.tooltip
             .html(html)
             .transition()
             .duration(300)
             //.style('display','block')
             .style('opacity', 1)
-            .style('left', (d3.event.pageX + 10) + 'px')
-            .style('top', (d3.event.pageY + 20) + 'px')
+            //.style('left', (d3.event.pageX + 10) + 'px')
+            .style('left', (window.scrollX + position.x + position.width) + 'px')
+            //.style('top', (d3.event.pageY + 20) + 'px')
+            .style('top', (window.scrollY + position.y + position.height) + 'px')
             .style('z-index', 1000);
 
         this.scatter.selectAll("circle").transition().duration(300).style('stroke-width', this.strokeWidth);
@@ -381,6 +386,7 @@ class BubbleChart extends Component {
             this.tooltip.attr('fixed', false);
             this.showTooltip(d, element);
             this.tooltip.attr('fixed', true);
+            this.scatter.selectAll('circle').attr('fixed', false);
             d3.select(element).attr('fixed', true);
         }
     }
