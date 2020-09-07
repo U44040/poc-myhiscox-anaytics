@@ -70,22 +70,34 @@ class DataTable extends Component {
                 isMultiSortEvent: (event) => (event.ctrlKey === true),
                 initialState: {
                     sortBy: [
-                        {id: 'fullPercentAverage', desc: true},
-                        {id: 'elapsedTime', desc: true},
-                        {id: 'totalRate', desc: true},
+                        { id: 'fullPercentAverage', desc: true },
+                        { id: 'elapsedTime', desc: true },
+                        { id: 'totalRate', desc: true },
                     ],
                 },
             },
-            rowStyle: this.getRowStyle,
+            rowCustomProps: this.getRowCustomProps,
         }
     }
 
-    getRowStyle = (row) => {
-            let percentage = row.cells.find(d => d.column.id == "fullPercentAverage").value > this.props.treshold.percentage;
-            let elapsedTime = row.cells.find(d => d.column.id == "elapsedTime").value > this.props.treshold.elapsedTime;
-            let totalRate = row.cells.find(d => d.column.id == "totalRate").value > this.props.treshold.totalRate;
-            let status = ['Approved', 'Rejected'].includes(row.cells.find(d => d.column.id == "status").value) === false;
-            return (percentage && elapsedTime && totalRate && status ? 'bg-highlight' : '');
+    getRowCustomProps = (row) => {
+        let percentage = row.cells.find(d => d.column.id == "fullPercentAverage").value > this.props.treshold.percentage;
+        let elapsedTime = row.cells.find(d => d.column.id == "elapsedTime").value > this.props.treshold.elapsedTime;
+        let totalRate = row.cells.find(d => d.column.id == "totalRate").value > this.props.treshold.totalRate;
+        let status = ['Approved', 'Rejected'].includes(row.cells.find(d => d.column.id == "status").value) === false;
+
+        let reference = row.cells.find(d => d.column.id == "reference").value;
+
+        return {
+            projectReference: reference,
+            onClick: (e) => {
+                let el = document.getElementById('project-' + reference);
+                if (el) {
+                    el.dispatchEvent(new Event("click"));
+                }
+            },
+            className: (percentage && elapsedTime && totalRate && status ? 'bg-highlight' : ''),
+        }
     }
 
     componentDidUpdate = (prevProps, prevState) => {
@@ -114,7 +126,7 @@ class DataTable extends Component {
                         columns={this.state.columns}
                         data={this.state.data}
                         tableOptions={this.state.tableOptions}
-                        rowStyle={this.state.rowStyle}
+                        rowCustomProps={this.state.rowCustomProps}
                         stripped
                         hover
                         responsive

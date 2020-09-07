@@ -56,16 +56,16 @@ const DataTable = (props) => {
                 {rows.map(
                     (row, i) => {
                         prepareRow(row);
-                        let rowStyle;
-                        if (props.rowStyle) {
-                            if (typeof props.rowStyle == "function") {
-                                rowStyle = props.rowStyle(row);
+                        let rowCustomProps;
+                        if (props.rowCustomProps) {
+                            if (typeof props.rowCustomProps == "function") {
+                                rowCustomProps = props.rowCustomProps(row);
                             } else {
-                                rowStyle = props.rowStyle;
+                                rowCustomProps = props.rowCustomProps;
                             }
                         }
                         return (
-                            <tr className={rowStyle} {...row.getRowProps()}>
+                            <tr {...rowCustomProps} {...row.getRowProps()}>
                                 {row.cells.map(cell => {
                                     return (
                                         <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
