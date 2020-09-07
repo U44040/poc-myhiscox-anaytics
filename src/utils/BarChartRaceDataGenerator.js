@@ -140,8 +140,9 @@ const productVariants = [
 
 export const generateData = () => {
 
-    let startDate = moment('20190101', 'YYYYMMDD');
-    let endDate = moment().subtract(1, 'months').endOf('month');
+    //let startDate = moment('20190101','YYYYMMDD');
+    let startDate = moment().subtract(1, 'day');
+    let endDate = moment().add(2, 'week').endOf('day');
 
     let elapsedDays = moment.duration(endDate.diff(startDate)).asDays();
 
@@ -181,7 +182,7 @@ export const generateData = () => {
 
             volume += fullTotalRate;
 
-            let createdAt = date.clone().add(getRandomFloat(480, 1200), 'minutes'); // (Day between startDate, today) + (8:00,20:00)
+            let createdAt = date.clone().add(getRandomFloat(0, 1440), 'minutes'); // (Day between startDate, today) + (8:00,20:00)
             let finishedAt = createdAt.clone().add(getRandomFloat(60, 180), 'minutes'); // finishedAt (30, 120min) from createdAt
 
             let project = {
@@ -211,7 +212,7 @@ export const generateData = () => {
     return data;
 }
 
-export const updateData = () => { }
+//export const updateData = (data, actualMoment) => {}
 
 const getRandomValueFromArray = (array) => {
     return { ...array[(getRandomInt(0, 100) % array.length)] };

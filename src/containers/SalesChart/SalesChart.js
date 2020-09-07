@@ -253,26 +253,26 @@ class SalesChart extends Component {
   }
 
   render = () => (
-        <div className="col-md">
-          <Card type="primary" /* header="Venta de pólizas" title="Tiempo real" text="Gráfica en tiempo real de las pólizas que se están creando"*/ >
-            <div className="pull-left">
-              Hora: {this.state.actualMoment.format('HH:mm:ss')} - Velocidad: <input type="range" min="0" max="200" value={this.state.speed} onChange={this.updateSpeed} /> {this.state.speed}%
+    <div className="col-md">
+      <Card type="primary" /* header="Venta de pólizas" title="Tiempo real" text="Gráfica en tiempo real de las pólizas que se están creando"*/ >
+        <div className="pull-left">
+          Hour: {this.state.actualMoment.format('HH:mm:ss')} - Speed: <input type="range" min="0" max="200" value={this.state.speed} onChange={this.updateSpeed} /> {this.state.speed}%
         </div>
-            <div className="pull-right">
-              <Dropdown>
-                <Dropdown.Toggle>
-                  Export
+        <div className="pull-right">
+          <Dropdown>
+            <Dropdown.Toggle>
+              Export
             </Dropdown.Toggle>
-                <Dropdown.Menu>
-                  <Dropdown.Item>As CSV</Dropdown.Item>
-                  <Dropdown.Item>As PNG</Dropdown.Item>
-                </Dropdown.Menu>
-              </Dropdown>
-            </div>
-            <BubbleChart data={this.state.filteredData} addHiddenProject={this.addHiddenProject} />
-          </Card>
+            <Dropdown.Menu>
+              <Dropdown.Item>As CSV</Dropdown.Item>
+              <Dropdown.Item>As PNG</Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown>
         </div>
-      );
-  }
+        <BubbleChart data={this.state.filteredData} addHiddenProject={this.addHiddenProject} />
+      </Card>
+    </div>
+  );
+}
 
-  export default SalesChart;
+export default SalesChart;

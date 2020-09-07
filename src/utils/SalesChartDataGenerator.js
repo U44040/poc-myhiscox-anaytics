@@ -84,7 +84,23 @@ const users = [
             "id": 1,
             "name": "Hiscox Office"
         }
-    }
+    },
+    {
+        "id": 6,
+        "name": "Alicia Palacín Ortuño",
+        "brokerage": {
+            "id": 5,
+            "name": "AON",
+            "network": {
+                "id": 3,
+                "name": "RED AON"
+            }
+        },
+        "office": {
+            "id": 1,
+            "name": "Hiscox Office"
+        }
+    },
 ];
 
 const productVariants = [

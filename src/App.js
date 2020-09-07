@@ -10,6 +10,7 @@ import userContext from './context/userContext';
 import Cookies from 'js-cookie';
 import * as ROLES from './utils/RoleTypes';
 import TotalAccumulatedSales from './routes/Graphs/TotalAccumulatedSales';
+import BarChartRace from './routes/Graphs/BarChartRace';
 
 const USERS = [
   {
@@ -81,7 +82,7 @@ class App extends Component {
     }
   }
 
-  
+
   checkLogin = (email, password) => {
     let index = this.state.users.findIndex((d) => d.email.toLowerCase() == email.toLowerCase() && d.password === password);
     if (index != -1) {
@@ -110,12 +111,13 @@ class App extends Component {
     return (<div className="app">
       <userContext.Provider value={{ authenticated: this.state.authenticated, user: this.state.user, checkLogin: this.checkLogin, logout: this.logout }}>
         <BrowserRouter>
-          {this.state.authenticated === false ? <Redirect to="/login" /> : '' }
-          {this.state.authenticated === true ? <Header /> : '' }
+          {this.state.authenticated === false ? <Redirect to="/login" /> : ''}
+          {this.state.authenticated === true ? <Header /> : ''}
           <Main>
             <Switch>
               <Route path="/login" component={Login} />
               <Route path="/graphs/total-accumulated-sales" component={TotalAccumulatedSales} />
+              <Route path="/graphs/sales-race" component={BarChartRace} />
               <Route path="/" component={Dashboard} />
             </Switch>
           </Main>
