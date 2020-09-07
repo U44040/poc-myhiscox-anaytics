@@ -90,7 +90,7 @@ class DataTable extends Component {
         let reference = row.cells.find(d => d.column.id == "reference").value;
 
         return {
-            projectReference: reference,
+            projectreference: reference,
             onClick: (e) => {
                 let el = document.getElementById('project-' + reference);
                 if (el) {
