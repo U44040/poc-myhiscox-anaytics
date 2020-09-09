@@ -9,6 +9,7 @@ import userContext from '../../context/userContext';
 import * as ROLES from '../../utils/RoleTypes';
 import { Form, Dropdown } from 'react-bootstrap';
 import BarChart from './../../components/BarChartRace/BarChart/BarChart';
+import Export from '../../components/Shared/Dropdown/Export/Export';
 
 const deepClone = rfdc();
 const INTERVAL_REFRESH = 4000;
@@ -383,15 +384,7 @@ class BarChartRace extends Component {
                 </Form>
               </div>
               <div className="pull-right">
-                <Dropdown>
-                  <Dropdown.Toggle>
-                    Export
-                </Dropdown.Toggle>
-                  <Dropdown.Menu>
-                    <Dropdown.Item>As CSV</Dropdown.Item>
-                    <Dropdown.Item>As PNG</Dropdown.Item>
-                  </Dropdown.Menu>
-                </Dropdown>
+                <Export excel image />
               </div>
             </div>
           </div>

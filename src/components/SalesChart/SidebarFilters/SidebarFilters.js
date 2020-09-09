@@ -271,12 +271,12 @@ class SidebarFilters extends Component {
                     <AxisModeSelector />
                 </div>
 
-                <ListGroupItem title="TRESHOLD" isCollapsable collapsed></ListGroupItem>
+                <ListGroupItem title="KPIs" isCollapsable collapsed></ListGroupItem>
                 <div className="list-group-item-content pt-2">
 
                     <FormGroup className="mx-2">
                         <InputGroup>
-                            <label htmlFor="percentage">Percentage</label>
+                            <label htmlFor="percentage">Market Position</label>
                             <FormControl id="percentage" type="number" onInput={(e) => this.props.updateTreshold(e, 'percentage')} value={this.props.treshold.percentage} />
                             <InputGroup.Append>
                                 <InputGroup.Text id="basic-addon2">%</InputGroup.Text>
@@ -286,7 +286,7 @@ class SidebarFilters extends Component {
 
                     <FormGroup className="mx-2">
                         <InputGroup>
-                            <label htmlFor="elapsedTime">Elapsed Time</label>
+                            <label htmlFor="elapsedTime">Time in Market</label>
                             <FormControl id="elapsedTime" type="number" min="0" onInput={(e) => this.props.updateTreshold(e, 'elapsedTime')} value={this.props.treshold.elapsedTime} />
                             <InputGroup.Append>
                                 <InputGroup.Text id="basic-addon2">minutes</InputGroup.Text>

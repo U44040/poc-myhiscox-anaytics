@@ -9,6 +9,7 @@ import userContext from '../../context/userContext';
 import * as ROLES from '../../utils/RoleTypes';
 import ConnectedScatterPlotChart from '../../components/TotalAccumulatedSales/ConnectedScatterPlotChart/ConnectedScatterPlotChart';
 import { Form, Dropdown } from 'react-bootstrap';
+import Export from '../../components/Shared/Dropdown/Export/Export';
 
 const deepClone = rfdc();
 const INTERVAL_REFRESH = 1000;
@@ -38,6 +39,7 @@ class TotalAccumulatedSalesChart extends Component {
       let filteredData = this.filterData(validData);
       let segmentedData = this.getSegmentedData(filteredData);
       let aggregatedData = this.getAggregatedData(segmentedData);
+      this.props.updateAggregatedData(aggregatedData);
 
       return {
         validData,
@@ -54,6 +56,7 @@ class TotalAccumulatedSalesChart extends Component {
         let filteredData = this.filterData(oldState.validData);
         let segmentedData = this.getSegmentedData(filteredData);
         let aggregatedData = this.getAggregatedData(segmentedData);
+        this.props.updateAggregatedData(aggregatedData);
         return {
           filteredData,
           segmentedData,
@@ -353,6 +356,7 @@ class TotalAccumulatedSalesChart extends Component {
   prepareData = () => {
     let segmentedData = this.getSegmentedData(this.state.filteredData);
     let aggregatedData = this.getAggregatedData(segmentedData);
+    this.props.updateAggregatedData(aggregatedData);
 
     this.setState({
       segmentedData,
@@ -386,15 +390,7 @@ class TotalAccumulatedSalesChart extends Component {
                 </Form>
               </div>
               <div className="pull-right">
-                <Dropdown>
-                  <Dropdown.Toggle>
-                    Export
-                  </Dropdown.Toggle>
-                  <Dropdown.Menu>
-                    <Dropdown.Item>As CSV</Dropdown.Item>
-                    <Dropdown.Item>As PNG</Dropdown.Item>
-                  </Dropdown.Menu>
-                </Dropdown>
+                <Export excel image />
               </div>
             </div>
           </div>

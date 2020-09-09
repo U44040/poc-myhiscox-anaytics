@@ -12,7 +12,7 @@ class BubbleChart extends Component {
 
         const margin = { top: 5, right: 70, bottom: 5, left: 38 };
         const width = 670 - margin.left - margin.right;
-        const height = 300 - margin.top - margin.bottom;
+        const height = 250 - margin.top - margin.bottom;
 
         this.svg = null;
         this.scatter = null;
@@ -109,17 +109,19 @@ class BubbleChart extends Component {
         // Labels
         // Y-Label
         this.yLabel = d3.select(this.svgEl).append("text")
-            .attr('x', () => - 175)
-            .attr('y', (d, i) => 4)
-            .text((d, i) => "Products vs Market")
+            .attr('x', () => - scales.yScale(0) - 5)
+            .attr('y', (d, i) => 5)
+            .attr("text-anchor", "middle")
+            .text((d, i) => "Market Position")
             .style("font-size", 6)
             .style("font-weight", "bold")
             .style("transform", "rotate(-90deg)");
         // X-Label
         this.xLabel = d3.select(this.svgEl).append("text")
-            .attr('x', () => this.state.width - 5)
+            .attr('x', () => this.state.width)
             .attr('y', (d, i) => scales.yScale(0) + 3)
-            .text((d, i) => "Time (minutes)")
+            .attr("text-anchor", "middle")
+            .text((d, i) => "Time in Market (minutes)")
             .style("font-size", 6)
             .style("font-weight", "bold");
 

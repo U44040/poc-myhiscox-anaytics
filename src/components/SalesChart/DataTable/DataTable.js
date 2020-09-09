@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import Card from './../../Shared/Card/Card';
 import SmartDataTable from './../../Shared/Table/DataTable';
 import moment from 'moment';
+import * as d3 from 'd3';
 
 class DataTable extends Component {
 
@@ -19,7 +20,7 @@ class DataTable extends Component {
                 {
                     id: 'totalRate',
                     Header: 'Total Rate',
-                    accessor: 'totalRate',
+                    accessor: (d) => d3.sum(d.productVariants.map(pv => pv.totalRate)),
                     Cell: (d) => {
                         return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(d.cell.value);
                     }
@@ -51,14 +52,14 @@ class DataTable extends Component {
                 },
                 {
                     id: 'fullPercentAverage',
-                    Header: 'Percentage',
-                    accessor: (d) => Number(d.fullPercentAverage),
+                    Header: 'Market Position',
+                    accessor: (d) => d3.mean(d.productVariants.map(pv => pv.percentAverage)),
                     Cell: (d => Math.round(d.cell.value) + '%'),
                     sortType: 'basic',
                 },
                 {
                     id: 'elapsedTime',
-                    Header: 'Elapsed Time',
+                    Header: 'Time in Market',
                     accessor: 'elapsedTime',
                     Cell: (d) => {
                         let duration = moment.duration(d.cell.value, "minutes");
@@ -89,7 +90,7 @@ class DataTable extends Component {
         let reference = row.cells.find(d => d.column.id == "reference").value;
 
         return {
-            projectReference: reference,
+            projectreference: reference,
             onClick: (e) => {
                 let el = document.getElementById('project-' + reference);
                 if (el) {
