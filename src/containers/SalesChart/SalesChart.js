@@ -9,6 +9,7 @@ import userContext from '../../context/userContext';
 import * as ROLES from '../../utils/RoleTypes';
 import BubbleChart from './../../components/SalesChart/Bubblechart/BubbleChart';
 import { Dropdown } from 'react-bootstrap';
+import Export from '../../components/Shared/Dropdown/Export/Export';
 
 const deepClone = rfdc();
 const INTERVAL_REFRESH = 1000;
@@ -259,15 +260,7 @@ class SalesChart extends Component {
           Hour: {this.state.actualMoment.format('HH:mm:ss')} - Speed: <input type="range" min="0" max="200" value={this.state.speed} onChange={this.updateSpeed} /> {this.state.speed}%
         </div>
         <div className="pull-right">
-          <Dropdown>
-            <Dropdown.Toggle>
-              Export
-            </Dropdown.Toggle>
-            <Dropdown.Menu>
-              <Dropdown.Item>As CSV</Dropdown.Item>
-              <Dropdown.Item>As PNG</Dropdown.Item>
-            </Dropdown.Menu>
-          </Dropdown>
+          <Export excel image />
         </div>
         <BubbleChart data={this.state.filteredData} addHiddenProject={this.addHiddenProject} />
       </Card>

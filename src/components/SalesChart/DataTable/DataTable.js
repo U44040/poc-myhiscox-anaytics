@@ -52,14 +52,14 @@ class DataTable extends Component {
                 },
                 {
                     id: 'fullPercentAverage',
-                    Header: 'Percentage',
+                    Header: 'Market Position',
                     accessor: (d) => d3.mean(d.productVariants.map(pv => pv.percentAverage)),
                     Cell: (d => Math.round(d.cell.value) + '%'),
                     sortType: 'basic',
                 },
                 {
                     id: 'elapsedTime',
-                    Header: 'Elapsed Time',
+                    Header: 'Time in Market',
                     accessor: 'elapsedTime',
                     Cell: (d) => {
                         let duration = moment.duration(d.cell.value, "minutes");
