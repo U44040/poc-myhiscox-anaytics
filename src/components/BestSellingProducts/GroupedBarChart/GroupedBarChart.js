@@ -14,7 +14,7 @@ class GroupedBarChart extends Component {
         const width = 670 - margin.left - margin.right;
         const height = 200 - margin.top - margin.bottom;
         const padding = { top: 15, right: 0, bottom: 0, left: 0 };
-        const barSize = 20;
+        const barSize = 15;
 
         this.svg = null;
         this.scatter = null;
@@ -235,7 +235,7 @@ class GroupedBarChart extends Component {
     updateChart = () => {
 
         this.setState((oldState, oldProps) => (
-            { height: oldState.barSize * (oldProps.data.length) * (oldProps.data[0].values.length * 0.75) }
+            { height: oldState.barSize * (oldProps.data.length) * ((oldProps.data[0].values.length ? oldProps.data[0].values.length : 1) * 0.75) }
         ), () => {
 
             let component = this;
