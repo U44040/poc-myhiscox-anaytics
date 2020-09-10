@@ -235,7 +235,7 @@ class GroupedBarChart extends Component {
     updateChart = () => {
 
         this.setState((oldState, oldProps) => (
-            { height: oldState.barSize * (oldProps.data.length) * (oldProps.data[0].values.length ? oldProps.data[0].values.length * 0.75 : 1) }
+            { height: oldState.barSize * (oldProps.data.length) * (oldProps.data[0].values.length * 0.75) }
         ), () => {
 
             let component = this;
@@ -247,7 +247,7 @@ class GroupedBarChart extends Component {
                 .attr("height", this.state.height + 5)
 
             // Axis
-            this.xAxis.call(d3.axisTop(this.xScaleTransformed()).ticks(10).tickSizeInner(-this.state.height).tickSizeOuter(0));
+            this.xAxis.call(d3.axisTop(this.xScaleTransformed()).tickFormat((d, i) => this.formatCurrency(d)).ticks(10).tickSizeInner(-this.state.height).tickSizeOuter(0));
             this.yAxis.call(d3.axisLeft(this.yScaleTransformed()).tickFormat((d, i) => "#"+(d+1)).tickSizeInner(1).tickSizeOuter(0));
 
             // Serie
