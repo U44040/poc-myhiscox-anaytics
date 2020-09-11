@@ -1,0 +1,29 @@
+#barChartRace {
+
+    .legend-bubble {
+        cursor: pointer;
+    }
+
+    g.x-axis {
+        >path {
+            color: transparent;
+        }
+        g.tick {
+            >path {
+                color: transparent;
+            }
+            >line {
+                color: #fff;
+                stroke-width: .75px;
+                opacity: 0.33;
+            }
+
+        }
+    }
+
+    g.y-axis {
+        >path{
+            stroke-width: .5px;
+        }
+    }
+}

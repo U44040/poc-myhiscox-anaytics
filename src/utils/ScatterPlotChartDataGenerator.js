@@ -1,12 +1,13 @@
 import moment from 'moment';
 import rfdc from 'rfdc';
+import * as STATUS from './StatusTypes';
 
 const deepClone = rfdc();
 
 const users = [
     {
         "id": 1,
-        "name": "Hiscox User",
+        "name": "Albert Pérez Moliné",
         "brokerage": {
             "id": 1,
             "name": "Hiscox",
@@ -22,7 +23,7 @@ const users = [
     },
     {
         "id": 2,
-        "name": "Hiscox User 2",
+        "name": "Carlos Luis Sanchez Torres",
         "brokerage": {
             "id": 2,
             "name": "Abella Mediación",
@@ -38,7 +39,7 @@ const users = [
     },
     {
         "id": 3,
-        "name": "Hiscox User 3",
+        "name": "Estefania Morales",
         "brokerage": {
             "id": 3,
             "name": "ALBROKSA",
@@ -54,7 +55,7 @@ const users = [
     },
     {
         "id": 4,
-        "name": "Hiscox User 4",
+        "name": "Laura Santana",
         "brokerage": {
             "id": 4,
             "name": "AICO MEDIACIÓN",
@@ -70,7 +71,23 @@ const users = [
     },
     {
         "id": 5,
-        "name": "Hiscox User 5",
+        "name": "Manuel Naranjo González-Coviella",
+        "brokerage": {
+            "id": 5,
+            "name": "AON",
+            "network": {
+                "id": 3,
+                "name": "RED AON"
+            }
+        },
+        "office": {
+            "id": 1,
+            "name": "Hiscox Office"
+        }
+    },
+    {
+        "id": 6,
+        "name": "Alicia Palacín Ortuño",
         "brokerage": {
             "id": 5,
             "name": "AON",
@@ -121,96 +138,84 @@ const productVariants = [
     },
 ]
 
-export const averageSales = {
-    1: 200,
-    10: 400,
-    14: 600,
-    15: 546,
-};
-
 export const generateData = () => {
-    
+
+    let startDate = moment('20190101', 'YYYYMMDD');
+    let endDate = moment().subtract(1, 'months').endOf('month');
+
+    let elapsedDays = moment.duration(endDate.diff(startDate)).asDays();
+
     let data = [];
-    
     let maxId = 1;
 
-    const state = ['Draft', 'Policy Holder Step', 'Start Date Step', 'Pending Info', 'Binding Request Pending'];
-    for (let i = 0; i < state.length; i++) {
+    const AVERAGE_PROJECTS_PER_DAY_MIN = 40;
+    const AVERAGE_PROJECTS_PER_DAY_MAX = 50;
 
-        let numItems = 20 + getRandomInt(0,20);
+    let status = STATUS.APPROVED;
+
+    for (let i = 0; i < elapsedDays; i++) {
+
+        let date = startDate.clone().add(i, 'days');
+        let numProjects = getRandomInt(AVERAGE_PROJECTS_PER_DAY_MIN, AVERAGE_PROJECTS_PER_DAY_MAX);
         let projects = [];
+        let volume = 0;
 
-        for (let k = 0; k < numItems; k++) {
+        for (let k = 0; k < numProjects; k++) {
 
+            let minimumRate = 0;
             let fullTotalRate = 0;
-            let fullPercentAverage = 0;
 
-            let numProducts = getRandomInt(1,3);
+            let numProducts = getRandomInt(1, 3);
 
             let products = [];
             for (let p = 0; p < numProducts; p++) {
-
-                const randomRate = getRandomInt(100,500);
+                const randomRate = getRandomInt(100, 500);
+                minimumRate += randomRate;
                 fullTotalRate += randomRate;
 
                 let productVariant = getRandomValueFromArray(productVariants);
+                productVariant.minimumRate = randomRate;
                 productVariant.totalRate = randomRate;
-                productVariant.percentAverage = (randomRate-averageSales[productVariant.idProductVariant])/averageSales[productVariant.idProductVariant]*100;
-                fullPercentAverage+=productVariant.percentAverage;
                 products.push(productVariant);
             }
 
-            fullPercentAverage = (fullPercentAverage/numProducts);
+            volume += fullTotalRate;
 
-            let isClean;
-            if (state[i] === 'Pending Info') {
-                isClean = false;
-            } else if (['Start Date Step', 'Binding Request Pending'].includes(state[i])) {
-                isClean = true;
-            } else {
-                isClean = ((Math.round(Math.random())) === 0)
-            }
-
-            let createdAt = moment().subtract(getRandomFloat(-10,+10), 'minutes'); // createdAt with future / past +-(0-300min)
+            let createdAt = date.clone().add(getRandomFloat(480, 1200), 'minutes'); // (Day between startDate, today) + (8:00,20:00)
+            let finishedAt = createdAt.clone().add(getRandomFloat(60, 180), 'minutes'); // finishedAt (30, 120min) from createdAt
 
             let project = {
                 "id": maxId++,
-                "reference": "AX" + i + k,
+                "reference": "AX" + 0 + k,
+                "status": status,
                 "user": getRandomValueFromArray(users),
                 "createdAt": createdAt.format('YYYY-MM-DD HH:mm:ss'),
-                "elapsedTime": moment.duration(moment().diff(createdAt)).asMinutes(),
+                "finishedAt": finishedAt.format('YYYY-MM-DD HH:mm:ss'),
+                "elapsedTime": moment.duration(finishedAt.diff(createdAt)).asMinutes(),
                 "productVariants": products,
-                "isClean": isClean,
-                "source": ((Math.round(Math.random())) === 0 ? "web" : "api"),
+                "isClean": ((Math.round(Math.random())) === 0),
+                "source": ((Math.round(Math.random())) === 0 ? "MyHiscox" : "API"),
+                "minimumRate": minimumRate,
                 "totalRate": fullTotalRate,
-                "fullPercentAverage": fullPercentAverage,
             }
             projects.push(project);
         }
 
         data.push({
-            state: state[i],
+            date: date,
             projects: projects,
+            volume: volume,
         })
     }
 
     return data;
 }
 
-export const updateData = (d) => {
-    // deep copy from input data to avoid modification of original    
-    let data = deepClone(d);
-    for (let state of data) {
-        for (let project of state.projects) {
-            project.elapsedTime = moment.duration(moment().diff(project.createdAt)).asMinutes();
-        }
-    }
-    return data;
-}
+export const updateData = () => { }
 
 const getRandomValueFromArray = (array) => {
-    return {...array[(getRandomInt(0, 100) % array.length)]};
+    return { ...array[(getRandomInt(0, 100) % array.length)] };
 };
-const getRandomInt = (min, max) => Math.floor(Math.random() * (max-min)) + min;
-const getRandomFloat = (min, max) => Math.random() * (max-min) + min;
+const getRandomInt = (min, max) => Math.floor(Math.random() * (max - min)) + min;
+const getRandomFloat = (min, max) => Math.random() * (max - min) + min;
 
