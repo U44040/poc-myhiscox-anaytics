@@ -82,8 +82,7 @@ Your changes will be compiled while you are developing.<br />
 
 ### Build
 
-If you need to start a Production Server execute:<br />
-**npm run build** this will Build the app for production to the `build` folder.<br />
+If you need to start a Production Server execute: `npm run build` this will Build the app for production to the `build` folder.<br />
 
 ### Start Production Server
 
