@@ -70,34 +70,15 @@ This section has moved here: https://facebook.github.io/create-react-app/docs/tr
 ## Notes for Dev-Team
 
 ### Install
-<<<<<<< HEAD
-=======
-
->>>>>>> develop
 Download the repository to your computer. You will need **npm** installed.<br />
 Once you have **npm** installed, go to the root folder of this repository and execute: **npm install**.<br />
 
 ### Start Development Server
-<<<<<<< HEAD
-=======
-
->>>>>>> develop
 If you need to start a Development Server execute:<br />
 **npm start** this will deploy a development server at localhost:3000.<br />
 Your changes will be compiled while you are developing.<br />
 
 ### Build
-<<<<<<< HEAD
-If you need to start a Production Server execute:<br />
-**npm run build** this will Build the app for production to the `build` folder.<br />
-
-### Start Production Server
-After you have the build completed you need to serve the `build` folder.<br />
-Install **serve** using this command: `npm install -g serve`<br />
-Run this command to start serving the build folder: `serve -s build`<br />
-
-
-=======
 
 If you need to start a Production Server execute: `npm run build` this will Build the app for production to the `build` folder.<br />
 
@@ -115,4 +96,3 @@ Now you can access the server at `localhost:5000`
 - src/containers (Folder) Containers used by the routes
 - src/components (Folder) Containing the components used by the Containers
 - src/utils (Folder) All stuffs :)
->>>>>>> develop
