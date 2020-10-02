@@ -138,6 +138,8 @@ const productVariants = [
     },
 ]
 
+const sources = ["MyHiscox", "API", "Magic"];
+
 export const generateData = () => {
 
     //let startDate = moment('20190101','YYYYMMDD');
@@ -195,7 +197,7 @@ export const generateData = () => {
                 "elapsedTime": moment.duration(finishedAt.diff(createdAt)).asMinutes(),
                 "productVariants": products,
                 "isClean": ((Math.round(Math.random())) === 0),
-                "source": ((Math.round(Math.random())) === 0 ? "MyHiscox" : "API"),
+                "source": getRandomStringFromArray(sources),
                 "minimumRate": minimumRate,
                 "totalRate": fullTotalRate,
             }
@@ -213,6 +215,9 @@ export const generateData = () => {
 }
 
 //export const updateData = (data, actualMoment) => {}
+const getRandomStringFromArray = (array) => {
+    return array[(getRandomInt(0, 100) % array.length)]
+}
 
 const getRandomValueFromArray = (array) => {
     return { ...array[(getRandomInt(0, 100) % array.length)] };
