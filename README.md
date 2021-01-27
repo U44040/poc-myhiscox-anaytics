@@ -70,12 +70,10 @@ This section has moved here: https://facebook.github.io/create-react-app/docs/tr
 ## Notes for Dev-Team
 
 ### Install
-
 Download the repository to your computer. You will need **npm** installed.<br />
 Once you have **npm** installed, go to the root folder of this repository and execute: **npm install**.<br />
 
 ### Start Development Server
-
 If you need to start a Development Server execute:<br />
 **npm start** this will deploy a development server at localhost:3000.<br />
 Your changes will be compiled while you are developing.<br />

@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import Callout from '../../components/Shared/Callout/Callout';
-import BarChartRaceContainer from './../../containers/BarChartRace/BarChartRace';
-import SidebarFilters from '../../components/BarChartRace/SidebarFilters/SidebarFilters';
+import BestSellingProductsContainer from './../../containers/BestSellingProducts/BestSellingProducts';
+import SidebarFilters from '../../components/BestSellingProducts/SidebarFilters/SidebarFilters';
 import * as STATUS from '../../utils/StatusTypes';
 
 
-class BarChartRace extends Component {
+class BestSellingProducts extends Component {
 
     state = {
         filters: {},
@@ -30,7 +30,7 @@ class BarChartRace extends Component {
             { specialFilters: specialFilters }
         )
     }
-    
+
     render = () => {
         return (
             <div className="section-dashboard row">
@@ -41,9 +41,9 @@ class BarChartRace extends Component {
                 />
                 <div className="col py-3">
                     <div className="container-fluid">
-                        <h3 className="text-gray-800">Sales Race</h3>
+                        <h3 className="text-gray-800">Best Selling Products</h3>
                         <div className="row mb-4">
-                            <BarChartRaceContainer updateData={this.updateSalesChartData} filters={this.state.filters} specialFilters={this.state.specialFilters} />
+                            <BestSellingProductsContainer updateData={this.updateSalesChartData} filters={this.state.filters} specialFilters={this.state.specialFilters} />
                         </div>
                     </div>
                 </div>
@@ -53,4 +53,4 @@ class BarChartRace extends Component {
 
 }
 
-export default BarChartRace;
+export default BestSellingProducts;

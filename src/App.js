@@ -11,6 +11,7 @@ import Cookies from 'js-cookie';
 import * as ROLES from './utils/RoleTypes';
 import TotalAccumulatedSales from './routes/Graphs/TotalAccumulatedSales';
 import BarChartRace from './routes/Graphs/BarChartRace';
+import BestSellingProducts from './routes/Graphs/BestSellingProducts';
 
 const USERS = [
   {
@@ -118,6 +119,7 @@ class App extends Component {
               <Route path="/login" component={Login} />
               <Route path="/graphs/total-accumulated-sales" component={TotalAccumulatedSales} />
               <Route path="/graphs/sales-race" component={BarChartRace} />
+              <Route path="/graphs/best-selling-products" component={BestSellingProducts} />
               <Route path="/" component={Dashboard} />
             </Switch>
           </Main>
